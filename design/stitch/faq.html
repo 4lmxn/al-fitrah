@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FAQ - Fitrah Academy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#dbdad5",
+                        "surface-bright": "#faf9f4",
+                        "outline": "#6f7973",
+                        "tertiary-fixed": "#cde5ff",
+                        "on-secondary-fixed-variant": "#763300",
+                        "on-background": "#1b1c19",
+                        "inverse-surface": "#30312e",
+                        "surface-container": "#efeee9",
+                        "primary-fixed": "#a6f2d1",
+                        "surface": "#faf9f4",
+                        "on-tertiary-fixed": "#001d32",
+                        "on-tertiary-container": "#97cdff",
+                        "secondary": "#9b4500",
+                        "on-secondary-fixed": "#331200",
+                        "on-tertiary": "#ffffff",
+                        "surface-tint": "#1b6b51",
+                        "tertiary-container": "#005888",
+                        "outline-variant": "#bec9c2",
+                        "on-primary-container": "#8bd6b7",
+                        "on-error-container": "#93000a",
+                        "background": "#faf9f4",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "primary-container": "#065f46",
+                        "on-surface-variant": "#3f4944",
+                        "on-primary-fixed-variant": "#00513b",
+                        "surface-container-high": "#e9e8e3",
+                        "secondary-fixed-dim": "#ffb68e",
+                        "on-error": "#ffffff",
+                        "tertiary": "#004065",
+                        "on-tertiary-fixed-variant": "#004b74",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f5f4ef",
+                        "secondary-container": "#fd8a42",
+                        "on-surface": "#1b1c19",
+                        "tertiary-fixed-dim": "#94ccff",
+                        "surface-container-highest": "#e3e3de",
+                        "primary": "#004532",
+                        "on-secondary-container": "#682c00",
+                        "primary-fixed-dim": "#8bd6b6",
+                        "secondary-fixed": "#ffdbca",
+                        "inverse-primary": "#8bd6b6",
+                        "surface-variant": "#e3e3de",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#002116",
+                        "inverse-on-surface": "#f2f1ec"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "mobile-margin": "20px",
+                        "section-padding": "80px",
+                        "gutter": "24px",
+                        "base": "8px",
+                        "container-max": "1200px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-xl": ["Playfair Display"],
+                        "headline-lg": ["Playfair Display"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "headline-md": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-xl": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["36px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf9f4; color: #1b1c19; }
+        h1, h2, h3, h4, h5, h6, .font-headline { font-family: 'Playfair Display', serif; }
+        
+        /* Subtle geometric pattern mask */
+        .bg-geometric-mask {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23004532' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* Accordion transition */
+        .accordion-content {
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding-top 0.3s ease-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            padding-top: 0;
+        }
+        .accordion-item.active .accordion-content {
+            max-height: 500px; /* arbitrary max-height larger than content */
+            opacity: 1;
+            padding-top: 1rem;
+        }
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+        .accordion-icon {
+            transition: transform 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative overflow-x-hidden">
+<!-- Ambient Texture Layer -->
+<div class="fixed inset-0 bg-geometric-mask z-[-1] pointer-events-none"></div>
+<!-- TopNavBar Shared Component -->
+<header class="bg-surface/90 dark:bg-surface-dim/90 backdrop-blur-md sticky top-0 w-full z-50 bg-surface-container-low dark:bg-surface-container-high shadow-sm shadow-sm text-primary dark:text-primary-fixed">
+<div class="flex justify-between items-center px-8 py-4 max-w-container-max mx-auto">
+<a class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed tracking-tight" href="#">Fitrah Academy</a>
+<nav class="hidden md:flex space-x-8 items-center font-label-md text-label-md">
+<a class="text-on-surface-variant dark:text-on-surface hover:text-primary transition-colors duration-200 hover:text-secondary dark:hover:text-secondary-fixed transition-all" href="#">Curriculum</a>
+<a class="text-on-surface-variant dark:text-on-surface hover:text-primary transition-colors duration-200 hover:text-secondary dark:hover:text-secondary-fixed transition-all" href="#">Hifz Program</a>
+<a class="text-on-surface-variant dark:text-on-surface hover:text-primary transition-colors duration-200 hover:text-secondary dark:hover:text-secondary-fixed transition-all" href="#">Montessori</a>
+<a class="text-primary dark:text-primary-fixed border-b-2 border-secondary font-bold pb-1 hover:text-secondary dark:hover:text-secondary-fixed transition-all active:scale-95 duration-150 ease-in-out" href="#">Admissions</a>
+<a class="text-on-surface-variant dark:text-on-surface hover:text-primary transition-colors duration-200 hover:text-secondary dark:hover:text-secondary-fixed transition-all" href="#">Contact</a>
+</nav>
+<button class="hidden md:inline-flex bg-primary-container text-on-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:bg-surface-tint transition-colors shadow-sm focus:ring-2 focus:ring-secondary active:scale-95 duration-150 ease-in-out">
+                Enroll Now
+            </button>
+<button class="md:hidden text-primary p-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+</div>
+</header>
+<main class="flex-grow w-full max-w-container-max mx-auto px-mobile-margin md:px-gutter py-section-padding space-y-16">
+<!-- Hero Section -->
+<section class="text-center max-w-3xl mx-auto space-y-6">
+<h1 class="font-headline-lg-mobile md:font-headline-xl text-headline-lg-mobile md:text-headline-xl text-primary">Frequently Asked Questions</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Find answers to common questions about our admissions process, holistic curriculum, and daily life at Fitrah Academy.</p>
+</section>
+<!-- FAQ Categories Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Sidebar Navigation (Desktop) -->
+<div class="hidden md:block md:col-span-3 space-y-2 sticky top-32 self-start">
+<h3 class="font-label-md text-label-md text-outline uppercase tracking-wider mb-4">Categories</h3>
+<nav class="flex flex-col space-y-1">
+<a class="px-4 py-3 rounded-lg bg-surface-container text-primary font-label-md text-label-md border-l-4 border-primary transition-colors" href="#admissions">Admissions Process</a>
+<a class="px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low font-label-md text-label-md border-l-4 border-transparent hover:border-outline-variant transition-colors" href="#fees">Fees &amp; Scholarships</a>
+<a class="px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low font-label-md text-label-md border-l-4 border-transparent hover:border-outline-variant transition-colors" href="#islamic">Islamic Integration</a>
+<a class="px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low font-label-md text-label-md border-l-4 border-transparent hover:border-outline-variant transition-colors" href="#schedule">Daily Schedule</a>
+</nav>
+</div>
+<!-- FAQ Content Area -->
+<div class="col-span-1 md:col-span-9 space-y-12">
+<!-- Category 1: Admissions -->
+<div class="space-y-6 scroll-mt-32" id="admissions">
+<div class="flex items-center space-x-3 border-b border-surface-container-highest pb-4">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">assignment</span>
+<h2 class="font-headline-md text-headline-md text-primary">Admissions Process</h2>
+</div>
+<div class="space-y-4">
+<!-- FAQ Item -->
+<div class="accordion-item bg-surface-bright border border-surface-container-high rounded-xl overflow-hidden hover:border-outline-variant transition-colors shadow-sm">
+<button class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-primary-fixed focus:bg-surface-container-lowest" onclick="toggleAccordion(this)">
+<span class="font-body-lg text-body-lg text-on-surface font-semibold">What is the ideal age to enroll my child in the Montessori program?</span>
+<span class="material-symbols-outlined text-outline accordion-icon">expand_more</span>
+</button>
+<div class="accordion-content px-6 pb-5">
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                                    Our Montessori program is designed for children aged 3 to 6 years. We find that starting at age 3 allows children to fully benefit from the three-year cycle, establishing strong foundational skills in a nurturing environment before transitioning to the lower elementary grades.
+                                </p>
+</div>
+</div>
+<!-- FAQ Item -->
+<div class="accordion-item bg-surface-bright border border-surface-container-high rounded-xl overflow-hidden hover:border-outline-variant transition-colors shadow-sm">
+<button class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-primary-fixed focus:bg-surface-container-lowest" onclick="toggleAccordion(this)">
+<span class="font-body-lg text-body-lg text-on-surface font-semibold">Do you require an assessment or interview prior to admission?</span>
+<span class="material-symbols-outlined text-outline accordion-icon">expand_more</span>
+</button>
+<div class="accordion-content px-6 pb-5">
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                                    Yes, we conduct a gentle assessment and a family interview. This is not a formal test, but rather an opportunity for us to understand your child's unique needs, learning style, and readiness. It also ensures that our educational philosophy aligns with your family's values.
+                                </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Category 2: Islamic Integration -->
+<div class="space-y-6 scroll-mt-32" id="islamic">
+<div class="flex items-center space-x-3 border-b border-surface-container-highest pb-4">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<h2 class="font-headline-md text-headline-md text-primary">Islamic Integration (Tajweed &amp; Quran)</h2>
+</div>
+<div class="space-y-4">
+<!-- FAQ Item -->
+<div class="accordion-item bg-surface-bright border border-surface-container-high rounded-xl overflow-hidden hover:border-outline-variant transition-colors shadow-sm">
+<button class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-primary-fixed focus:bg-surface-container-lowest" onclick="toggleAccordion(this)">
+<span class="font-body-lg text-body-lg text-on-surface font-semibold">How much time is dedicated to the Hifz program daily?</span>
+<span class="material-symbols-outlined text-outline accordion-icon">expand_more</span>
+</button>
+<div class="accordion-content px-6 pb-5">
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                                    Students in the dedicated Hifz track spend approximately 2.5 to 3 hours daily on memorization, revision, and Tajweed practice. This is carefully balanced with their core academic subjects to ensure holistic development without overwhelming the student.
+                                </p>
+</div>
+</div>
+<!-- FAQ Item -->
+<div class="accordion-item bg-surface-bright border border-surface-container-high rounded-xl overflow-hidden hover:border-outline-variant transition-colors shadow-sm">
+<button class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-primary-fixed focus:bg-surface-container-lowest" onclick="toggleAccordion(this)">
+<span class="font-body-lg text-body-lg text-on-surface font-semibold">Does my child need prior Arabic knowledge to join?</span>
+<span class="material-symbols-outlined text-outline accordion-icon">expand_more</span>
+</button>
+<div class="accordion-content px-6 pb-5">
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                                    No prior knowledge is required for the early years or primary grades. We have a leveled Arabic curriculum that caters to beginners as well as advanced speakers. Our dedicated educators provide individualized support to help every child progress at their own pace.
+                                </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Call to Action Banner -->
+<div class="mt-12 p-8 bg-surface-container-low border border-surface-container-highest rounded-2xl flex flex-col md:flex-row items-center justify-between shadow-sm relative overflow-hidden">
+<div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23065f46\' fill-opacity=\'0.05\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E')] opacity-50 z-0"></div>
+<div class="relative z-10 space-y-2 md:w-2/3 mb-6 md:mb-0">
+<h4 class="font-headline-md text-headline-md text-primary">Still have questions?</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Our admissions team is here to guide you through every step. We welcome you to reach out directly.</p>
+</div>
+<div class="relative z-10 w-full md:w-auto flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+<button class="bg-secondary text-on-secondary font-label-md text-label-md px-6 py-3 rounded-lg hover:bg-secondary-container hover:text-on-secondary-container transition-colors shadow-sm focus:ring-2 focus:ring-primary">
+                            Contact Admissions
+                        </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Shared Component -->
+<footer class="bg-surface-container-highest dark:bg-inverse-surface w-full rounded-t-xl bg-[url('geometric-pattern-mask')] bg-repeat opacity-10 flat no shadows text-on-surface dark:text-inverse-on-surface mt-auto">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter px-mobile-margin py-section-padding max-w-container-max mx-auto">
+<div class="space-y-4">
+<h2 class="font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim">Fitrah Academy</h2>
+<p class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant">
+                    Nurturing the innate goodness within every child.
+                </p>
+<p class="font-body-md text-body-md text-outline mt-4">
+                    © 2024 Fitrah Academy. Nurturing the innate goodness within every child.
+                </p>
+</div>
+<div class="space-y-4">
+<h3 class="font-label-md text-label-md font-bold text-on-surface uppercase tracking-wider">Quick Links</h3>
+<nav class="flex flex-col space-y-2 font-body-md text-body-md">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors hover:underline decoration-secondary transition-all focus:ring-2 focus:ring-primary" href="#">Campus Location</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors hover:underline decoration-secondary transition-all focus:ring-2 focus:ring-primary" href="#">Program Highlights</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors hover:underline decoration-secondary transition-all focus:ring-2 focus:ring-primary" href="#">Islamic Integration</a>
+</nav>
+</div>
+<div class="space-y-4">
+<h3 class="font-label-md text-label-md font-bold text-on-surface uppercase tracking-wider">Resources</h3>
+<nav class="flex flex-col space-y-2 font-body-md text-body-md">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors hover:underline decoration-secondary transition-all focus:ring-2 focus:ring-primary" href="#">Parent Portal</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors hover:underline decoration-secondary transition-all focus:ring-2 focus:ring-primary" href="#">Careers</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors hover:underline decoration-secondary transition-all focus:ring-2 focus:ring-primary" href="#">Privacy Policy</a>
+</nav>
+</div>
+</div>
+</footer>
+<script>
+        function toggleAccordion(button) {
+            const item = button.closest('.accordion-item');
+            const isActive = item.classList.contains('active');
+            
+            // Close all other accordions (optional: remove if you want multiple open)
+            document.querySelectorAll('.accordion-item').forEach(el => {
+                el.classList.remove('active');
+                el.querySelector('.accordion-content').style.maxHeight = '0px';
+                el.querySelector('.accordion-content').style.opacity = '0';
+                el.querySelector('.accordion-content').style.paddingTop = '0px';
+                el.classList.remove('border-primary', 'shadow-sm');
+                el.classList.add('border-surface-container-high');
+            });
+
+            if (!isActive) {
+                item.classList.add('active');
+                item.classList.remove('border-surface-container-high');
+                item.classList.add('border-primary', 'shadow-sm');
+                // The CSS handles the actual transition via max-height, but setting inline styles helps force reflow if needed. 
+                // Using generic CSS class toggle is usually cleaner.
+            }
+        }
+    </script>
+</body></html>

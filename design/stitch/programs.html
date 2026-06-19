@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Our Programs - Al Fitrah</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-container": "#682c00",
+                      "inverse-on-surface": "#f2f1ec",
+                      "outline-variant": "#bec9c2",
+                      "primary-container": "#065f46",
+                      "inverse-surface": "#30312e",
+                      "tertiary-fixed-dim": "#94ccff",
+                      "tertiary-container": "#005888",
+                      "primary": "#004532",
+                      "primary-fixed": "#a6f2d1",
+                      "outline": "#6f7973",
+                      "on-background": "#1b1c19",
+                      "on-tertiary-fixed": "#001d32",
+                      "tertiary-fixed": "#cde5ff",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-fixed": "#002116",
+                      "surface-dim": "#dbdad5",
+                      "on-secondary": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-container": "#97cdff",
+                      "primary-fixed-dim": "#8bd6b6",
+                      "error": "#ba1a1a",
+                      "background": "#faf9f4",
+                      "secondary-fixed-dim": "#ffb68e",
+                      "tertiary": "#004065",
+                      "on-secondary-fixed-variant": "#763300",
+                      "secondary-container": "#fd8a42",
+                      "surface": "#faf9f4",
+                      "secondary-fixed": "#ffdbca",
+                      "on-tertiary-fixed-variant": "#004b74",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-primary": "#8bd6b6",
+                      "surface-container-low": "#f5f4ef",
+                      "on-surface-variant": "#3f4944",
+                      "on-error-container": "#93000a",
+                      "on-secondary-fixed": "#331200",
+                      "surface-variant": "#e3e3de",
+                      "on-surface": "#1b1c19",
+                      "on-primary-fixed-variant": "#00513b",
+                      "surface-bright": "#faf9f4",
+                      "on-error": "#ffffff",
+                      "surface-tint": "#1b6b51",
+                      "secondary": "#9b4500",
+                      "surface-container-highest": "#e3e3de",
+                      "surface-container-high": "#e9e8e3",
+                      "surface-container": "#efeee9",
+                      "on-primary-container": "#8bd6b7",
+                      "error-container": "#ffdad6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "base": "8px",
+                      "container-max": "1200px",
+                      "mobile-margin": "20px",
+                      "section-padding": "80px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": [
+                              "Playfair Display"
+                      ],
+                      "headline-xl": [
+                              "Playfair Display"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Playfair Display"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Playfair Display"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-xl": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "36px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        .geometric-bg {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l30 30-30 30L0 30z' fill='%23004532' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+        .soft-glow {
+            box-shadow: 0 10px 30px -10px rgba(6, 95, 70, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-x-hidden">
+<!-- TopNavBar -->
+<nav class="bg-background dark:bg-inverse-surface docked full-width top-0 sticky z-50 bg-surface-container-low dark:bg-surface-container-low flat no shadows">
+<div class="max-w-container-max mx-auto px-mobile-margin md:px-gutter flex justify-between items-center h-20">
+<div class="flex items-center gap-4 hover:opacity-90 transition-opacity">
+<img alt="Al Fitrah Logo" class="h-12 w-12 object-contain rounded-full bg-white p-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPfnS7TmODBcW2YEebWsTRriUwfr5ut2_3mcxZN_1Z3Jql0NNKXALwZ6RVp0nJiz_0GPgXEn_-sc6ne_IUL8ylibbpGYK5MptKj8vxNs_FgnGv0cNtSFXRTdfC9RZzkpnlSjx6kysg-ChuRbLrDtTCsBt_0Ya2MzuHNctddqHVG5upuyIft0psBpSU2S0m_5TOQxudfTzWO-4YabgQb_QPWHodKMUDt9Qx0a_KKbKTymXPP1AZWBqFm0nzDqH_auiXF-7T85LQLtw"/>
+<span class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed">Al Fitrah</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-colors hover:opacity-90 transition-opacity" href="#">Home</a>
+<a class="font-label-md text-label-md text-primary dark:text-primary-fixed border-b-2 border-primary dark:border-primary-fixed pb-1 hover:opacity-90 transition-opacity" href="#">Programs</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-colors hover:opacity-90 transition-opacity" href="#">About Us</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-colors hover:opacity-90 transition-opacity" href="#">Admissions</a>
+</div>
+<button class="hidden md:block bg-secondary text-on-secondary px-6 py-3 rounded-lg font-label-md text-label-md hover:bg-opacity-90 transition-all hover:scale-95 duration-150">Enroll Now</button>
+<!-- Mobile Menu Icon (Placeholder for interaction) -->
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="w-full">
+<!-- Hero Section -->
+<section class="relative w-full py-section-padding px-mobile-margin md:px-gutter geometric-bg flex items-center justify-center min-h-[60vh]">
+<div class="max-w-container-max mx-auto text-center relative z-10">
+<span class="bg-tertiary-fixed text-primary px-4 py-2 rounded-full font-label-md text-label-md mb-6 inline-block">Nurturing the Innate Goodness</span>
+<h1 class="font-headline-lg-mobile md:font-headline-xl text-headline-lg-mobile md:text-headline-xl text-primary mb-6">3-Year Integrated Program</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-10">A holistic journey designed to balance rigorous academic foundations with deep spiritual nurturing, preparing your child for both this world and the hereafter.</p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+<div class="bg-surface-container-lowest px-6 py-4 rounded-xl border border-outline-variant soft-glow flex items-center gap-3 w-full sm:w-auto">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="child_care">child_care</span>
+<div class="text-left">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Age Group</p>
+<p class="font-headline-md text-headline-md text-primary mt-1">2.10 - 3.10 Yrs</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest px-6 py-4 rounded-xl border border-outline-variant soft-glow flex items-center gap-3 w-full sm:w-auto">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="schedule">schedule</span>
+<div class="text-left">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Duration</p>
+<p class="font-headline-md text-headline-md text-primary mt-1">3 Years</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Curriculum Breakdown (Bento Grid) -->
+<section class="py-section-padding px-mobile-margin md:px-gutter bg-surface-container-lowest">
+<div class="max-w-container-max mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-4">Comprehensive Curriculum</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto">Our unique approach blends essential modern subjects with core Islamic teachings, delivered in a sanctuary of learning.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-min">
+<!-- Arabic & Quran (Large Focus) -->
+<div class="md:col-span-2 bg-primary-container text-on-primary-container rounded-xl p-8 flex flex-col justify-between soft-glow group">
+<div class="flex justify-between items-start mb-12">
+<h3 class="font-headline-md text-headline-md text-on-primary">Arabic &amp; Qur'an</h3>
+<span class="material-symbols-outlined text-4xl text-primary-fixed" data-icon="auto_stories" data-weight="fill" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+<div>
+<h4 class="font-label-md text-label-md text-primary-fixed uppercase tracking-wider mb-2">Tajweed</h4>
+<p class="font-body-md text-body-md text-inverse-on-surface opacity-90">Perfecting pronunciation and the art of recitation from an early age.</p>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary-fixed uppercase tracking-wider mb-2">Recitation</h4>
+<p class="font-body-md text-body-md text-inverse-on-surface opacity-90">Fostering a deep love and connection with the words of Allah.</p>
+</div>
+</div>
+</div>
+<!-- Modern Subjects -->
+<div class="bg-surface-container border border-outline-variant rounded-xl p-8 soft-glow flex flex-col gap-6">
+<div class="flex items-start gap-4">
+<div class="bg-white p-3 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-secondary" data-icon="calculate" data-weight="fill" style="font-variation-settings: 'FILL' 1;">calculate</span>
+</div>
+<div>
+<h4 class="font-headline-md text-headline-md text-on-surface text-lg">Mathematics</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Building logical foundations.</p>
+</div>
+</div>
+<div class="w-full h-px bg-outline-variant opacity-50"></div>
+<div class="flex items-start gap-4">
+<div class="bg-white p-3 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-secondary" data-icon="language" data-weight="fill" style="font-variation-settings: 'FILL' 1;">language</span>
+</div>
+<div>
+<h4 class="font-headline-md text-headline-md text-on-surface text-lg">English</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Confident global communication.</p>
+</div>
+</div>
+</div>
+<!-- Spiritual Practices -->
+<div class="bg-surface-container border border-outline-variant rounded-xl p-8 soft-glow">
+<div class="flex justify-between items-start mb-6">
+<h3 class="font-headline-md text-headline-md text-primary text-xl">Spiritual Rhythm</h3>
+<span class="material-symbols-outlined text-3xl text-secondary" data-icon="self_improvement">self_improvement</span>
+</div>
+<div class="flex flex-wrap gap-3 mt-4">
+<span class="bg-tertiary-fixed text-primary px-3 py-1 rounded-full font-label-md text-label-md">Hadith</span>
+<span class="bg-tertiary-fixed text-primary px-3 py-1 rounded-full font-label-md text-label-md">Dhikr</span>
+<span class="bg-tertiary-fixed text-primary px-3 py-1 rounded-full font-label-md text-label-md">Dua</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-6">Integrating daily remembrance and the teachings of the Prophet (SAW) into routine.</p>
+</div>
+<!-- Image Feature -->
+<div class="md:col-span-2 rounded-xl overflow-hidden relative soft-glow min-h-[300px]">
+<div class="bg-cover bg-center absolute inset-0 w-full h-full transform hover:scale-105 transition-transform duration-700" data-alt="{{DATA:IMAGE:IMAGE_15:ALT}}" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCmOGsTHNpWwXhFEaWzX51GbmbX9g99YtkDVlQWdI6r7NFRS3R73ibxJYtec9pT647lB2WM9nbKpCZ5xpkK-I2bPD-NFbD8RMGRlnkNw-ypUMUNpRHjj2rHgAXj9br8-Wcu4lY_36rHo8jyoc7Yn8x0t7Bt8pGeTm6qAOWoyZ_Qpji01p1E_YM7YKIlhj6XFslFDKFPwT-WfIaC3DC9oDC7B3AzsGj5CuGuEU2KJjkMc_cW9Of0UOS4Tq0vWgNbr4vQT5C_6DJ6DZY')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8">
+<p class="font-headline-md text-headline-md text-white">Nurturing a lifelong love for learning.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Outcomes Section -->
+<section class="py-section-padding px-mobile-margin md:px-gutter geometric-bg relative overflow-hidden">
+<!-- Decorative ambient shape -->
+<div class="absolute top-0 right-0 w-96 h-96 bg-primary-fixed opacity-10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
+<div class="max-w-container-max mx-auto relative z-10 flex flex-col md:flex-row items-center gap-12">
+<div class="w-full md:w-1/2">
+<div class="bg-cover bg-center w-full aspect-square rounded-2xl soft-glow" data-alt="{{DATA:IMAGE:IMAGE_16:ALT}}" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCuiveLqpdAeECrvw56z5kpcUT2-v7EFEMP5kI0LQRtBQY67AUNTcLsPFo3vy4mIR3xWmNdHtG2QVIdfgtCCgEo97Axf4xACbKJI6vkpqPtAwok8LYmrX9spuusbkMhTRMbidB39eM19L9aaKh7bpauOpouKDkgjfuvY1f2ZK4ASmeWwU6v_kz3LTSlmaOtx4NyGchiJ4AZZrowuDxkGZo0yqDe35OcEUGU50V3ZINZ852o5cMYs9LUj0VzPB-z_Ls15BWU-9aXhtU')"></div>
+</div>
+<div class="w-full md:w-1/2">
+<div class="bg-surface-container-lowest p-8 md:p-12 rounded-2xl border border-outline-variant soft-glow relative">
+<!-- Subtle quote mark -->
+<span class="material-symbols-outlined absolute top-6 right-8 text-6xl text-surface-variant opacity-50" data-icon="format_quote" data-weight="fill">format_quote</span>
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-6">Program Outcomes</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8 uppercase tracking-widest font-semibold text-sm">By the end of 3 years</p>
+<div class="bg-surface-container-low p-6 rounded-xl border-l-4 border-primary">
+<p class="font-headline-md text-headline-md text-primary leading-relaxed">
+                                "Khatmul Qur’an recitation &amp; memorization of 2 Juz with Tajweed."
+                            </p>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-6">
+                            Our dedicated educators ensure that each child progresses at their own natural pace while achieving remarkable milestones in both academic and spiritual disciplines.
+                        </p>
+<button class="mt-8 bg-primary text-on-primary px-8 py-3 rounded-lg font-label-md text-label-md hover:bg-opacity-90 transition-all soft-glow inline-flex items-center gap-2">
+<span>View Full Syllabus</span>
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary dark:bg-surface-container-highest w-full bg-primary dark:bg-surface-container-highest flat no shadows relative overflow-hidden">
+<!-- Subtle pattern overlay -->
+<div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E');"></div>
+<div class="max-w-container-max mx-auto px-mobile-margin md:px-gutter py-section-padding flex flex-col md:flex-row justify-between gap-8 relative z-10">
+<div class="flex flex-col gap-4 max-w-sm">
+<span class="text-headline-md font-headline-md text-on-primary dark:text-on-surface">Al Fitrah</span>
+<p class="font-body-md text-body-md text-on-primary-fixed-variant opacity-80">Nurturing the innate goodness in every child through comprehensive Islamic and modern education.</p>
+</div>
+<div class="flex flex-wrap gap-8 md:gap-12">
+<div class="flex flex-col gap-3">
+<p class="font-label-md text-label-md text-on-primary opacity-50 uppercase tracking-widest mb-2">Campuses</p>
+<a class="font-body-md text-body-md text-on-primary-fixed-variant dark:text-on-surface-variant hover:text-secondary-fixed dark:hover:text-secondary transition-colors focus:ring-2 focus:ring-secondary-fixed rounded outline-none w-fit" href="#">Sompura Campus</a>
+<a class="font-body-md text-body-md text-on-primary-fixed-variant dark:text-on-surface-variant hover:text-secondary-fixed dark:hover:text-secondary transition-colors focus:ring-2 focus:ring-secondary-fixed rounded outline-none w-fit" href="#">Sarjapura Campus</a>
+</div>
+<div class="flex flex-col gap-3">
+<p class="font-label-md text-label-md text-on-primary opacity-50 uppercase tracking-widest mb-2">Explore</p>
+<a class="font-body-md text-body-md text-on-primary-fixed-variant dark:text-on-surface-variant hover:text-secondary-fixed dark:hover:text-secondary transition-colors focus:ring-2 focus:ring-secondary-fixed rounded outline-none w-fit" href="#">Noor-el-bayan</a>
+<a class="font-body-md text-body-md text-on-primary dark:text-on-surface underline hover:text-secondary-fixed dark:hover:text-secondary transition-colors focus:ring-2 focus:ring-secondary-fixed rounded outline-none w-fit" href="#">Curriculum</a>
+<a class="font-body-md text-body-md text-on-primary-fixed-variant dark:text-on-surface-variant hover:text-secondary-fixed dark:hover:text-secondary transition-colors focus:ring-2 focus:ring-secondary-fixed rounded outline-none w-fit" href="#">Contact Us</a>
+</div>
+</div>
+</div>
+<div class="max-w-container-max mx-auto px-mobile-margin md:px-gutter py-6 border-t border-on-primary/10 relative z-10">
+<p class="font-body-md text-body-md text-center text-on-primary-fixed-variant text-sm">© 2024 Al Fitrah Islamic Pre-School. All rights reserved.</p>
+</div>
+</footer>
+</body></html>

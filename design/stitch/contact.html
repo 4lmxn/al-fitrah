@@ -1,0 +1,311 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Contact Us - Al Fitrah Islamic Pre-School</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,600&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed-variant": "#004b74",
+                    "error": "#ba1a1a",
+                    "surface-container-highest": "#e3e3de",
+                    "on-surface": "#1b1c19",
+                    "inverse-surface": "#30312e",
+                    "secondary-container": "#fd8a42",
+                    "tertiary-fixed-dim": "#94ccff",
+                    "surface-dim": "#dbdad5",
+                    "on-primary-fixed": "#002116",
+                    "tertiary-container": "#005888",
+                    "surface-bright": "#faf9f4",
+                    "on-primary": "#ffffff",
+                    "inverse-on-surface": "#f2f1ec",
+                    "surface-variant": "#e3e3de",
+                    "on-background": "#1b1c19",
+                    "surface-container": "#efeee9",
+                    "on-tertiary-container": "#97cdff",
+                    "primary-fixed-dim": "#8bd6b6",
+                    "primary-fixed": "#a6f2d1",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed": "#331200",
+                    "on-secondary-container": "#682c00",
+                    "outline": "#6f7973",
+                    "tertiary": "#004065",
+                    "primary": "#004532",
+                    "on-primary-container": "#8bd6b7",
+                    "error-container": "#ffdad6",
+                    "surface-container-low": "#f5f4ef",
+                    "on-surface-variant": "#3f4944",
+                    "inverse-primary": "#8bd6b6",
+                    "secondary-fixed": "#ffdbca",
+                    "secondary-fixed-dim": "#ffb68e",
+                    "on-tertiary-fixed": "#001d32",
+                    "on-secondary-fixed-variant": "#763300",
+                    "tertiary-fixed": "#cde5ff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed-variant": "#00513b",
+                    "primary-container": "#065f46",
+                    "background": "#faf9f4",
+                    "surface-tint": "#1b6b51",
+                    "surface-container-high": "#e9e8e3",
+                    "on-error": "#ffffff",
+                    "secondary": "#9b4500",
+                    "on-error-container": "#93000a",
+                    "outline-variant": "#bec9c2",
+                    "surface": "#faf9f4"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-padding": "80px",
+                    "container-max": "1200px",
+                    "mobile-margin": "20px",
+                    "gutter": "24px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "headline-lg": [
+                            "Playfair Display"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "headline-lg-mobile": [
+                            "Playfair Display"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "label-md": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Playfair Display"
+                    ],
+                    "headline-xl": [
+                            "Playfair Display"
+                    ]
+            },
+            "fontSize": {
+                    "headline-lg": [
+                            "36px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "28px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "1",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-xl": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .bg-pattern {
+            background-image: radial-gradient(var(--tw-colors-surface-dim) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col bg-pattern">
+<!-- TopNavBar Shared Component -->
+<nav class="w-full top-0 sticky bg-background dark:bg-surface z-50 transition-all duration-300 shadow-sm">
+<div class="flex justify-between items-center max-w-container-max mx-auto px-8 py-4">
+<!-- Brand -->
+<a class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim" href="#">
+                Al Fitrah
+            </a>
+<!-- Navigation Links (Web) -->
+<div class="hidden md:flex items-center space-x-6 font-body-md text-body-md">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-200" href="#">Home</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-200" href="#">Programs</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-200" href="#">About Us</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-200" href="#">Campus Life</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-200" href="#">Admissions</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-200" href="#">Parent Resources</a>
+</div>
+<!-- Actions -->
+<div class="flex items-center space-x-4">
+<a class="hidden md:inline-flex font-label-md text-label-md text-primary hover:text-primary-container transition-colors duration-200" href="#">Contact</a>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-6 py-2 rounded-lg hover:bg-primary-container transition-colors duration-200 shadow-sm">
+                    Enroll Now
+                </button>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-container-max mx-auto px-mobile-margin md:px-gutter py-section-padding">
+<!-- Hero Header -->
+<header class="text-center mb-16 max-w-3xl mx-auto">
+<h1 class="font-headline-xl text-headline-xl text-primary mb-4">Get in Touch</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+                We welcome your inquiries. Reach out to us to learn more about our nurturing environment rooted in Fitrah and academic excellence.
+            </p>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Contact Information Card -->
+<div class="md:col-span-5 bg-surface-bright border border-outline-variant rounded-xl p-8 shadow-sm flex flex-col justify-between">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary mb-8 border-b border-surface-dim pb-4">Contact Details</h2>
+<ul class="space-y-8">
+<li class="flex items-start space-x-4 group">
+<div class="bg-primary-container/10 p-3 rounded-full text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">location_on</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-primary mb-1 uppercase tracking-wider">Address</h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                                    3rd Floor, Vivian Complex,<br>
+                                    Opp HP Petrol Bunk, Sompura Gate,<br>
+                                    Sarjapura - 562125
+                                </p>
+</div>
+</li>
+<li class="flex items-start space-x-4 group">
+<div class="bg-primary-container/10 p-3 rounded-full text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">call</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-primary mb-1 uppercase tracking-wider">Phone</h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex flex-col space-y-1">
+<a class="hover:text-primary transition-colors" href="tel:+919986500718">+91 9986500718</a>
+<a class="hover:text-primary transition-colors" href="tel:+919986049413">+91 9986049413</a>
+</p>
+</div>
+</li>
+<li class="flex items-start space-x-4 group">
+<div class="bg-primary-container/10 p-3 rounded-full text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">mail</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-primary mb-1 uppercase tracking-wider">Email</h3>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors break-all" href="mailto:alfitrah.sompura@gmail.com">
+                                    alfitrah.sompura@gmail.com
+                                </a>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<!-- Integrated Google Maps Frame -->
+<div class="md:col-span-7 bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden min-h-[400px] shadow-sm relative group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A clean, minimalist 3D map rendering of a suburban neighborhood in light-mode. The map highlights a central building (Vivian Complex) near a main road (Sompura Gate). The visual style uses a soft color palette of light creams, faint emerald greens for parks/trees, and subtle golden highlights for roads. A stylized map marker in deep emerald green pins the central building. The mood is modern, clear, and inviting, devoid of messy satellite textures." data-location="Sarjapura, Bengaluru" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjXGjAcTd5QXpUvmr67Z719X_ha5j2BmQH022LDaEv_zgzXKc8gTx4C_7azf6iOtr3BI6g_Rwb05iyGkzqhxF-dgGDDxXwy-rONU3sHAeMxco18F1lQSWTevrNrJwnVwxVAuFTmmhLM6NychztFpSK4FPNvSjZmXmX912ikY2Vb68IwTttbVBOfigeREPLV8WvY0W4ZZK-5FH3yyRCc0BSw0G4_zp1zm4gg9Y6xwgfDRMp21I1gbazZpuMrTIzNoTm_VEQk0Nwkfs">
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+</div>
+</div>
+<!-- Visit Us Section (School Hours) -->
+<section class="mt-gutter bg-primary-container rounded-xl p-8 md:p-12 text-center relative overflow-hidden">
+<!-- Decorative geometric subtle layer -->
+<div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(45deg, var(--tw-colors-primary) 0, var(--tw-colors-primary) 1px, transparent 0, transparent 50%); background-size: 20px 20px;"></div>
+<div class="relative z-10">
+<span class="material-symbols-outlined text-4xl text-on-primary-container mb-4" style="font-variation-settings: 'FILL' 1;">schedule</span>
+<h2 class="font-headline-lg text-headline-lg text-on-primary mb-6">Visit Us</h2>
+<div class="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-16">
+<div class="bg-primary/20 backdrop-blur-sm p-6 rounded-lg border border-primary/30 min-w-[250px]">
+<h3 class="font-label-md text-label-md text-primary-fixed-dim uppercase tracking-wider mb-2">Monday - Friday</h3>
+<p class="font-headline-md text-headline-md text-on-primary">8:30 AM - 3:30 PM</p>
+</div>
+<div class="bg-primary/20 backdrop-blur-sm p-6 rounded-lg border border-primary/30 min-w-[250px]">
+<h3 class="font-label-md text-label-md text-primary-fixed-dim uppercase tracking-wider mb-2">Saturday</h3>
+<p class="font-headline-md text-headline-md text-on-primary">9:00 AM - 12:30 PM</p>
+</div>
+</div>
+<p class="font-body-md text-body-md text-primary-fixed mt-6">
+                    Closed on Sundays and Public Holidays. Appointments recommended for campus tours.
+                </p>
+</div>
+</section>
+</main>
+<!-- Footer Shared Component -->
+<footer class="w-full mt-auto bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container font-body-md text-body-md font-headline-md text-headline-md">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter max-w-container-max mx-auto px-8 py-section-padding">
+<!-- Brand/Copyright -->
+<div class="md:col-span-1 flex flex-col justify-between">
+<h2 class="font-headline-md text-headline-md font-bold text-on-primary dark:text-on-primary-container mb-4">
+                    Al Fitrah
+                </h2>
+<p class="font-body-md text-body-md text-on-primary/80 dark:text-on-primary-container/80 text-sm mt-auto">
+                    © 2024 Al Fitrah Islamic Pre-School. All rights reserved. Rooted in Fitrah, Growing in Excellence.
+                </p>
+</div>
+<!-- Links Container -->
+<div class="md:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+<!-- We map the links array to logical columns. Since there are 4, we put one in each or list them. -->
+<div class="flex flex-col space-y-3">
+<a class="text-on-primary/80 dark:text-on-primary-container/80 hover:text-secondary dark:hover:text-secondary-fixed transition-colors font-body-md text-body-md" href="#">Campus Locations</a>
+</div>
+<div class="flex flex-col space-y-3">
+<a class="text-on-primary/80 dark:text-on-primary-container/80 hover:text-secondary dark:hover:text-secondary-fixed transition-colors font-body-md text-body-md" href="#">Contact Info</a>
+</div>
+<div class="flex flex-col space-y-3">
+<a class="text-on-primary/80 dark:text-on-primary-container/80 hover:text-secondary dark:hover:text-secondary-fixed transition-colors font-body-md text-body-md" href="#">Quick Links</a>
+</div>
+<div class="flex flex-col space-y-3">
+<a class="text-on-primary/80 dark:text-on-primary-container/80 hover:text-secondary dark:hover:text-secondary-fixed transition-colors font-body-md text-body-md" href="#">Privacy Policy</a>
+</div>
+</div>
+</div>
+</footer>
+
+
+</body></html>

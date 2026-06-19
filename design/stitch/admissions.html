@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admissions - Al Fitrah</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#682c00",
+                        "inverse-on-surface": "#f2f1ec",
+                        "outline-variant": "#bec9c2",
+                        "primary-container": "#065f46",
+                        "inverse-surface": "#30312e",
+                        "tertiary-fixed-dim": "#94ccff",
+                        "tertiary-container": "#005888",
+                        "primary": "#004532",
+                        "primary-fixed": "#a6f2d1",
+                        "outline": "#6f7973",
+                        "on-background": "#1b1c19",
+                        "on-tertiary-fixed": "#001d32",
+                        "tertiary-fixed": "#cde5ff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#002116",
+                        "surface-dim": "#dbdad5",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#97cdff",
+                        "primary-fixed-dim": "#8bd6b6",
+                        "error": "#ba1a1a",
+                        "background": "#faf9f4",
+                        "secondary-fixed-dim": "#ffb68e",
+                        "tertiary": "#004065",
+                        "on-secondary-fixed-variant": "#763300",
+                        "secondary-container": "#fd8a42",
+                        "surface": "#faf9f4",
+                        "secondary-fixed": "#ffdbca",
+                        "on-tertiary-fixed-variant": "#004b74",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-primary": "#8bd6b6",
+                        "surface-container-low": "#f5f4ef",
+                        "on-surface-variant": "#3f4944",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#331200",
+                        "surface-variant": "#e3e3de",
+                        "on-surface": "#1b1c19",
+                        "on-primary-fixed-variant": "#00513b",
+                        "surface-bright": "#faf9f4",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#1b6b51",
+                        "secondary": "#9b4500",
+                        "surface-container-highest": "#e3e3de",
+                        "surface-container-high": "#e9e8e3",
+                        "surface-container": "#efeee9",
+                        "on-primary-container": "#8bd6b7",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "base": "8px",
+                        "container-max": "1200px",
+                        "mobile-margin": "20px",
+                        "section-padding": "80px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "headline-xl": ["Playfair Display"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Playfair Display"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["28px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "headline-xl": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "headline-lg": ["36px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf9f4; color: #1b1c19; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', serif; }
+        
+        /* Subtle Geometric Pattern for Depth */
+        .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23065f46' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased relative min-h-screen flex flex-col bg-pattern">
+<!-- TopNavBar -->
+<nav class="bg-surface-container-lowest sticky top-0 z-50 transition-all duration-300 shadow-sm border-b border-surface-variant">
+<div class="max-w-container-max mx-auto px-mobile-margin md:px-gutter h-20 flex justify-between items-center">
+<!-- Brand -->
+<div class="flex items-center gap-3">
+<img alt="Al Fitrah Logo" class="h-12 w-12 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPfnS7TmODBcW2YEebWsTRriUwfr5ut2_3mcxZN_1Z3Jql0NNKXALwZ6RVp0nJiz_0GPgXEn_-sc6ne_IUL8ylibbpGYK5MptKj8vxNs_FgnGv0cNtSFXRTdfC9RZzkpnlSjx6kysg-ChuRbLrDtTCsBt_0Ya2MzuHNctddqHVG5upuyIft0psBpSU2S0m_5TOQxudfTzWO-4YabgQb_QPWHodKMUDt9Qx0a_KKbKTymXPP1AZWBqFm0nzDqH_auiXF-7T85LQLtw"/>
+<span class="font-headline-md text-headline-md font-bold text-primary">Al Fitrah</span>
+</div>
+<!-- Nav Links (Desktop) -->
+<div class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors" href="#">Home</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors" href="#">Programs</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors" href="#">About Us</a>
+<a class="text-primary font-label-md text-label-md border-b-2 border-primary pb-1" href="#">Admissions</a>
+</div>
+<!-- Trailing Action -->
+<div class="hidden md:block">
+<button class="bg-secondary text-on-secondary px-6 py-3 rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity shadow-md hover:shadow-lg focus:ring-2 focus:ring-secondary-fixed focus:outline-none focus:ring-offset-2">
+                    Enroll Now
+                </button>
+</div>
+<!-- Mobile Menu Toggle -->
+<button aria-label="Toggle Menu" class="md:hidden text-on-surface-variant p-2 rounded hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow max-w-container-max w-full mx-auto px-mobile-margin md:px-gutter py-section-padding space-y-16 lg:space-y-24">
+<!-- Hero Section -->
+<section class="text-center max-w-3xl mx-auto space-y-6 pt-8 md:pt-16">
+<h1 class="font-headline-xl text-headline-lg-mobile md:text-headline-xl text-primary font-bold">
+                Secure Your Child's Place
+            </h1>
+<p class="font-body-lg text-body-md md:text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                Begin a journey of holistic education rooted in natural goodness. Our admissions process is designed to be clear, supportive, and welcoming to all families seeking a nurturing environment.
+            </p>
+</section>
+<!-- Admissions Layout Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Left Column: Process & Info (Spans 5 cols) -->
+<div class="lg:col-span-5 space-y-12">
+<!-- Admissions Process Steps -->
+<section class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/30 relative overflow-hidden">
+<!-- Subtle background element -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none"></div>
+<h2 class="font-headline-md text-headline-md text-primary mb-8 font-semibold flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">list_alt</span>
+                        Admissions Process
+                    </h2>
+<div class="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-outline-variant before:via-outline-variant before:to-transparent">
+<!-- Step 1 -->
+<div class="relative flex items-start group">
+<div class="absolute left-0 w-10 h-10 flex items-center justify-center rounded-full bg-surface border-2 border-outline-variant text-on-surface-variant font-label-md group-hover:border-primary group-hover:text-primary group-hover:bg-primary-fixed/20 transition-colors z-10">
+                                1
+                            </div>
+<div class="ml-14 pt-2">
+<h3 class="font-label-md text-label-md text-on-background mb-1">Submit Inquiry</h3>
+<p class="font-body-md text-sm text-on-surface-variant">Fill out the form below to express interest and provide basic details.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="relative flex items-start group">
+<div class="absolute left-0 w-10 h-10 flex items-center justify-center rounded-full bg-surface border-2 border-outline-variant text-on-surface-variant font-label-md group-hover:border-primary group-hover:text-primary group-hover:bg-primary-fixed/20 transition-colors z-10">
+                                2
+                            </div>
+<div class="ml-14 pt-2">
+<h3 class="font-label-md text-label-md text-on-background mb-1">Campus Tour</h3>
+<p class="font-body-md text-sm text-on-surface-variant">We'll schedule a visit for you to experience our nurturing environment.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="relative flex items-start group">
+<div class="absolute left-0 w-10 h-10 flex items-center justify-center rounded-full bg-surface border-2 border-outline-variant text-on-surface-variant font-label-md group-hover:border-primary group-hover:text-primary group-hover:bg-primary-fixed/20 transition-colors z-10">
+                                3
+                            </div>
+<div class="ml-14 pt-2">
+<h3 class="font-label-md text-label-md text-on-background mb-1">Interaction</h3>
+<p class="font-body-md text-sm text-on-surface-variant">A brief, friendly meeting to understand your child's needs.</p>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="relative flex items-start group">
+<div class="absolute left-0 w-10 h-10 flex items-center justify-center rounded-full bg-surface border-2 border-outline-variant text-on-surface-variant font-label-md group-hover:border-primary group-hover:text-primary group-hover:bg-primary-fixed/20 transition-colors z-10">
+                                4
+                            </div>
+<div class="ml-14 pt-2">
+<h3 class="font-label-md text-label-md text-on-background mb-1">Enrollment</h3>
+<p class="font-body-md text-sm text-on-surface-variant">Complete necessary paperwork and secure your spot.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Contact Details Card -->
+<section class="bg-primary text-on-primary rounded-xl p-8 shadow-lg relative overflow-hidden">
+<div class="absolute inset-0 bg-pattern opacity-10 mix-blend-overlay pointer-events-none"></div>
+<h2 class="font-headline-md text-headline-md mb-6 font-semibold relative z-10">Need Assistance?</h2>
+<div class="space-y-4 relative z-10">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-on-primary/10 flex items-center justify-center backdrop-blur-sm">
+<span class="material-symbols-outlined">call</span>
+</div>
+<div>
+<p class="font-label-md text-xs text-primary-fixed opacity-90 uppercase tracking-wider mb-1">Call Us</p>
+<p class="font-body-md text-body-md">+91 9986500718</p>
+<p class="font-body-md text-body-md">+91 9986049413</p>
+</div>
+</div>
+<div class="flex items-center gap-4 pt-2">
+<div class="w-10 h-10 rounded-full bg-on-primary/10 flex items-center justify-center backdrop-blur-sm">
+<span class="material-symbols-outlined">mail</span>
+</div>
+<div>
+<p class="font-label-md text-xs text-primary-fixed opacity-90 uppercase tracking-wider mb-1">Email Us</p>
+<p class="font-body-md text-body-md break-all">alfitrah.sompura@gmail.com</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Inquiry Form (Spans 7 cols) -->
+<div class="lg:col-span-7">
+<section class="bg-surface-container-lowest rounded-xl p-8 md:p-10 border border-outline-variant shadow-sm h-full flex flex-col justify-center">
+<div class="mb-8">
+<h2 class="font-headline-md text-headline-md text-on-background font-semibold mb-2">Admissions Inquiry Form</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Please fill in the details below, and our admissions team will contact you shortly.</p>
+</div>
+<form action="#" class="space-y-6" method="POST">
+<!-- Name & Phone Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-on-surface" for="parentName">Parent's Name *</label>
+<input class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-background focus:ring-2 focus:ring-primary focus:border-primary transition-shadow placeholder:text-outline" id="parentName" name="parentName" placeholder="Jane Doe" required="" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-on-surface" for="phone">Phone Number *</label>
+<input class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-background focus:ring-2 focus:ring-primary focus:border-primary transition-shadow placeholder:text-outline" id="phone" name="phone" placeholder="+91 xxxxx xxxxx" required="" type="tel"/>
+</div>
+</div>
+<!-- Email & Child Age Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-on-surface" for="email">Email Address</label>
+<input class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-background focus:ring-2 focus:ring-primary focus:border-primary transition-shadow placeholder:text-outline" id="email" name="email" placeholder="jane@example.com" type="email"/>
+</div>
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-on-surface" for="childAge">Child's Age *</label>
+<select class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-background focus:ring-2 focus:ring-primary focus:border-primary transition-shadow appearance-none cursor-pointer" id="childAge" name="childAge" required="">
+<option disabled="" selected="" value="">Select age</option>
+<option value="2-3">2 - 3 Years (Playgroup)</option>
+<option value="3-4">3 - 4 Years (Nursery)</option>
+<option value="4-5">4 - 5 Years (LKG)</option>
+<option value="5-6">5 - 6 Years (UKG)</option>
+</select>
+</div>
+</div>
+<!-- Message Area -->
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-on-surface" for="message">Message / Any Questions?</label>
+<textarea class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-background focus:ring-2 focus:ring-primary focus:border-primary transition-shadow placeholder:text-outline resize-none" id="message" name="message" placeholder="How can we help you?" rows="4"></textarea>
+</div>
+<!-- Submit Button -->
+<div class="pt-4">
+<button class="w-full md:w-auto bg-primary text-on-primary px-8 py-3 rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors shadow-sm hover:shadow focus:ring-2 focus:ring-primary-fixed focus:outline-none focus:ring-offset-2 flex items-center justify-center gap-2 group" type="submit">
+                                Submit Inquiry
+                                <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+<p class="font-body-md text-xs text-outline mt-3 text-center md:text-left">
+                                By submitting, you agree to our privacy policy. We respect your data.
+                            </p>
+</div>
+</form>
+</section>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-highest mt-auto border-t border-outline-variant/20">
+<div class="max-w-container-max mx-auto px-mobile-margin md:px-gutter py-section-padding flex flex-col md:flex-row justify-between gap-8 items-center md:items-start text-center md:text-left">
+<div class="flex flex-col items-center md:items-start gap-4">
+<span class="text-headline-md font-headline-md text-on-surface font-bold text-primary">Al Fitrah</span>
+<p class="font-body-md text-sm text-on-surface-variant max-w-xs">Nurturing the natural goodness in every child through holistic Islamic education.</p>
+</div>
+<div class="flex flex-col md:flex-row gap-6 md:gap-12">
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-secondary transition-colors" href="#">Sompura Campus</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-secondary transition-colors" href="#">Sarjapura Campus</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-secondary transition-colors" href="#">Noor-el-bayan</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-secondary transition-colors" href="#">Curriculum</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-secondary transition-colors" href="#">Contact Us</a>
+</div>
+<div class="mt-8 md:mt-0 pt-8 md:pt-0 border-t md:border-none border-outline-variant/20 w-full md:w-auto">
+<p class="font-body-md text-xs text-on-surface-variant">© 2024 Al Fitrah Islamic Pre-School. All rights reserved.</p>
+</div>
+</div>
+</footer>
+</body></html>

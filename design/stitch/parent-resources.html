@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Parent Resources - Fitrah Academy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#dbdad5",
+                      "surface-bright": "#faf9f4",
+                      "outline": "#6f7973",
+                      "tertiary-fixed": "#cde5ff",
+                      "on-secondary-fixed-variant": "#763300",
+                      "on-background": "#1b1c19",
+                      "inverse-surface": "#30312e",
+                      "surface-container": "#efeee9",
+                      "primary-fixed": "#a6f2d1",
+                      "surface": "#faf9f4",
+                      "on-tertiary-fixed": "#001d32",
+                      "on-tertiary-container": "#97cdff",
+                      "secondary": "#9b4500",
+                      "on-secondary-fixed": "#331200",
+                      "on-tertiary": "#ffffff",
+                      "surface-tint": "#1b6b51",
+                      "tertiary-container": "#005888",
+                      "outline-variant": "#bec9c2",
+                      "on-primary-container": "#8bd6b7",
+                      "on-error-container": "#93000a",
+                      "background": "#faf9f4",
+                      "on-primary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "primary-container": "#065f46",
+                      "on-surface-variant": "#3f4944",
+                      "on-primary-fixed-variant": "#00513b",
+                      "surface-container-high": "#e9e8e3",
+                      "secondary-fixed-dim": "#ffb68e",
+                      "on-error": "#ffffff",
+                      "tertiary": "#004065",
+                      "on-tertiary-fixed-variant": "#004b74",
+                      "on-secondary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "surface-container-low": "#f5f4ef",
+                      "secondary-container": "#fd8a42",
+                      "on-surface": "#1b1c19",
+                      "tertiary-fixed-dim": "#94ccff",
+                      "surface-container-highest": "#e3e3de",
+                      "primary": "#004532",
+                      "on-secondary-container": "#682c00",
+                      "primary-fixed-dim": "#8bd6b6",
+                      "secondary-fixed": "#ffdbca",
+                      "inverse-primary": "#8bd6b6",
+                      "surface-variant": "#e3e3de",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-fixed": "#002116",
+                      "inverse-on-surface": "#f2f1ec"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "mobile-margin": "20px",
+                      "section-padding": "80px",
+                      "gutter": "24px",
+                      "base": "8px",
+                      "container-max": "1200px"
+              },
+              "fontFamily": {
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "headline-xl": [
+                              "Playfair Display"
+                      ],
+                      "headline-lg": [
+                              "Playfair Display"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Playfair Display"
+                      ],
+                      "headline-md": [
+                              "Playfair Display"
+                      ]
+              },
+              "fontSize": {
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-xl": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg": [
+                              "36px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        .geometric-pattern-mask {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23065f46' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .soft-glow-shadow {
+            box-shadow: 0 4px 20px -2px rgba(6, 95, 70, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen flex flex-col">
+<!-- TopNavBar Component -->
+<nav aria-label="Main Navigation" class="bg-surface/90 dark:bg-surface-dim/90 backdrop-blur-md sticky top-0 w-full z-50 bg-surface-container-low dark:bg-surface-container-high shadow-sm shadow-sm">
+<div class="flex justify-between items-center px-8 py-4 max-w-container-max mx-auto">
+<a class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed focus:outline-none focus:ring-2 focus:ring-secondary rounded-DEFAULT transition-all" href="#">Fitrah Academy</a>
+<ul class="hidden md:flex space-x-6">
+<li><a class="text-on-surface-variant dark:text-on-surface hover:text-primary transition-colors duration-200 hover:text-secondary dark:hover:text-secondary-fixed transition-all font-label-md text-label-md" href="#">Curriculum</a></li>
+<li><a class="text-on-surface-variant dark:text-on-surface hover:text-primary transition-colors duration-200 hover:text-secondary dark:hover:text-secondary-fixed transition-all font-label-md text-label-md" href="#">Hifz Program</a></li>
+<li><a class="text-on-surface-variant dark:text-on-surface hover:text-primary transition-colors duration-200 hover:text-secondary dark:hover:text-secondary-fixed transition-all font-label-md text-label-md" href="#">Montessori</a></li>
+<li><a class="text-on-surface-variant dark:text-on-surface hover:text-primary transition-colors duration-200 hover:text-secondary dark:hover:text-secondary-fixed transition-all font-label-md text-label-md" href="#">Admissions</a></li>
+<li><a class="text-on-surface-variant dark:text-on-surface hover:text-primary transition-colors duration-200 hover:text-secondary dark:hover:text-secondary-fixed transition-all font-label-md text-label-md" href="#">Contact</a></li>
+<!-- Parent Portal treated as active for this context -->
+<li><a aria-current="page" class="text-primary dark:text-primary-fixed border-b-2 border-secondary font-bold pb-1 hover:text-secondary dark:hover:text-secondary-fixed transition-all font-label-md text-label-md" href="#">Parent Portal</a></li>
+</ul>
+<div class="hidden md:block">
+<button class="bg-primary-container text-on-primary hover:bg-primary transition-colors px-6 py-2 rounded-lg font-label-md text-label-md Active: scale-95 duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-container">Enroll Now</button>
+</div>
+<!-- Mobile Menu Button (Icon only) -->
+<button aria-label="Open Mobile Menu" class="md:hidden text-primary p-2 focus:outline-none focus:ring-2 focus:ring-secondary rounded-DEFAULT">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-grow flex flex-col relative z-10">
+<!-- Hero Section with Geometric Pattern Mask -->
+<section class="relative pt-24 pb-32 px-mobile-margin md:px-gutter lg:px-0 geometric-pattern-mask">
+<div class="absolute inset-0 bg-surface-container-low opacity-80 z-0"></div>
+<div class="max-w-container-max mx-auto relative z-10 flex flex-col items-center text-center">
+<span class="bg-tertiary-fixed text-primary px-4 py-1 rounded-full font-label-md text-label-md mb-6 uppercase tracking-widest inline-flex items-center">
+<span class="material-symbols-outlined mr-2" style="font-variation-settings: 'FILL' 1;">family_restroom</span>
+                    Family Gateway
+                </span>
+<h1 class="font-headline-xl text-headline-xl text-primary mb-6 max-w-3xl">Parent Resources</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                    Everything you need to stay connected with your child's journey at Fitrah Academy. From academic calendars to daily nutrition plans, carefully curated for our community.
+                </p>
+</div>
+</section>
+<!-- Bento Grid Resources Section -->
+<section class="py-section-padding px-mobile-margin md:px-gutter lg:px-0 relative bg-surface-bright">
+<div class="max-w-container-max mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter auto-rows-[minmax(180px,auto)]">
+<!-- Calendar Card (Large) -->
+<a class="md:col-span-8 row-span-2 group relative overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest p-8 transition-all hover:soft-glow-shadow focus:outline-none focus:ring-2 focus:ring-primary flex flex-col justify-between" href="#">
+<div class="absolute top-0 right-0 p-8 text-surface-variant opacity-20 group-hover:opacity-40 transition-opacity">
+<span class="material-symbols-outlined text-[120px] leading-none" style="font-variation-settings: 'FILL' 0;">calendar_month</span>
+</div>
+<div class="relative z-10 mb-8">
+<div class="h-12 w-12 bg-primary-container text-on-primary rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-2 group-hover:text-secondary transition-colors">Academic Calendar</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">Access important dates, holidays, parent-teacher conferences, and community events for the 2024-2025 school year.</p>
+</div>
+<div class="relative z-10 flex items-center text-primary font-label-md text-label-md group-hover:underline decoration-secondary">
+                            View Schedule <span class="material-symbols-outlined ml-1 text-sm" style="font-variation-settings: 'FILL' 0;">arrow_forward</span>
+</div>
+</a>
+<!-- Halal Nutrition Menu (Tall) -->
+<a class="md:col-span-4 row-span-2 group relative overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest p-8 transition-all hover:soft-glow-shadow focus:outline-none focus:ring-2 focus:ring-primary flex flex-col justify-between" href="#">
+<div class="absolute -bottom-10 -right-10 text-surface-variant opacity-20 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-[150px] leading-none" style="font-variation-settings: 'FILL' 0;">restaurant_menu</span>
+</div>
+<div class="relative z-10">
+<div class="h-12 w-12 bg-secondary-container text-on-secondary-container rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">nutrition</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-primary mb-2 group-hover:text-secondary transition-colors">Lunch Menu</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">Weekly curated halal meals designed for growing minds. View nutritional information and dietary accommodations.</p>
+</div>
+<div class="relative z-10 flex items-center text-primary font-label-md text-label-md group-hover:underline decoration-secondary mt-auto">
+                            Download Menu PDF <span class="material-symbols-outlined ml-1 text-sm" style="font-variation-settings: 'FILL' 0;">download</span>
+</div>
+</a>
+<!-- Uniform Guidelines -->
+<a class="md:col-span-4 row-span-1 group relative rounded-xl border border-outline-variant bg-surface-container-lowest p-6 transition-all hover:soft-glow-shadow focus:outline-none focus:ring-2 focus:ring-primary flex items-start space-x-4" href="#">
+<div class="h-10 w-10 flex-shrink-0 bg-surface-container text-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">styler</span>
+</div>
+<div>
+<h3 class="font-headline-md text-[20px] text-primary mb-1 group-hover:text-secondary transition-colors">Uniform Guidelines</h3>
+<p class="font-body-md text-[14px] text-on-surface-variant">Modest, comfortable attire requirements.</p>
+</div>
+</a>
+<!-- Parent Handbook -->
+<a class="md:col-span-4 row-span-1 group relative rounded-xl border border-outline-variant bg-surface-container-lowest p-6 transition-all hover:soft-glow-shadow focus:outline-none focus:ring-2 focus:ring-primary flex items-start space-x-4" href="#">
+<div class="h-10 w-10 flex-shrink-0 bg-surface-container text-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+</div>
+<div>
+<h3 class="font-headline-md text-[20px] text-primary mb-1 group-hover:text-secondary transition-colors">Parent Handbook</h3>
+<p class="font-body-md text-[14px] text-on-surface-variant">Policies, procedures, and core values.</p>
+</div>
+</a>
+<!-- Volunteer Opportunities -->
+<a class="md:col-span-4 row-span-1 group relative rounded-xl border border-outline-variant bg-surface-container-lowest p-6 transition-all hover:soft-glow-shadow focus:outline-none focus:ring-2 focus:ring-primary flex items-start space-x-4" href="#">
+<div class="h-10 w-10 flex-shrink-0 bg-surface-container text-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">volunteer_activism</span>
+</div>
+<div>
+<h3 class="font-headline-md text-[20px] text-primary mb-1 group-hover:text-secondary transition-colors">Get Involved</h3>
+<p class="font-body-md text-[14px] text-on-surface-variant">Volunteer opportunities for parents.</p>
+</div>
+</a>
+</div>
+</div>
+</section>
+<!-- Testimonials Section (Glassmorphism inspired, but grounded in the corporate academic style) -->
+<section class="py-section-padding px-mobile-margin md:px-gutter lg:px-0 bg-surface relative overflow-hidden">
+<!-- Decorative background element -->
+<div class="absolute top-0 right-0 -mr-32 -mt-32 w-96 h-96 bg-primary-fixed opacity-20 rounded-full blur-3xl z-0 pointer-events-none"></div>
+<div class="absolute bottom-0 left-0 -ml-32 -mb-32 w-96 h-96 bg-secondary-fixed opacity-20 rounded-full blur-3xl z-0 pointer-events-none"></div>
+<div class="max-w-container-max mx-auto relative z-10">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-4">Voices from Our Community</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto">Hear how Fitrah Academy is nurturing the innate goodness within families across our community.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Testimonial 1 -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-sm border border-outline-variant/50 p-8 rounded-xl soft-glow-shadow relative">
+<span class="material-symbols-outlined absolute top-6 right-6 text-surface-variant opacity-30 text-4xl" style="font-variation-settings: 'FILL' 1;">format_quote</span>
+<div class="flex items-center space-x-4 mb-6">
+<div class="w-12 h-12 rounded-full bg-surface-container overflow-hidden border border-outline-variant">
+<img alt="Parent portrait" class="w-full h-full object-cover" data-alt="A softly lit portrait of a smiling mother with a modern hijab, standing in a bright, modern school library. The background features light-toned wooden bookshelves. The mood is warm, trusting, and peaceful, aligning with a nurturing academic aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCD93H06gC16pikSZHC4E1QOqlj3HgFj-5QFT5ZCGSNkmvi7DfE5qXzVACNlR-d9s3ojXo38mdS96wP8g9_WC3aQFmGHfaP4zIW5pDyB3HHGKkK4nuzEbC-B6At1krFOvbcBm5uuasNfWolaz3IS0ureNVRMOi8sc9tNHTb5bYUFHMSYKqOtc3U_BOYwcxC5DhSkuOZgIsAs2CakmYKkWJAaaOeRrCBFEih9HYqpmYdPp9H6HKPUSSMZpOiIiS8apUd88o5arnHWmo"/>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary">Aisha M.</h4>
+<p class="text-sm text-on-surface-variant">Parent of 2nd Grader</p>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface italic">"The balance between rigorous academics and spiritual grounding here is exceptional. The Parent Portal makes it so easy to stay involved without feeling overwhelmed. I feel truly partnered with the teachers."</p>
+</div>
+<!-- Testimonial 2 -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-sm border border-outline-variant/50 p-8 rounded-xl soft-glow-shadow relative">
+<span class="material-symbols-outlined absolute top-6 right-6 text-surface-variant opacity-30 text-4xl" style="font-variation-settings: 'FILL' 1;">format_quote</span>
+<div class="flex items-center space-x-4 mb-6">
+<div class="w-12 h-12 rounded-full bg-surface-container overflow-hidden border border-outline-variant">
+<img alt="Parent portrait" class="w-full h-full object-cover" data-alt="A warmly lit, professional portrait of a father in a neat button-down shirt, standing outdoors with blurred green trees in the background. The lighting is soft natural daylight, conveying a sense of grounded confidence and approachability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCM2bH6DdMOK1gSlgDR3Qaq_RpI19QUrpEKSebNOMf__j15l9EdIeUwxNEKO6JueDCrB4xPxsUiRdf3C7JCpRXdQeIHIYKTIywqitFPCVp7Jd4ONNWpSsz1u6vYfVpXXmEy6C9gZDUjMXY7w-nAJpQ7Lnwgo-ZpwtcIHWzuis4iUPnbWoE1NtzTHgJvr36aI5cCxBHZgC66OBdTSmXa3I8phI_zgRXzatnLdU3upuBFek_5n0PlUmWvOBi9dWn1JcemylGeU9ylZtA"/>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary">Omar K.</h4>
+<p class="text-sm text-on-surface-variant">Parent of Kindergartener</p>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface italic">"The transparency provided through these resources gives us peace of mind. Knowing exactly what my son is eating from the Halal menu and seeing his daily schedule helps us reinforce lessons at home."</p>
+</div>
+<!-- Testimonial 3 -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-sm border border-outline-variant/50 p-8 rounded-xl soft-glow-shadow relative md:col-span-2 lg:col-span-1">
+<span class="material-symbols-outlined absolute top-6 right-6 text-surface-variant opacity-30 text-4xl" style="font-variation-settings: 'FILL' 1;">format_quote</span>
+<div class="flex items-center space-x-4 mb-6">
+<div class="w-12 h-12 rounded-full bg-surface-container overflow-hidden border border-outline-variant flex items-center justify-center text-primary font-headline-md">
+                                S
+                            </div>
+<div>
+<h4 class="font-label-md text-label-md text-primary">Sarah &amp; Tariq</h4>
+<p class="text-sm text-on-surface-variant">Hifz Program Parents</p>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface italic">"The uniform guidelines and handbook provided such clear expectations before we even started. It's a professional, beautifully organized system that respects our time as parents."</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Component -->
+<footer class="bg-surface-container-highest dark:bg-inverse-surface w-full rounded-t-xl bg-[url('geometric-pattern-mask')] bg-repeat opacity-10 mt-auto" style="opacity: 1; background-image: none;"> <!-- Overriding JSON opacity for legibility, using custom pattern class carefully -->
+<div class="bg-surface-container-highest relative overflow-hidden rounded-t-xl">
+<!-- Subtle background pattern implementation for Footer -->
+<div class="absolute inset-0 opacity-5 pointer-events-none geometric-pattern-mask"></div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter px-mobile-margin py-section-padding max-w-container-max mx-auto relative z-10 flat no shadows">
+<!-- Brand Info -->
+<div class="flex flex-col space-y-4">
+<span class="font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim">Fitrah Academy</span>
+<p class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant">Nurturing the innate goodness within every child through balanced education.</p>
+</div>
+<!-- Links Column 1 -->
+<div class="flex flex-col space-y-3">
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors hover:underline decoration-secondary transition-all focus:ring-2 focus:ring-primary rounded-sm inline-block w-fit" href="#">Campus Location</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors hover:underline decoration-secondary transition-all focus:ring-2 focus:ring-primary rounded-sm inline-block w-fit" href="#">Program Highlights</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors hover:underline decoration-secondary transition-all focus:ring-2 focus:ring-primary rounded-sm inline-block w-fit" href="#">Islamic Integration</a>
+</div>
+<!-- Links Column 2 -->
+<div class="flex flex-col space-y-3">
+<a aria-current="page" class="font-body-md text-body-md text-secondary font-semibold hover:underline decoration-secondary transition-all focus:ring-2 focus:ring-primary rounded-sm inline-block w-fit" href="#">Parent Portal</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors hover:underline decoration-secondary transition-all focus:ring-2 focus:ring-primary rounded-sm inline-block w-fit" href="#">Careers</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-on-surface transition-colors hover:underline decoration-secondary transition-all focus:ring-2 focus:ring-primary rounded-sm inline-block w-fit" href="#">Privacy Policy</a>
+</div>
+</div>
+<!-- Copyright Bar -->
+<div class="border-t border-outline-variant/30 px-mobile-margin py-6 text-center relative z-10">
+<p class="font-body-md text-sm text-on-surface-variant dark:text-surface-variant">© 2024 Fitrah Academy. Nurturing the innate goodness within every child.</p>
+</div>
+</div>
+</footer>
+</body></html>

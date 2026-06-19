@@ -1,0 +1,41 @@
+# Firebase App Hosting config for the Al Fitrah Next.js app.
+# Server-side Firestore writes use Application Default Credentials automatically.
+runConfig:
+  maxInstances: 1
+
+env:
+  # Public Firebase web config (safe to expose; shipped in the client bundle).
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: "AIzaSyBnNP4ftDUQxKVXeSUbZeuU2IyIh-7FcBo"
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: "al-fitrah.firebaseapp.com"
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: "al-fitrah"
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: "al-fitrah.firebasestorage.app"
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "360754505866"
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:360754505866:web:4f92c20b33819558d1e573"
+    availability: [BUILD, RUNTIME]
+  - variable: FIREBASE_PROJECT_ID
+    value: "al-fitrah"
+    availability: [RUNTIME]
+
+  # Resend (added later). Once you create the secret:
+  #   firebase apphosting:secrets:set RESEND_API_KEY
+  # then uncomment:
+  # - variable: RESEND_API_KEY
+  #   secret: RESEND_API_KEY
+  #   availability: [RUNTIME]
+  # - variable: INQUIRY_FROM_EMAIL
+  #   value: "onboarding@resend.dev"
+  #   availability: [RUNTIME]
+  # - variable: INQUIRY_ADMIN_EMAIL
+  #   value: "alfitrah.sompura@gmail.com"
+  #   availability: [RUNTIME]

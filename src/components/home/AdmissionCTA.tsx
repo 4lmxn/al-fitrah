@@ -12,7 +12,7 @@ export function AdmissionCTA() {
             Begin your child's journey with us. Apply online in a few minutes.
           </p>
           <div className="mt-7 flex justify-center">
-            <Button href="/admissions" className="bg-gold text-ink hover:bg-gold-light">Apply now</Button>
+            <Button href="/admissions" variant="gold">Apply now</Button>
           </div>
         </div>
       </Container>

@@ -14,3 +14,67 @@ export type Home = {
   seats: { title: string; subtitle: string; cta: Cta };
   contact: { title: string; subtitle: string; address: string; phone: string; email: string; image: string; imageAlt: string };
 };
+
+// Shared page primitives
+export type Feature = { icon: string; title: string; body: string };
+export type Step = { icon: string; title: string; body: string };
+export type FaqItem = { q: string; a: string };
+export type FaqGroup = { id: string; icon: string; category: string; items: FaqItem[] };
+export type Testimonial = { author: string; relation: string; quote: string };
+export type ImageTile = { title: string; caption?: string; image: string };
+
+export type AboutPage = {
+  hero: { eyebrow: string; title: string; subtitle: string };
+  mission: { title: string; body: string };
+  vision: { title: string; body: string };
+  team: { title: string; subtitle: string; image: string; imageAlt: string; points: Feature[] };
+  location: { eyebrow: string; title: string; lines: string[]; image: string; imageAlt: string };
+};
+
+export type ProgramsPage = {
+  hero: { eyebrow: string; title: string; subtitle: string; stats: { icon: string; label: string; value: string }[] };
+  curriculum: {
+    title: string;
+    subtitle: string;
+    quran: { title: string; items: { label: string; body: string }[] };
+    modern: { icon: string; title: string; body: string }[];
+    spiritual: { title: string; tags: string[]; body: string };
+    image: string;
+    imageAlt: string;
+    imageCaption: string;
+  };
+  outcomes: { title: string; eyebrow: string; quote: string; body: string; cta: Cta; image: string; imageAlt: string };
+};
+
+export type AdmissionsPage = {
+  hero: { eyebrow: string; title: string; subtitle: string };
+  process: { title: string; steps: Step[] };
+  assist: { title: string; phones: string[]; email: string };
+  form: { title: string; subtitle: string; note: string };
+};
+
+export type CampusPage = {
+  hero: { eyebrow: string; title: string; subtitle: string };
+  gallery: ImageTile[];
+  rhythm: { title: string; subtitle: string; items: Feature[] };
+};
+
+export type FaqPage = {
+  hero: { eyebrow: string; title: string; subtitle: string };
+  groups: FaqGroup[];
+  cta: { title: string; body: string; cta: Cta };
+};
+
+export type ParentPage = {
+  hero: { eyebrow: string; title: string; subtitle: string };
+  resources: { icon: string; title: string; body: string; action: string; large?: boolean }[];
+  testimonials: { title: string; subtitle: string; items: Testimonial[] };
+};
+
+export type ContactPage = {
+  hero: { eyebrow: string; title: string; subtitle: string };
+  details: { address: string[]; phones: string[]; email: string };
+  image: string;
+  imageAlt: string;
+  hours: { title: string; rows: { label: string; value: string }[]; note: string };
+};

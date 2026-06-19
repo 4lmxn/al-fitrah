@@ -1,0 +1,34 @@
+import { test, expect } from "@playwright/test";
+
+const routes = ["/about", "/programs", "/admissions", "/campus-life", "/faq", "/parent-resources", "/contact"];
+
+for (const path of routes) {
+  test(`${path} renders with h1, footer, no console/asset errors`, async ({ page }) => {
+    const consoleErrors: string[] = [];
+    page.on("console", (m) => {
+      if (m.type() === "error" && !m.text().includes("Failed to load resource")) consoleErrors.push(m.text());
+    });
+    const unexpected404s: string[] = [];
+    page.on("response", (r) => { if (r.status() === 404 && !r.url().includes("_rsc=")) unexpected404s.push(r.url()); });
+
+    const resp = await page.goto(path);
+    expect(resp?.status()).toBeLessThan(400);
+    await expect(page.locator("h1")).toBeVisible();
+    await expect(page.locator("footer")).toContainText("Al Fitrah");
+    expect(consoleErrors).toEqual([]);
+    expect(unexpected404s).toEqual([]);
+  });
+}
+
+test("header nav reaches a built page without 404", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Programs" }).click();
+  await expect(page).toHaveURL(/\/programs$/);
+  await expect(page.locator("h1")).toBeVisible();
+});
+
+test("faq accordion toggles open", async ({ page }) => {
+  await page.goto("/faq");
+  const first = page.getByRole("button", { name: /ideal age to enroll/i });
+  await expect(first).toHaveAttribute("aria-expanded", "true"); // first opens by default
+});

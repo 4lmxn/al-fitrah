@@ -11,9 +11,7 @@ test("home renders hero, h1, CTAs, footer; no console errors", async ({ page }) 
     }
   });
 
-  // Next.js App Router prefetches every <Link>. Nav targets (/about, /programs,
-  // /admissions, …) are built in a later plan, so their RSC prefetch 404s are
-  // expected for now. Fail on any OTHER 404 (real broken assets).
+  // Fail on any unexpected asset 404 (ignore RSC prefetch noise).
   const unexpected404s: string[] = [];
   page.on("response", (r) => {
     if (r.status() === 404 && !r.url().includes("_rsc=")) unexpected404s.push(r.url());
@@ -22,8 +20,8 @@ test("home renders hero, h1, CTAs, footer; no console errors", async ({ page }) 
   await page.goto("/");
   await expect(page.getByTestId("hero")).toBeVisible();
   await expect(page.locator("h1")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Apply for Admission" })).toBeVisible();
-  await expect(page.getByTestId("admission-cta")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Begin your child's path" })).toBeVisible();
+  await expect(page.getByTestId("cta-band")).toBeVisible();
   await expect(page.locator("footer")).toContainText("Al Fitrah");
   expect(consoleErrors).toEqual([]);
   expect(unexpected404s).toEqual([]);

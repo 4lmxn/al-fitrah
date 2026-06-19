@@ -1,18 +1,17 @@
-// src/app/page.tsx
 import { Hero } from "@/components/home/Hero";
-import { QuickFacts } from "@/components/home/QuickFacts";
-import { WhyUs } from "@/components/home/WhyUs";
-import { ProgramsPreview } from "@/components/home/ProgramsPreview";
+import { Approach } from "@/components/home/Approach";
+import { Highlights } from "@/components/home/Highlights";
 import { AdmissionCTA } from "@/components/home/AdmissionCTA";
+import { ContactPreview } from "@/components/home/ContactPreview";
 
 export default function HomePage() {
   return (
     <>
       <Hero />
-      <QuickFacts />
-      <WhyUs />
-      <ProgramsPreview />
+      <Approach />
+      <Highlights />
       <AdmissionCTA />
+      <ContactPreview />
     </>
   );
 }

@@ -1,29 +1,44 @@
 import type { Home } from "./types";
+
 export const home: Home = {
   hero: {
-    eyebrow: "Islamic Pre-School · Ages 2–6",
-    title: "A nurturing place where faith and curiosity grow together.",
+    eyebrow: "Admissions open for 2026–27",
+    title: "A nurturing start, rooted in faith and curiosity.",
     subtitle:
-      "Al Fitrah blends Montessori-inspired learning with Islamic values in a warm, modern environment.",
-    ctas: [
-      { label: "Apply for Admission", href: "/admissions", variant: "primary" },
-      { label: "Explore Programs", href: "/programs", variant: "outline" },
+      "Al Fitrah blends Montessori-inspired learning with Islamic values in a warm, modern home for ages 2 to 6.",
+    cta: { label: "Begin your child's path", href: "/admissions", variant: "primary" },
+    image: "/images/classroom.png",
+    imageAlt: "Children exploring a bright Al Fitrah classroom, illustrated",
+    badge: "Small classes · Faith-first",
+  },
+  approach: {
+    eyebrow: "Our approach",
+    title: "Where young minds, character, and faith grow together.",
+    items: [
+      { icon: "school", title: "Integrated program", body: "A connected curriculum blending early-years learning with gentle Islamic guidance throughout the day." },
+      { icon: "menu_book", title: "Quran & Tajweed", body: "Age-appropriate introduction to the Quran and correct recitation, woven softly into daily rhythm." },
+      { icon: "volunteer_activism", title: "Character building", body: "Nurturing good manners, empathy, and confidence through everyday play and practice." },
     ],
   },
-  quickFacts: [
-    { label: "Ages", value: "2–6 yrs" },
-    { label: "Class size", value: "≤ 12" },
-    { label: "Approach", value: "Montessori" },
-    { label: "Values", value: "Faith-first" },
+  highlights: [
+    { title: "Engaged minds", caption: "Hands-on Montessori discovery", image: "/images/campus-engaged.png" },
+    { title: "Serene rhythm", caption: "A calm, prayerful daily flow", image: "/images/musalla.png" },
+    { title: "Joyful play", caption: "Room to move, build, and imagine", image: "/images/campus-play.png" },
+    { title: "Circle time", caption: "Stories, songs, and belonging", image: "/images/circle-time.png" },
   ],
-  whyUs: [
-    { title: "Faith-centered", body: "Daily Islamic values woven gently into play and routine." },
-    { title: "Small classes", body: "Low ratios so every child is seen, heard, and nurtured." },
-    { title: "Whole-child", body: "Cognitive, social, emotional, and spiritual growth together." },
-  ],
-  programs: [
-    { ageGroup: "2–3 yrs", title: "Toddler", description: "Gentle first steps into structured play." },
-    { ageGroup: "3–4 yrs", title: "Nursery", description: "Language, motor skills, and early Deen." },
-    { ageGroup: "4–6 yrs", title: "Kindergarten", description: "Pre-literacy, numeracy, and Quran basics." },
-  ],
+  seats: {
+    title: "Limited seats available",
+    subtitle:
+      "Join the Al Fitrah family and give your child an education that balances modern excellence with timeless spiritual wisdom.",
+    cta: { label: "Enroll today", href: "/admissions", variant: "gold" },
+  },
+  contact: {
+    title: "Come and see us",
+    subtitle: "We'd love to welcome your family for a visit and a conversation about your child.",
+    address: "3rd Floor, Vivian Complex, Opp HP Petrol Bunk, Sompura Gate, Sarjapura 562125",
+    phone: "+91 99995 00718",
+    email: "alfitrah.sompura@gmail.com",
+    image: "/images/map.png",
+    imageAlt: "Map showing the Al Fitrah campus location in Sarjapura",
+  },
 };

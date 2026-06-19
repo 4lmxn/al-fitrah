@@ -13,3 +13,5 @@ build/
 *.tsbuildinfo
 test-results/
 playwright-report/
+.playwright-mcp/
+home-redesign*.png

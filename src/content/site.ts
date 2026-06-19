@@ -2,6 +2,7 @@ import type { Site } from "./types";
 export const site: Site = {
   name: "Al Fitrah Islamic Pre-School",
   tagline: "Where young hearts and minds grow with faith.",
+  ctaLabel: "Enroll Now",
   nav: [
     { label: "About", href: "/about" },
     { label: "Programs", href: "/programs" },

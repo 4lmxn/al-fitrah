@@ -3,6 +3,7 @@ export type NavItem = { label: string; href: string };
 export type Site = {
   name: string;
   tagline: string;
+  ctaLabel: string;
   nav: NavItem[];
   contact: { phone: string; email: string; address: string };
 };

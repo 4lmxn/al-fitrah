@@ -11,14 +11,14 @@ export function Footer() {
           <p className="font-display text-lg">{site.name}</p>
           <p className="mt-2 text-sm text-cream/70">{site.tagline}</p>
         </div>
-        <div className="text-sm">
+        <nav className="text-sm" aria-label="Footer">
           <p className="font-semibold">Explore</p>
           <ul className="mt-3 space-y-2 text-cream/70">
             {site.nav.map((n) => (
               <li key={n.href}><Link href={n.href} className="hover:text-cream">{n.label}</Link></li>
             ))}
           </ul>
-        </div>
+        </nav>
         <div className="text-sm text-cream/70">
           <p className="font-semibold text-cream">Contact</p>
           <p className="mt-3">{site.contact.address}</p>

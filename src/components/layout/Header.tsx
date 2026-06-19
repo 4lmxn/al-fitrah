@@ -23,6 +23,7 @@ export function Header() {
           <Button href="/admissions">Apply</Button>
         </nav>
         <button
+          type="button"
           className="md:hidden text-emerald"
           aria-label="Toggle menu"
           aria-expanded={open}

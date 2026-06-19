@@ -9,8 +9,11 @@ export type Site = {
 };
 export type Home = {
   hero: { eyebrow: string; title: string; subtitle: string; cta: Cta; image: string; imageAlt: string; badge: string };
+  quickFacts: { icon: string; label: string; value: string }[];
   approach: { eyebrow: string; title: string; items: { icon: string; title: string; body: string }[] };
   highlights: { title: string; caption: string; image: string }[];
+  welcome: { eyebrow: string; title: string; body: string[]; by: string; role: string };
+  testimonials: { title: string; subtitle: string; items: { author: string; relation: string; quote: string }[] };
   seats: { title: string; subtitle: string; cta: Cta };
   contact: { title: string; subtitle: string; address: string; phone: string; email: string; image: string; imageAlt: string };
 };

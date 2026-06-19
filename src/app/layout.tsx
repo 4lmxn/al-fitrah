@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { SmoothScroll } from "@/components/ui/SmoothScroll";
 
 const sans = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const display = Playfair_Display({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-playfair", display: "swap" });
@@ -21,10 +22,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block"
         />
       </head>
-      <body className="bg-cream text-ink font-sans antialiased">
-        <Header />
-        <main>{children}</main>
-        <Footer />
+      <body className="relative bg-cream text-ink font-sans antialiased">
+        <SmoothScroll />
+        {/* Ambient geometric texture across the whole page */}
+        <div className="bg-geo pointer-events-none fixed inset-0 z-0 opacity-60" aria-hidden />
+        <div className="relative z-10">
+          <Header />
+          <main>{children}</main>
+          <Footer />
+        </div>
       </body>
     </html>
   );

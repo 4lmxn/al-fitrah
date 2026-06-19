@@ -18,7 +18,8 @@ export function CTABand({
     <Section>
       <Container>
         <div className="relative overflow-hidden rounded-xl3 bg-emerald-deep px-8 py-16 text-center text-cream shadow-lift">
-          {/* depth: soft gold glow + emerald wash, no flat fill */}
+          {/* depth: geometric texture + soft gold glow + emerald wash, no flat fill */}
+          <div className="bg-geo-on-emerald pointer-events-none absolute inset-0 opacity-70" aria-hidden />
           <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-gold/15 blur-3xl" aria-hidden />
           <div className="pointer-events-none absolute -bottom-20 -left-10 h-64 w-64 rounded-full bg-emerald/40 blur-3xl" aria-hidden />
           <div className="relative">

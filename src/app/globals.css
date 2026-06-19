@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap");
 @import "tailwindcss";
+/* Exclude Stitch reference HTML — its arbitrary bg-[url(...)] classes break the v4 content scan */
 @source not "../../design";
 
 @theme {
@@ -18,7 +19,7 @@
 }
 
 @layer base {
-  h1, h2, h3 { @apply font-display tracking-tight text-ink; }
+  h1, h2, h3 { @apply font-display font-semibold tracking-tight text-ink; }
   :focus-visible { @apply outline outline-2 outline-offset-2 outline-emerald; }
   .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; line-height: 1; }
 }

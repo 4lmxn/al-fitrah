@@ -16,3 +16,5 @@ playwright-report/
 .playwright-mcp/
 home-redesign*.png
 pg-*.png
+serviceAccountKey.json
+*-service-account*.json

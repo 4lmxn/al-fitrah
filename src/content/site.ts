@@ -12,8 +12,8 @@ export const site: Site = {
     { label: "Contact", href: "/contact" },
   ],
   contact: {
-    phone: "+91 00000 00000",
-    email: "hello@alfitrah.example",
-    address: "Bangalore, India",
+    phone: "+91 99865 00718",
+    email: "alfitrah.sompura@gmail.com",
+    address: "Sompura Gate, Sarjapura, Bengaluru 562125",
   },
 };

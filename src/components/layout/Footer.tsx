@@ -12,17 +12,17 @@ export function Footer() {
           <p className="mt-2 text-sm text-cream/70">{site.tagline}</p>
         </div>
         <nav className="text-sm" aria-label="Footer">
-          <p className="font-semibold text-cream">Campus</p>
+          <p className="font-semibold text-cream">Learn</p>
           <ul className="mt-3 space-y-2 text-cream/70">
-            <li><Link href="#" className="hover:text-cream">Campus Locations</Link></li>
             <li><Link href="/programs" className="hover:text-cream">Program Highlights</Link></li>
-            <li><Link href="/programs" className="hover:text-cream">Islamic Integration</Link></li>
+            <li><Link href="/syllabus" className="hover:text-cream">Syllabus</Link></li>
+            <li><Link href="/campus-life" className="hover:text-cream">Campus Life</Link></li>
           </ul>
           <p className="mt-6 font-semibold text-cream">Connect</p>
           <ul className="mt-3 space-y-2 text-cream/70">
-            <li><Link href="#" className="hover:text-cream">Parent Portal</Link></li>
-            <li><Link href="#" className="hover:text-cream">Careers</Link></li>
-            <li><Link href="#" className="hover:text-cream">Privacy Policy</Link></li>
+            <li><Link href="/parent-resources" className="hover:text-cream">Parent Portal</Link></li>
+            <li><Link href="/careers" className="hover:text-cream">Careers</Link></li>
+            <li><Link href="/privacy" className="hover:text-cream">Privacy Policy</Link></li>
           </ul>
         </nav>
         <div className="text-sm text-cream/70">

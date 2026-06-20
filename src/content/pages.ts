@@ -75,7 +75,7 @@ export const programs: ProgramsPage = {
     title: "Program outcomes",
     quote: "Khatmul Qur'an recitation and memorization of 2 Juz with Tajweed.",
     body: "Our dedicated educators ensure each child progresses at their own natural pace while reaching remarkable milestones in both academic and spiritual disciplines.",
-    cta: { label: "View full syllabus", href: "/admissions", variant: "primary" },
+    cta: { label: "View full syllabus", href: "/syllabus", variant: "primary" },
     image: "/images/classroom.png",
     imageAlt: "Children learning together in a bright classroom, illustrated",
   },

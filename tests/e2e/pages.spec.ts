@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const routes = ["/about", "/programs", "/admissions", "/campus-life", "/faq", "/parent-resources", "/contact"];
+const routes = ["/about", "/programs", "/admissions", "/campus-life", "/faq", "/parent-resources", "/contact", "/syllabus", "/privacy", "/careers"];
 
 for (const path of routes) {
   test(`${path} renders with h1, footer, no console/asset errors`, async ({ page }) => {
@@ -24,6 +24,19 @@ test("header nav reaches a built page without 404", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Programs" }).click();
   await expect(page).toHaveURL(/\/programs$/);
+  await expect(page.locator("h1")).toBeVisible();
+});
+
+test("footer has no dead (#) links", async ({ page }) => {
+  await page.goto("/");
+  const deadLinks = await page.locator('footer a[href="#"]').count();
+  expect(deadLinks).toBe(0);
+});
+
+test("programs 'View full syllabus' reaches /syllabus", async ({ page }) => {
+  await page.goto("/programs");
+  await page.getByRole("link", { name: /view full syllabus/i }).click();
+  await expect(page).toHaveURL(/\/syllabus$/);
   await expect(page.locator("h1")).toBeVisible();
 });
 

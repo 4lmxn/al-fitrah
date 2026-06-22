@@ -20,7 +20,7 @@ export function Header() {
               {n.label}
             </Link>
           ))}
-          <Button href="/admissions">{site.ctaLabel}</Button>
+          <Button href="/admissions#enroll">{site.ctaLabel}</Button>
         </nav>
         <button
           type="button"
@@ -40,7 +40,7 @@ export function Header() {
                 {n.label}
               </Link>
             ))}
-            <Button href="/admissions" className="mt-2">{site.ctaLabel}</Button>
+            <Button href="/admissions#enroll" className="mt-2">{site.ctaLabel}</Button>
           </Container>
         </nav>
       )}

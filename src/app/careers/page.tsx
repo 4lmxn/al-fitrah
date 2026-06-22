@@ -3,9 +3,8 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
-import { CTABand } from "@/components/ui/CTABand";
 import { Reveal } from "@/components/ui/Reveal";
-import { site } from "@/content/site";
+import { CareersForm } from "@/components/pages/CareersForm";
 
 export const metadata: Metadata = {
   title: "Careers — Al Fitrah Islamic Pre-School",
@@ -76,12 +75,9 @@ export default function CareersPage() {
                     </div>
                     <p className="mt-2 leading-relaxed text-ink/70">{r.body}</p>
                   </div>
-                  <a
-                    href={`mailto:${site.contact.email}?subject=${encodeURIComponent("Application: " + r.title)}`}
-                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-emerald/30 px-5 py-2.5 text-sm font-semibold text-emerald transition hover:bg-emerald/5"
-                  >
-                    Apply <Icon name="arrow_forward" className="text-[18px]" />
-                  </a>
+                  <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-emerald/8 px-4 py-2 text-sm font-semibold text-emerald-deep">
+                    Apply below <Icon name="south" className="text-[16px]" />
+                  </span>
                 </div>
               </Reveal>
             ))}
@@ -107,12 +103,19 @@ export default function CareersPage() {
         </Container>
       </Section>
 
-      <CTABand
-        title="Ready to apply?"
-        subtitle={`Send your CV and a short note to ${site.contact.email} and our team will be in touch.`}
-        cta={{ label: "Email your application", href: `mailto:${site.contact.email}?subject=${encodeURIComponent("Application — Al Fitrah")}` }}
-        icon="work"
-      />
+      <Section id="apply" className="bg-cream-deep/60">
+        <Container className="max-w-3xl">
+          <Reveal>
+            <div className="rounded-xl3 border border-emerald/10 bg-white/80 p-8 shadow-soft sm:p-10">
+              <h2 className="text-2xl text-emerald-deep">Apply now</h2>
+              <p className="mt-2 text-ink/70">Share your details and attach your CV. We review every application.</p>
+              <div className="mt-8">
+                <CareersForm roles={roles.map((r) => r.title)} />
+              </div>
+            </div>
+          </Reveal>
+        </Container>
+      </Section>
     </>
   );
 }

@@ -1,0 +1,10 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // All Storage access is server-only via the Admin SDK (which bypasses
+    // these rules). No client may read or write objects directly.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

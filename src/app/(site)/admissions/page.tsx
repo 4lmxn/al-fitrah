@@ -61,7 +61,7 @@ export default function AdmissionsPage() {
           </div>
           {/* Form */}
           <Reveal delay={0.1} className="lg:col-span-7">
-            <div className="rounded-xl3 border border-emerald/10 bg-white/80 p-8 shadow-soft sm:p-10">
+            <div id="enroll" className="scroll-mt-28 rounded-xl3 border border-emerald/10 bg-white/80 p-8 shadow-soft sm:p-10">
               <h2 className="text-2xl text-emerald-deep">{form.title}</h2>
               <p className="mt-2 text-ink/70">{form.subtitle}</p>
               <div className="mt-8"><InquiryForm /></div>

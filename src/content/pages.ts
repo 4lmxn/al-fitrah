@@ -23,8 +23,8 @@ export const about: AboutPage = {
     image: "/images/circle-time.png",
     imageAlt: "An Al Fitrah teacher leading circle time with children, illustrated",
     points: [
-      { icon: "verified", title: "Certified excellence", body: "Our teaching staff are qualified professionals approved by Noor-el-bayan, Egypt, ensuring an authentic, deeply rooted approach to Arabic and Quranic studies." },
-      { icon: "favorite", title: "Nurturing methodology", body: "We pair modern, child-centric pedagogy with Islamic values, treating every child with respect and empathy to build calm confidence." },
+      { icon: "verified", title: "Authentic Qur'anic method", body: "Our teaching is rooted in the Noor-ul-Bayan System — developed in Egypt and delivered in India through Anjuman Taleemul Qur'an, Calicut, with whom Al Fitrah is proudly affiliated." },
+      { icon: "favorite", title: "Nurturing methodology", body: "We pair the Oxford Early Learning Curriculum with Islamic values, treating every child with respect and empathy to build calm confidence." },
     ],
   },
   location: {
@@ -49,22 +49,24 @@ export const programs: ProgramsPage = {
   },
   curriculum: {
     title: "A comprehensive curriculum",
-    subtitle: "Essential modern subjects blended with core Islamic teachings, delivered in a sanctuary of learning.",
+    subtitle: "The Oxford Early Learning Curriculum blended with the Noor-ul-Bayan Islamic system, delivered in a sanctuary of learning.",
     quran: {
-      title: "Arabic & Qur'an",
+      title: "Islamic curriculum · Noor-ul-Bayan",
       items: [
-        { label: "Tajweed", body: "Perfecting pronunciation and the art of recitation from an early age." },
-        { label: "Recitation", body: "Fostering a deep love and connection with the words of Allah." },
+        { label: "Qur'an & Tajweed", body: "Qur'an reading, fluency, and the rules of recitation, built gradually from an early age." },
+        { label: "Arabic foundations", body: "Letter recognition, joining, and reading using the Noor-ul-Bayan method." },
+        { label: "Aqeedah & Hadith", body: "Islamic beliefs, Hadith, daily Du'as, and Islamic manners woven through the day." },
       ],
     },
     modern: [
-      { icon: "calculate", title: "Mathematics", body: "Building logical foundations." },
-      { icon: "language", title: "English", body: "Confident communication." },
+      { icon: "language", title: "English", body: "Phonics, vocabulary, and early reading & writing readiness." },
+      { icon: "calculate", title: "Mathematics", body: "Numbers, counting, patterns, shapes, and logical thinking." },
+      { icon: "public", title: "Environmental studies", body: "The world around us, nature, community, health, and hygiene." },
     ],
     spiritual: {
-      title: "Spiritual rhythm",
-      tags: ["Hadith", "Dhikr", "Dua"],
-      body: "Integrating daily remembrance and the teachings of the Prophet (ﷺ) into routine.",
+      title: "Learning through play",
+      tags: ["Hands-on", "Storytelling", "Art & craft"],
+      body: "Children learn best when engaged — sensory play, role play, and group activities build confidence, curiosity, and social skills.",
     },
     image: "/images/musalla.png",
     imageAlt: "A serene prayer hall with soft light, illustrated",
@@ -73,8 +75,8 @@ export const programs: ProgramsPage = {
   outcomes: {
     eyebrow: "By the end of 3 years",
     title: "Program outcomes",
-    quote: "Khatmul Qur'an recitation and memorization of 2 Juz with Tajweed.",
-    body: "Our dedicated educators ensure each child progresses at their own natural pace while reaching remarkable milestones in both academic and spiritual disciplines.",
+    quote: "Read the Qur'an fluently and memorize up to 2 Juz, with a strong Arabic and academic foundation.",
+    body: "By completion, In Sha Allah, students read the Qur'an fluently, grasp basic Tajweed, Aqeedah and Hadith, and are academically prepared for Grade 1 of any recognized school — grounded in faith for life.",
     cta: { label: "View full syllabus", href: "/syllabus", variant: "primary" },
     image: "/images/classroom.png",
     imageAlt: "Children learning together in a bright classroom, illustrated",
@@ -86,7 +88,7 @@ export const admissions: AdmissionsPage = {
     eyebrow: "Admissions 2026–27",
     title: "Secure your child's place.",
     subtitle:
-      "Begin a journey of holistic education rooted in natural goodness. Our process is clear, supportive, and welcoming to every family.",
+      "Admissions are at the Pre-KG entry level for children aged 2 years 10 months to 3 years 10 months. The process is clear, supportive, and welcoming to every family.",
   },
   process: {
     title: "Admissions process",
@@ -117,7 +119,7 @@ export const campus: CampusPage = {
       "A sanctuary for growth, learning, and spiritual connection. Every moment of the Al Fitrah day is designed to nurture the goodness within.",
   },
   gallery: [
-    { title: "Engaged minds", caption: "Hands-on Montessori discovery", image: "/images/campus-engaged.png" },
+    { title: "Engaged minds", caption: "Hands-on, play-based discovery", image: "/images/campus-engaged.png" },
     { title: "Serene rhythm", caption: "A calm, prayerful flow", image: "/images/musalla.png" },
     { title: "Joyful play", caption: "Room to move and imagine", image: "/images/campus-play.png" },
     { title: "Nurturing spaces", caption: "Warm, welcoming rooms", image: "/images/campus-spaces.png" },
@@ -129,7 +131,7 @@ export const campus: CampusPage = {
     subtitle: "A structured yet flexible flow that balances academic focus, spiritual connection, and play.",
     items: [
       { icon: "wb_sunny", title: "Morning arrival & circle", body: "We begin with peaceful intention, welcoming each child with morning Du'as and collaborative circle time." },
-      { icon: "explore", title: "Focused work & Hifz", body: "Uninterrupted Montessori work periods interwoven with guided Quran memorization in a calm environment." },
+      { icon: "explore", title: "Focused learning & Qur'an", body: "Oxford Early Learning periods interwoven with Qur'an (Noor-ul-Bayan) and guided memorization in a calm environment." },
       { icon: "nature_people", title: "Outdoor play & dismissal", body: "Gross-motor development in our play areas, followed by afternoon reflections before home." },
     ],
   },
@@ -145,15 +147,15 @@ export const faq: FaqPage = {
     {
       id: "admissions", icon: "assignment", category: "Admissions process",
       items: [
-        { q: "What is the ideal age to enroll my child in the Montessori program?", a: "Our Montessori program is designed for children aged 3 to 6 years. Starting at age 3 lets children fully benefit from the three-year cycle, building strong foundations before transitioning onward." },
-        { q: "Do you require an assessment or interview prior to admission?", a: "Yes, we conduct a gentle assessment and a family interview. It is not a formal test, but a chance to understand your child's needs and ensure our philosophy aligns with your family's values." },
+        { q: "What is the ideal age to enroll my child?", a: "Admissions are at our Pre-KG entry level for children aged 2 years 10 months to 3 years 10 months. The program is a continuous three-year journey — Pre-KG, Junior KG, then Senior KG — so we do not offer direct entry into Junior or Senior KG." },
+        { q: "Do you require an assessment or interview prior to admission?", a: "We hold a brief, friendly interaction with the child and family. It is not a formal test, but a chance to understand your child's needs and ensure our philosophy aligns with your family's values." },
       ],
     },
     {
-      id: "islamic", icon: "menu_book", category: "Islamic integration (Tajweed & Quran)",
+      id: "islamic", icon: "menu_book", category: "Islamic curriculum (Noor-ul-Bayan)",
       items: [
-        { q: "How much time is dedicated to the Hifz program daily?", a: "Students in the dedicated Hifz track spend roughly 2.5 to 3 hours daily on memorization, revision, and Tajweed, carefully balanced with core academics." },
-        { q: "Does my child need prior Arabic knowledge to join?", a: "No prior knowledge is required. Our levelled Arabic curriculum supports beginners and advanced speakers alike, with individualized support so every child progresses at their own pace." },
+        { q: "How is the Qur'an taught at Al Fitrah?", a: "Through the Noor-ul-Bayan System, children build Qur'an reading, fluency, and Tajweed, and memorize up to 2 Juz of selected Surahs across the three years — integrated into the daily rhythm alongside Aqeedah, Hadith, and Du'as, not as a separate intensive track." },
+        { q: "Does my child need prior Arabic knowledge to join?", a: "No prior knowledge is required. The Noor-ul-Bayan method starts from the foundations and supports every child individually, so each progresses at their own pace." },
       ],
     },
     {
@@ -195,9 +197,9 @@ export const parent: ParentPage = {
     title: "Voices from our community",
     subtitle: "How Al Fitrah is nurturing the innate goodness within families across our community.",
     items: [
-      { author: "Aisha M.", relation: "Parent of a nursery student", quote: "The balance between rigorous academics and spiritual grounding is exceptional. I feel truly partnered with the teachers." },
-      { author: "Omar K.", relation: "Parent of a kindergartener", quote: "The transparency gives us peace of mind. Seeing the halal menu and daily schedule helps us reinforce lessons at home." },
-      { author: "Sarah & Tariq", relation: "Hifz program parents", quote: "Clear expectations from day one. A professional, beautifully organized system that respects our time as parents." },
+      { author: "Aisha M.", relation: "Parent of a Pre-KG student", quote: "The balance between a strong academic foundation and spiritual grounding is exceptional. I feel truly partnered with the teachers." },
+      { author: "Omar K.", relation: "Parent of a Senior KG student", quote: "The transparency gives us peace of mind. Seeing the halal menu and daily schedule helps us reinforce lessons at home." },
+      { author: "Sarah & Tariq", relation: "Al Fitrah parents", quote: "Clear expectations from day one. A professional, beautifully organized system that respects our time as parents." },
     ],
   },
 };

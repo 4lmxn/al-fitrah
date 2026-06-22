@@ -1,6 +1,7 @@
 import "server-only";
 import { getDb } from "@/lib/firebaseAdmin";
-import type { LeadType } from "@/lib/leads";
+import { PIPELINES, type LeadType } from "@/lib/leads";
+import { stageMeta, type StageGroup } from "@/lib/stageMeta";
 
 export type LeadRow = {
   id: string;
@@ -35,6 +36,44 @@ export async function listLeads(type: LeadType, stage?: string): Promise<LeadRow
   // Sort newest first in memory (avoids needing a composite index for type+stage+createdAt).
   rows.sort((a, b) => (b.createdAtMs ?? 0) - (a.createdAtMs ?? 0));
   return rows;
+}
+
+export type InboxKpis = Record<StageGroup, number> & { total: number };
+
+export type Inbox = {
+  rows: LeadRow[];
+  counts: Record<string, number>; // per-stage counts (unfiltered by stage)
+  kpis: InboxKpis;
+};
+
+// One read per inbox view: fetch all leads of a type, derive per-stage counts
+// and KPI groups, then apply the stage + search filters in memory.
+export async function getInbox(
+  type: LeadType,
+  opts: { stage?: string; q?: string } = {},
+): Promise<Inbox> {
+  const all = await listLeads(type); // newest-first, all stages
+
+  const counts: Record<string, number> = {};
+  for (const s of PIPELINES[type]) counts[s] = 0;
+  const kpis: InboxKpis = { total: all.length, new: 0, active: 0, won: 0, lost: 0 };
+  for (const r of all) {
+    if (r.stage in counts) counts[r.stage] += 1;
+    kpis[stageMeta(r.stage).group] += 1;
+  }
+
+  const q = opts.q?.trim().toLowerCase();
+  let rows = all;
+  if (opts.stage) rows = rows.filter((r) => r.stage === opts.stage);
+  if (q) {
+    rows = rows.filter((r) =>
+      [r.name, r.phone, r.email, r.role, r.childAge]
+        .filter(Boolean)
+        .some((v) => String(v).toLowerCase().includes(q)),
+    );
+  }
+
+  return { rows, counts, kpis };
 }
 
 export type LeadNote = { text: string; author: string; atMs: number | null };

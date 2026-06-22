@@ -13,13 +13,13 @@ export const metadata: Metadata = {
 
 const values = [
   { icon: "favorite", title: "Purposeful work", body: "Shape the earliest years of a child's life, nurturing both Deen and Dunya in a calm, respectful environment." },
-  { icon: "school", title: "Grow with us", body: "Ongoing training in Montessori method and the Noor-el-bayan approach, with mentorship from experienced educators." },
+  { icon: "school", title: "Grow with us", body: "Ongoing training in the Oxford Early Learning Curriculum and the Noor-ul-Bayan Qur'anic method, with mentorship from experienced educators." },
   { icon: "diversity_3", title: "A real community", body: "Work alongside a warm, supportive team that treats colleagues and families with empathy and care." },
 ];
 
 const roles = [
-  { title: "Qur'an & Arabic Teacher", type: "Full-time", body: "Teach recitation, Tajweed, and Arabic using the Noor-el-bayan method. Noor-el-bayan certification preferred." },
-  { title: "Montessori Lead Teacher", type: "Full-time", body: "Lead a mixed-age classroom with hands-on Montessori materials and child-centric pedagogy. Montessori diploma required." },
+  { title: "Qur'an & Arabic Teacher", type: "Full-time", body: "Teach Qur'an reading, Tajweed, and Arabic using the Noor-ul-Bayan System. Noor-ul-Bayan certification preferred." },
+  { title: "Early Years Lead Teacher", type: "Full-time", body: "Lead a classroom with the Oxford Early Learning Curriculum and hands-on, play-based pedagogy. Early-childhood education qualification preferred." },
   { title: "Assistant Teacher", type: "Full-time", body: "Support the lead teacher in daily routines, circle time, and care of young children. Experience with early years preferred." },
   { title: "Front Office & Admissions", type: "Full-time", body: "Be the welcoming first point of contact for families — manage inquiries, tours, and day-to-day coordination." },
 ];

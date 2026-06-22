@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-export const AGE_BANDS = ["2-3", "3-4", "4-5", "5-6"] as const;
+// Entry is only at Pre-KG for children aged 2y10m–3y10m, so the inquiry
+// captures eligibility rather than a tier.
+export const AGE_BANDS = ["below", "eligible", "above"] as const;
 
 export const leadSchema = z.object({
   parentName: z.string().trim().min(2, "Please enter a name").max(80),

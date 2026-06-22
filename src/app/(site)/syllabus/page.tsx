@@ -8,44 +8,44 @@ import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
   title: "Syllabus — Al Fitrah Islamic Pre-School",
-  description: "The 3-year integrated syllabus: Qur'an & Tajweed, Arabic (Noor-el-bayan), English, Mathematics, and character, by year.",
+  description: "The 3-year integrated syllabus: Noor-ul-Bayan Qur'an & Arabic, Aqeedah & Hadith, plus the Oxford Early Learning Curriculum — English, Mathematics, and EVS — by year.",
 };
 
 const strands = [
-  { icon: "menu_book", title: "Qur'an & Tajweed", body: "Daily recitation, correct makharij, and memorization building toward Khatmul Qur'an goals — approximately 2 Juz with Tajweed by the end of the cycle." },
-  { icon: "translate", title: "Arabic (Noor-el-bayan)", body: "Letter recognition, joining, and reading fluency using the Noor-el-bayan method, taught by certified instructors." },
-  { icon: "language", title: "English & literacy", body: "Phonics, vocabulary, listening and early reading through stories, songs, and conversation." },
-  { icon: "calculate", title: "Mathematics", body: "Numbers, counting, patterns, shapes, and early problem-solving with Montessori materials." },
-  { icon: "volunteer_activism", title: "Character & Deen", body: "Manners (adab), daily Du'as, Hadith for children, Dhikr, and gentle Islamic values woven through the day." },
-  { icon: "extension", title: "Montessori practical life", body: "Independence, fine-motor skills, sensorial work, and care of self and environment." },
+  { icon: "menu_book", title: "Qur'an & Tajweed", body: "Qur'an reading and fluency with the rules of recitation, building toward memorization of up to 2 Juz of selected Surahs by the end of the program." },
+  { icon: "translate", title: "Arabic — Noor-ul-Bayan", body: "Letter recognition, joining, and reading fluency using the Noor-ul-Bayan System (Anjuman Taleemul Qur'an, Calicut)." },
+  { icon: "auto_awesome", title: "Aqeedah, Hadith & manners", body: "Islamic beliefs, Hadith, daily Du'as, and Islamic etiquettes (adab) woven gently through the day." },
+  { icon: "language", title: "English & literacy", body: "Phonics, letter recognition, vocabulary, listening & speaking, and early reading & writing readiness (Oxford Early Learning)." },
+  { icon: "calculate", title: "Mathematics", body: "Number recognition, counting, patterns, shapes, and logical thinking & problem solving." },
+  { icon: "public", title: "Environmental studies (EVS)", body: "Understanding the world, nature & community awareness, health & hygiene, and observation skills." },
 ];
 
 const years = [
   {
-    year: "Year 1 · Playgroup–Nursery (≈2.10–3.10 yrs)",
+    year: "Year 1 · Pre-KG (Beginner / Level 0) — entry 2y10m–3y10m",
     points: [
       "Settling in, routines, and circle time; building confidence and language.",
-      "Qur'an: short Surahs by listening and repetition; love for the Qur'an.",
-      "Arabic: letter sounds and recognition (Noor-el-bayan foundation).",
-      "Early numeracy, sensorial Montessori work, and practical-life skills.",
+      "Qur'an: short Surahs by listening and repetition; Noor-ul-Bayan letter foundations.",
+      "English phonics readiness and early numeracy through play.",
+      "Du'as, Islamic manners, and learning through hands-on play.",
     ],
   },
   {
-    year: "Year 2 · LKG (≈3.10–4.10 yrs)",
+    year: "Year 2 · Junior KG (Level 1)",
     points: [
-      "Qur'an: continued memorization with introductory Tajweed.",
-      "Arabic: joining letters and beginning to read words.",
+      "Qur'an: continued reading with introductory Tajweed; Arabic letter joining.",
       "English phonics and early writing; expanding mathematics.",
-      "Hadith for children, Du'as for daily life, and group projects.",
+      "EVS: nature, community, health, and hygiene awareness.",
+      "Aqeedah basics, Hadith for children, and Du'as for daily life.",
     ],
   },
   {
-    year: "Year 3 · UKG (≈4.10–5.10 yrs)",
+    year: "Year 3 · Senior KG (Level 2)",
     points: [
-      "Qur'an: fluency and revision toward the cohort's Khatmul Qur'an / 2-Juz goal with Tajweed.",
+      "Qur'an: fluency and revision toward memorization of up to 2 Juz with Tajweed.",
       "Arabic: reading fluency and simple comprehension.",
-      "English reading and writing; numeracy toward school readiness.",
-      "Stronger independence, responsibility, and character habits.",
+      "English reading & writing and numeracy toward Grade 1 readiness.",
+      "Stronger independence, responsibility, and Islamic character habits.",
     ],
   },
 ];

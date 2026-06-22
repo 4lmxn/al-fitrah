@@ -10,10 +10,9 @@ type InquiryEmail = {
 };
 
 const AGE_LABEL: Record<string, string> = {
-  "2-3": "2–3 years (Playgroup)",
-  "3-4": "3–4 years (Nursery)",
-  "4-5": "4–5 years (LKG)",
-  "5-6": "5–6 years (UKG)",
+  below: "Below 2y 10m",
+  eligible: "2y 10m – 3y 10m (Pre-KG eligible)",
+  above: "Above 3y 10m",
 };
 
 /**

@@ -71,13 +71,12 @@ export function InquiryForm() {
           <input id="email" name="email" type="email" placeholder="you@example.com" className={field} />
         </div>
         <div className="space-y-2">
-          <label className={labelCls} htmlFor="childAge">Child&apos;s age *</label>
+          <label className={labelCls} htmlFor="childAge">Child&apos;s age (entry at Pre-KG) *</label>
           <select id="childAge" name="childAge" required defaultValue="" className={`${field} cursor-pointer`}>
             <option value="" disabled>Select age</option>
-            <option value="2-3">2 – 3 years (Playgroup)</option>
-            <option value="3-4">3 – 4 years (Nursery)</option>
-            <option value="4-5">4 – 5 years (LKG)</option>
-            <option value="5-6">5 – 6 years (UKG)</option>
+            <option value="below">Below 2 years 10 months</option>
+            <option value="eligible">2y 10m – 3y 10m (Pre-KG eligible)</option>
+            <option value="above">Above 3 years 10 months</option>
           </select>
         </div>
       </div>

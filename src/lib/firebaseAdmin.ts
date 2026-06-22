@@ -1,5 +1,7 @@
 import { getApps, initializeApp, cert, applicationDefault, type App } from "firebase-admin/app";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
+import { getAuth, type Auth } from "firebase-admin/auth";
+import { getStorage } from "firebase-admin/storage";
 
 /**
  * Server-only Firebase Admin init.
@@ -10,7 +12,7 @@ import { getFirestore, type Firestore } from "firebase-admin/firestore";
  */
 let app: App | undefined;
 
-function getAdminApp(): App {
+export function getAdminApp(): App {
   if (app) return app;
   const existing = getApps();
   if (existing.length) {
@@ -28,4 +30,13 @@ function getAdminApp(): App {
 
 export function getDb(): Firestore {
   return getFirestore(getAdminApp());
+}
+
+export function getAuthAdmin(): Auth {
+  return getAuth(getAdminApp());
+}
+
+export function getBucket() {
+  const name = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+  return getStorage(getAdminApp()).bucket(name);
 }

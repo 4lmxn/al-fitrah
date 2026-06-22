@@ -27,6 +27,12 @@ env:
     value: "al-fitrah"
     availability: [RUNTIME]
 
+  # Admin allowlist for the leads inbox (comma-separated emails). Secret —
+  # create with: firebase apphosting:secrets:set ADMIN_EMAILS
+  - variable: ADMIN_EMAILS
+    secret: ADMIN_EMAILS
+    availability: [RUNTIME]
+
   # Resend (added later). Once you create the secret:
   #   firebase apphosting:secrets:set RESEND_API_KEY
   # then uncomment:

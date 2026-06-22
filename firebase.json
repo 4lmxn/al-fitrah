@@ -1,5 +1,16 @@
 {
   "firestore": {
     "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "auth": {
+    "providers": {
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "Al Fitrah Islamic Pre-School",
+        "supportEmail": "almanmohd15@gmail.com"
+      }
+    }
   }
 }

@@ -36,3 +36,44 @@ export async function listLeads(type: LeadType, stage?: string): Promise<LeadRow
   rows.sort((a, b) => (b.createdAtMs ?? 0) - (a.createdAtMs ?? 0));
   return rows;
 }
+
+export type LeadNote = { text: string; author: string; atMs: number | null };
+
+export type LeadDetail = {
+  id: string;
+  type: LeadType;
+  name: string;
+  phone: string;
+  email: string | null;
+  message: string | null;
+  stage: string;
+  role?: string;
+  childAge?: string;
+  cv?: { filename: string } | null;
+  notes: LeadNote[];
+  createdAtMs: number | null;
+};
+
+export async function getLead(id: string): Promise<LeadDetail | null> {
+  const doc = await getDb().collection("leads").doc(id).get();
+  if (!doc.exists) return null;
+  const x = doc.data()!;
+  return {
+    id: doc.id,
+    type: x.type,
+    name: x.name ?? x.parentName ?? "—",
+    phone: x.phone ?? "—",
+    email: x.email ?? null,
+    message: x.message ?? null,
+    stage: x.stage ?? "new",
+    role: x.role,
+    childAge: x.childAge,
+    cv: x.cv ? { filename: x.cv.filename } : null,
+    notes: (x.notes ?? []).map((n: { text: string; author: string; at?: { toMillis?: () => number } }) => ({
+      text: n.text,
+      author: n.author,
+      atMs: n.at?.toMillis?.() ?? null,
+    })),
+    createdAtMs: x.createdAt?.toMillis?.() ?? null,
+  };
+}

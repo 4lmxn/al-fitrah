@@ -52,11 +52,11 @@ export async function sendInquiryEmails(lead: InquiryEmail): Promise<void> {
     await resend.emails.send({
       from,
       to: lead.email,
-      subject: "We received your inquiry — Al Fitrah Islamic Pre-School",
+      subject: "We received your inquiry — Al Fitrah Pre School",
       text: [
         `Assalamu alaikum ${lead.parentName},`,
         ``,
-        `Thank you for your interest in Al Fitrah Islamic Pre-School. We have received`,
+        `Thank you for your interest in Al Fitrah Pre School. We have received`,
         `your inquiry and our admissions team will contact you shortly.`,
         ``,
         `Your reference number is ${lead.id}.`,

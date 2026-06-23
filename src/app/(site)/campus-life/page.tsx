@@ -8,7 +8,7 @@ import { FeatureCard } from "@/components/ui/FeatureCard";
 import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
-  title: "Campus Life — Al Fitrah Islamic Pre-School",
+  title: "Campus Life — Al Fitrah Pre School",
   description: "A calm, joyful daily rhythm of learning, play, and spiritual connection at Al Fitrah.",
 };
 

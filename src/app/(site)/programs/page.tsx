@@ -9,7 +9,7 @@ import { EyebrowPill } from "@/components/ui/EyebrowPill";
 import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
-  title: "Our Programs — Al Fitrah Islamic Pre-School",
+  title: "Our Programs — Al Fitrah Pre School",
   description: "A 3-year integrated program — Noor-ul-Bayan Qur'an & Arabic with the Oxford Early Learning Curriculum (English, Mathematics, EVS). Entry at Pre-KG, ages 2y10m–3y10m.",
 };
 

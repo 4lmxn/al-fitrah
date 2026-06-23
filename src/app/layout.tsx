@@ -6,7 +6,7 @@ const sans = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swa
 const display = Playfair_Display({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-playfair", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Al Fitrah Islamic Pre-School",
+  title: "Al Fitrah Pre School",
   description: "A nurturing Islamic pre-school where young hearts and minds grow.",
 };
 

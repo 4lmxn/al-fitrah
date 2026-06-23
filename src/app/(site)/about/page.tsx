@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
-  title: "About Us — Al Fitrah Islamic Pre-School",
+  title: "About Us — Al Fitrah Pre School",
   description: "Our story, mission, and the certified educators nurturing every child's Deen and Dunya at Al Fitrah.",
 };
 

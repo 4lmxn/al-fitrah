@@ -7,7 +7,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
-  title: "Parent Resources — Al Fitrah Islamic Pre-School",
+  title: "Parent Resources — Al Fitrah Pre School",
   description: "Academic calendar, halal lunch menu, uniform guidelines, parent handbook, and ways to get involved.",
 };
 

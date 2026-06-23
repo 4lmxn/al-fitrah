@@ -7,7 +7,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { CareersForm } from "@/components/pages/CareersForm";
 
 export const metadata: Metadata = {
-  title: "Careers — Al Fitrah Islamic Pre-School",
+  title: "Careers — Al Fitrah Pre School",
   description: "Join the Al Fitrah team. We're looking for nurturing, qualified educators who blend academic excellence with Islamic values for young children in Sarjapura, Bengaluru.",
 };
 

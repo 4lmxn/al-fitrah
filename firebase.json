@@ -8,7 +8,7 @@
   "auth": {
     "providers": {
       "googleSignIn": {
-        "oAuthBrandDisplayName": "Al Fitrah Islamic Pre-School",
+        "oAuthBrandDisplayName": "Al Fitrah Pre School",
         "supportEmail": "almanmohd15@gmail.com"
       }
     }

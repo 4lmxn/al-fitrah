@@ -7,8 +7,8 @@ import { Reveal } from "@/components/ui/Reveal";
 import { site } from "@/content/site";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Al Fitrah Islamic Pre-School",
-  description: "How Al Fitrah Islamic Pre-School collects, uses, and protects the personal information shared by families through our website and admissions inquiry form.",
+  title: "Privacy Policy — Al Fitrah Pre School",
+  description: "How Al Fitrah Pre School collects, uses, and protects the personal information shared by families through our website and admissions inquiry form.",
 };
 
 const lastUpdated = "19 June 2026";

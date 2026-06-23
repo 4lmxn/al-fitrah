@@ -9,7 +9,7 @@ import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
   title: "Contact Us — Al Fitrah Pre School",
-  description: "Visit, call, or email Al Fitrah in Sarjapura, Bengaluru. School hours and campus location inside.",
+  description: "Visit, call, or email Al Fitrah in Sarjapura, Bengaluru. Campus location and visiting details inside.",
 };
 
 export default function ContactPage() {

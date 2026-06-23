@@ -168,8 +168,8 @@ export const faq: FaqPage = {
     {
       id: "schedule", icon: "schedule", category: "Daily schedule",
       items: [
-        { q: "What are the school hours?", a: "Monday to Friday, 8:30 AM to 3:30 PM, and Saturday, 9:00 AM to 12:30 PM. We are closed on Sundays and public holidays." },
-        { q: "Do you provide meals?", a: "We share a weekly halal lunch menu designed for growing children, with information on nutrition and dietary accommodations." },
+        { q: "What are the school hours?", a: "Please contact our admissions team to confirm current school timings. We're happy to walk you through the daily schedule and arrange a campus visit." },
+        { q: "Do you provide meals?", a: "Please ask our admissions team about current meal arrangements, our halal policy, and dietary accommodations during enrollment." },
       ],
     },
   ],
@@ -188,7 +188,7 @@ export const parent: ParentPage = {
   },
   resources: [
     { icon: "event", title: "Academic calendar", body: "Important dates, holidays, parent-teacher conferences, and community events for the school year.", action: "View schedule", large: true },
-    { icon: "nutrition", title: "Lunch menu", body: "Weekly halal meals designed for growing minds, with nutrition and dietary information.", action: "Download menu" },
+    { icon: "nutrition", title: "Lunch menu", body: "Details on our halal meal arrangements, nutrition, and dietary accommodations — shared on request.", action: "Download menu" },
     { icon: "styler", title: "Uniform guidelines", body: "Modest, comfortable attire requirements.", action: "Read more" },
     { icon: "menu_book", title: "Parent handbook", body: "Policies, procedures, and core values.", action: "Read more" },
     { icon: "volunteer_activism", title: "Get involved", body: "Volunteer opportunities for parents.", action: "Read more" },
@@ -220,9 +220,8 @@ export const contact: ContactPage = {
   hours: {
     title: "Visit us",
     rows: [
-      { label: "Monday – Friday", value: "8:30 AM – 3:30 PM" },
-      { label: "Saturday", value: "9:00 AM – 12:30 PM" },
+      { label: "Campus tours", value: "By appointment" },
     ],
-    note: "Closed on Sundays and public holidays. Appointments recommended for campus tours.",
+    note: "Please call or message us to confirm current school timings and to arrange a campus visit.",
   },
 };

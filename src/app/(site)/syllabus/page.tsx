@@ -7,7 +7,7 @@ import { CTABand } from "@/components/ui/CTABand";
 import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
-  title: "Syllabus — Al Fitrah Pre School",
+  title: "Syllabus",
   description: "The 3-year integrated syllabus: Noor-ul-Bayan Qur'an & Arabic, Aqeedah & Hadith, plus the Oxford Early Learning Curriculum — English, Mathematics, and EVS — by year.",
 };
 

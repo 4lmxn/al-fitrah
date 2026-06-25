@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { site } from "@/content/site";
 import { Container } from "@/components/ui/Container";
+import { PHONE_E164, WHATSAPP_URL, MAPS_DIRECTIONS_URL } from "@/lib/seo";
 
 export function Footer() {
   return (
@@ -27,9 +28,25 @@ export function Footer() {
         </nav>
         <div className="text-sm text-cream/70">
           <p className="font-semibold text-cream">Contact</p>
-          <p className="mt-3">{site.contact.address}</p>
-          <p>{site.contact.phone}</p>
-          <p>{site.contact.email}</p>
+          <a
+            href={MAPS_DIRECTIONS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 block hover:text-cream"
+          >
+            {site.contact.address}
+          </a>
+          <a href={`tel:${PHONE_E164}`} className="mt-2 block hover:text-cream">{site.contact.phone}</a>
+          <a href={`mailto:${site.contact.email}`} className="block hover:text-cream">{site.contact.email}</a>
+          <a
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex items-center gap-2 rounded-full bg-cream/10 px-4 py-2 font-semibold text-cream ring-1 ring-cream/15 hover:bg-cream/15"
+          >
+            WhatsApp us
+          </a>
+          <p className="mt-4 text-cream/60">School hours: 9:00 AM – 1:30 PM</p>
         </div>
       </Container>
       <Container className="border-t border-cream/10 py-5 text-xs text-cream/50">

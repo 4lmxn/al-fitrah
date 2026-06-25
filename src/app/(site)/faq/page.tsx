@@ -9,7 +9,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Accordion } from "@/components/pages/Accordion";
 
 export const metadata: Metadata = {
-  title: "FAQ — Al Fitrah Pre School",
+  title: "FAQ",
   description: "Answers about admissions, curriculum, Islamic integration, fees, and the daily schedule at Al Fitrah.",
 };
 

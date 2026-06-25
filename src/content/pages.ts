@@ -31,8 +31,8 @@ export const about: AboutPage = {
     eyebrow: "Visit us",
     title: "Our sanctuary",
     lines: ["3rd Floor, Vivian Complex", "Opp HP Petrol Bunk, Sompura Gate", "Sarjapura, Bengaluru 562125"],
-    image: "/images/map.png",
-    imageAlt: "Map of the Al Fitrah campus location in Sarjapura",
+    image: "/images/real/lobby.jpg",
+    imageAlt: "The welcoming reception area at Al Fitrah Pre School, Sarjapura",
   },
 };
 
@@ -68,8 +68,8 @@ export const programs: ProgramsPage = {
       tags: ["Hands-on", "Storytelling", "Art & craft"],
       body: "Children learn best when engaged — sensory play, role play, and group activities build confidence, curiosity, and social skills.",
     },
-    image: "/images/musalla.png",
-    imageAlt: "A serene prayer hall with soft light, illustrated",
+    image: "/images/real/classroom.jpg",
+    imageAlt: "A bright, glass-fronted classroom at Al Fitrah with soft play equipment",
     imageCaption: "Nurturing a lifelong love for learning.",
   },
   outcomes: {
@@ -78,8 +78,8 @@ export const programs: ProgramsPage = {
     quote: "Read the Qur'an fluently and memorize up to 2 Juz, with a strong Arabic and academic foundation.",
     body: "By completion, In Sha Allah, students read the Qur'an fluently, grasp basic Tajweed, Aqeedah and Hadith, and are academically prepared for Grade 1 of any recognized school — grounded in faith for life.",
     cta: { label: "View full syllabus", href: "/syllabus", variant: "primary" },
-    image: "/images/classroom.png",
-    imageAlt: "Children learning together in a bright classroom, illustrated",
+    image: "/images/real/welcome-board.jpg",
+    imageAlt: "A colourful 'Welcome Back to School' board at Al Fitrah Pre School",
   },
 };
 
@@ -94,7 +94,7 @@ export const admissions: AdmissionsPage = {
     title: "Admissions process",
     steps: [
       { icon: "edit_note", title: "Submit inquiry", body: "Fill out the form to express interest and share a few basic details." },
-      { icon: "tour", title: "Campus tour", body: "We'll schedule a visit so you can experience our nurturing environment." },
+      { icon: "tour", title: "Campus visit", body: "Drop by during school hours (9:00 AM – 1:30 PM) to experience our nurturing environment." },
       { icon: "groups", title: "Interaction", body: "A brief, friendly meeting to understand your child's needs." },
       { icon: "verified", title: "Enrollment", body: "Complete the paperwork and secure your child's spot." },
     ],
@@ -119,12 +119,12 @@ export const campus: CampusPage = {
       "A sanctuary for growth, learning, and spiritual connection. Every moment of the Al Fitrah day is designed to nurture the goodness within.",
   },
   gallery: [
-    { title: "Engaged minds", caption: "Hands-on, play-based discovery", image: "/images/campus-engaged.png" },
-    { title: "Serene rhythm", caption: "A calm, prayerful flow", image: "/images/musalla.png" },
-    { title: "Joyful play", caption: "Room to move and imagine", image: "/images/campus-play.png" },
-    { title: "Nurturing spaces", caption: "Warm, welcoming rooms", image: "/images/campus-spaces.png" },
-    { title: "Creative expression", caption: "Art, colour, and craft", image: "/images/campus-creative.png" },
-    { title: "Community", caption: "Belonging in every circle", image: "/images/campus-community.png" },
+    { title: "A warm welcome", caption: "Our bright, welcoming entrance", image: "/images/real/entrance-wide.jpg" },
+    { title: "Joyful play", caption: "Room to move, slide, and imagine", image: "/images/real/play-room.jpg" },
+    { title: "Soft, safe play", caption: "Cushioned floors and a ball pit", image: "/images/real/ball-pit.jpg" },
+    { title: "Bright classrooms", caption: "Clean, glass-fronted learning rooms", image: "/images/real/classroom.jpg" },
+    { title: "Creative corners", caption: "Slides, easels, and play stations", image: "/images/real/soft-play.jpg" },
+    { title: "Calm, clean spaces", caption: "A tidy, peaceful campus", image: "/images/real/corridor.jpg" },
   ],
   rhythm: {
     title: "The daily rhythm",
@@ -168,8 +168,8 @@ export const faq: FaqPage = {
     {
       id: "schedule", icon: "schedule", category: "Daily schedule",
       items: [
-        { q: "What are the school hours?", a: "Please contact our admissions team to confirm current school timings. We're happy to walk you through the daily schedule and arrange a campus visit." },
-        { q: "Do you provide meals?", a: "Please ask our admissions team about current meal arrangements, our halal policy, and dietary accommodations during enrollment." },
+        { q: "What are the school hours?", a: "School runs from 9:00 AM to 1:30 PM. You're welcome to visit during these hours to see the campus and meet our team." },
+        { q: "Do you provide meals?", a: "We don't have a canteen or cafeteria, so children bring their own food from home for snack and lunch." },
       ],
     },
   ],
@@ -184,15 +184,74 @@ export const parent: ParentPage = {
   hero: {
     eyebrow: "Family gateway",
     title: "Parent resources.",
-    subtitle: "Everything you need to stay connected with your child's journey, from academic calendars to daily nutrition, curated for our community.",
+    subtitle: "Everything you need to stay connected with your child's journey, from academic calendars to uniform guidelines, curated for our community.",
   },
   resources: [
-    { icon: "event", title: "Academic calendar", body: "Important dates, holidays, parent-teacher conferences, and community events for the school year.", action: "View schedule", large: true },
-    { icon: "nutrition", title: "Lunch menu", body: "Details on our halal meal arrangements, nutrition, and dietary accommodations — shared on request.", action: "Download menu" },
+    { icon: "event", title: "Academic calendar", body: "Holidays, assessments, parent meetings, and celebrations for 2026–27 — see the full year below.", action: "See dates below", large: true },
     { icon: "styler", title: "Uniform guidelines", body: "Modest, comfortable attire requirements.", action: "Read more" },
     { icon: "menu_book", title: "Parent handbook", body: "Policies, procedures, and core values.", action: "Read more" },
     { icon: "volunteer_activism", title: "Get involved", body: "Volunteer opportunities for parents.", action: "Read more" },
   ],
+  academicCalendar: {
+    title: "Academic Year 2026–27",
+    subtitle: "The key dates families need through the year. A few dates are tentative and may shift slightly — we'll always confirm ahead of time.",
+    note: "Returning students reopen on 3 June 2026. Pre-KG (Beginners) orientation is 6 June, with classes from 8 June.",
+    groups: [
+      {
+        icon: "celebration",
+        title: "Celebrations & special days",
+        items: [
+          "Red Day — 25 Jun",
+          "Green Day — 9 Jul",
+          "Fruit Day — 23 Jul",
+          "Independence Day celebration — 14 Aug",
+          "Blue Day — 10 Sep",
+          "School picnic — 15 Oct",
+          "Professions Day — 5 Nov",
+          "Sports Day — 28 Nov",
+          "Yellow Day — 3 Dec",
+          "Number Day — 7 Jan",
+          "Annual Day — 30 Jan (tentative)",
+        ],
+      },
+      {
+        icon: "fact_check",
+        title: "Assessments & parent meetings",
+        items: [
+          "Assessment 1 — 16–24 Sep",
+          "PTM 1 — 26 Sep",
+          "Assessment 2 — 10–18 Dec",
+          "PTM 2 — 2 Jan",
+          "Assessment 3 — 17–25 Mar",
+          "PTM 3 — 27 Mar",
+        ],
+      },
+      {
+        icon: "beach_access",
+        title: "Breaks & vacations",
+        items: [
+          "Winter break — 24–29 Dec (reopens 30 Dec)",
+          "Ramadan & Eid break — 1–14 Mar (reopens 15 Mar)",
+          "Last working day — 31 Mar (tentative)",
+          "Summer vacation — 1 Apr – 31 May",
+        ],
+      },
+      {
+        icon: "event_busy",
+        title: "Public holidays",
+        items: [
+          "Muharram — 26 Jun",
+          "Independence Day — 15 Aug",
+          "Ganesh Chaturthi — 14 Sep",
+          "Gandhi Jayanti — 2 Oct",
+          "Dussehra — 19–21 Oct",
+          "Diwali — 9 Nov",
+          "Sankranti — 15 Jan",
+          "Republic Day — 26 Jan",
+        ],
+      },
+    ],
+  },
   testimonials: {
     title: "Voices from our community",
     subtitle: "How Al Fitrah is nurturing the innate goodness within families across our community.",
@@ -220,8 +279,9 @@ export const contact: ContactPage = {
   hours: {
     title: "Visit us",
     rows: [
-      { label: "Campus tours", value: "By appointment" },
+      { label: "School hours", value: "9:00 AM – 1:30 PM" },
+      { label: "Campus visits", value: "Walk in during school hours" },
     ],
-    note: "Please call or message us to confirm current school timings and to arrange a campus visit.",
+    note: "You're welcome to visit during school hours — no appointment needed. Feel free to call or message ahead if you'd like.",
   },
 };

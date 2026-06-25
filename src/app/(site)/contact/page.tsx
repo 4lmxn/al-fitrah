@@ -1,19 +1,24 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { contact } from "@/content/pages";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
+import {
+  PHONE_E164,
+  WHATSAPP_URL,
+  MAPS_DIRECTIONS_URL,
+  MAPS_EMBED_URL,
+} from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Contact Us — Al Fitrah Pre School",
+  title: "Contact Us",
   description: "Visit, call, or email Al Fitrah in Sarjapura, Bengaluru. Campus location and visiting details inside.",
 };
 
 export default function ContactPage() {
-  const { hero, details, image, imageAlt, hours } = contact;
+  const { hero, details, hours } = contact;
   const rows = [
     { icon: "location_on", label: "Address", value: details.address },
     { icon: "call", label: "Phone", value: details.phones },
@@ -43,11 +48,41 @@ export default function ContactPage() {
                   </li>
                 ))}
               </ul>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <a
+                  href={WHATSAPP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full bg-emerald px-5 py-3 text-sm font-semibold text-cream transition hover:bg-emerald-dark"
+                >
+                  <Icon name="chat" className="text-[18px]" /> WhatsApp
+                </a>
+                <a
+                  href={`tel:${PHONE_E164}`}
+                  className="inline-flex items-center gap-2 rounded-full border border-emerald/30 px-5 py-3 text-sm font-semibold text-emerald transition hover:bg-emerald/5"
+                >
+                  <Icon name="call" className="text-[18px]" /> Call
+                </a>
+                <a
+                  href={MAPS_DIRECTIONS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-emerald/30 px-5 py-3 text-sm font-semibold text-emerald transition hover:bg-emerald/5"
+                >
+                  <Icon name="directions" className="text-[18px]" /> Directions
+                </a>
+              </div>
             </div>
           </Reveal>
           <Reveal delay={0.1} className="lg:col-span-7">
             <div className="relative h-full min-h-[360px] overflow-hidden rounded-xl3 border border-emerald/10 shadow-soft">
-              <Image src={image} alt={imageAlt} fill sizes="(min-width:1024px) 60vw, 100vw" className="object-cover" />
+              <iframe
+                src={MAPS_EMBED_URL}
+                title="Map to Al Fitrah Pre School, Sarjapura, Bengaluru"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="absolute inset-0 h-full w-full border-0"
+              />
             </div>
           </Reveal>
         </Container>

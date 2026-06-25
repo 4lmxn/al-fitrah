@@ -8,12 +8,12 @@ import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
-  title: "Parent Resources — Al Fitrah Pre School",
-  description: "Academic calendar, halal lunch menu, uniform guidelines, parent handbook, and ways to get involved.",
+  title: "Parent Resources",
+  description: "Academic calendar, uniform guidelines, parent handbook, and ways to get involved.",
 };
 
 export default function ParentResourcesPage() {
-  const { hero, resources } = parent;
+  const { hero, resources, academicCalendar } = parent;
   return (
     <>
       <PageHero eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.subtitle} />
@@ -43,7 +43,7 @@ export default function ParentResourcesPage() {
 
           <Reveal className="mt-10 flex flex-col items-center gap-4 rounded-xl3 border border-emerald/10 bg-emerald/5 p-8 text-center sm:flex-row sm:justify-between sm:text-left">
             <p className="max-w-xl leading-relaxed text-ink/75">
-              Need the academic calendar, lunch menu, parent handbook, or uniform details? Our team will share the latest copy with you directly.
+              Need the parent handbook or uniform details? Our team will share the latest copy with you directly.
             </p>
             <Link
               href="/contact"
@@ -53,6 +53,48 @@ export default function ParentResourcesPage() {
               <Icon name="arrow_forward" className="text-base" />
             </Link>
           </Reveal>
+        </Container>
+      </Section>
+
+      {/* Real academic calendar — sourced from the school's 2026–27 year planner. */}
+      <Section id="calendar" className="bg-cream-deep/60">
+        <Container>
+          <Reveal className="max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Year planner</p>
+            <h2 className="mt-2 text-3xl sm:text-4xl">{academicCalendar.title}</h2>
+            <p className="mt-3 text-lg text-ink/70">{academicCalendar.subtitle}</p>
+          </Reveal>
+
+          <Reveal delay={0.05} className="mt-6 flex items-start gap-3 rounded-2xl border border-emerald/10 bg-white/80 p-5 shadow-soft">
+            <Icon name="info" className="mt-0.5 shrink-0 text-[22px] text-emerald" />
+            <p className="leading-relaxed text-ink/75">{academicCalendar.note}</p>
+          </Reveal>
+
+          <div className="mt-8 grid gap-5 md:grid-cols-2">
+            {academicCalendar.groups.map((g, i) => (
+              <Reveal key={g.title} delay={i * 0.06} className="h-full">
+                <div className="flex h-full flex-col rounded-xl3 border border-emerald/10 bg-white/80 p-7 shadow-soft">
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald/8 text-emerald ring-1 ring-emerald/10">
+                      <Icon name={g.icon} className="text-[22px]" />
+                    </span>
+                    <h3 className="text-xl text-emerald-deep">{g.title}</h3>
+                  </div>
+                  <ul className="mt-5 space-y-2.5">
+                    {g.items.map((item) => {
+                      const [event, date] = item.split(" — ");
+                      return (
+                        <li key={item} className="flex items-baseline justify-between gap-4 border-b border-emerald/5 pb-2.5 last:border-0 last:pb-0">
+                          <span className="text-ink/75">{event}</span>
+                          {date && <span className="shrink-0 text-sm font-semibold tabular-nums text-emerald-deep">{date}</span>}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </Container>
       </Section>
     </>

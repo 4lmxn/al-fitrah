@@ -8,7 +8,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { InquiryForm } from "@/components/pages/InquiryForm";
 
 export const metadata: Metadata = {
-  title: "Admissions — Al Fitrah Pre School",
+  title: "Admissions",
   description: "A clear, supportive admissions process for the 2026–27 year. Submit an inquiry and our team will reach out.",
 };
 

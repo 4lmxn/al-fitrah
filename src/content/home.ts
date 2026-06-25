@@ -7,8 +7,8 @@ export const home: Home = {
     subtitle:
       "Al Fitrah blends the Oxford Early Learning Curriculum with the Noor-ul-Bayan Qur'anic method in a warm, faith-centred three-year program for young children.",
     cta: { label: "Begin your child's path", href: "/admissions", variant: "primary" },
-    image: "/images/classroom.png",
-    imageAlt: "Children exploring a bright Al Fitrah classroom, illustrated",
+    image: "/images/real/entrance-wide.jpg",
+    imageAlt: "The bright, welcoming entrance of Al Fitrah Pre School with a 'Welcome Back to School' board",
     badge: "3-year program · Faith-first",
   },
   quickFacts: [
@@ -27,10 +27,10 @@ export const home: Home = {
     ],
   },
   highlights: [
-    { title: "Engaged minds", caption: "Hands-on, play-based discovery", image: "/images/campus-engaged.png" },
-    { title: "Serene rhythm", caption: "A calm, prayerful daily flow", image: "/images/musalla.png" },
-    { title: "Joyful play", caption: "Room to move, build, and imagine", image: "/images/campus-play.png" },
-    { title: "Circle time", caption: "Stories, songs, and belonging", image: "/images/circle-time.png" },
+    { title: "Joyful play", caption: "Room to move, build, and imagine", image: "/images/real/play-room.jpg" },
+    { title: "Bright classrooms", caption: "Clean, glass-fronted learning rooms", image: "/images/real/classroom.jpg" },
+    { title: "Soft, safe play", caption: "Cushioned floors for our littlest learners", image: "/images/real/soft-play.jpg" },
+    { title: "A warm welcome", caption: "Every child greeted with care", image: "/images/real/welcome-board.jpg" },
   ],
   welcome: {
     eyebrow: "Assalamu alaikum",

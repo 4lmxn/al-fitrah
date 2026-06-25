@@ -36,6 +36,12 @@ export default async function AdminDashLayout({ children }: { children: React.Re
           >
             <Icon name="inbox" className="text-[20px] text-gold-light" /> Leads
           </Link>
+          <Link
+            href="/admin/openings"
+            className="mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-cream/80 transition hover:bg-cream/10"
+          >
+            <Icon name="work" className="text-[20px] text-gold-light" /> Careers
+          </Link>
         </nav>
 
         <div className="mt-auto rounded-2xl bg-cream/5 p-4 ring-1 ring-cream/10">

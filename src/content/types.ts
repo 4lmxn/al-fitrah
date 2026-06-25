@@ -71,6 +71,12 @@ export type FaqPage = {
 export type ParentPage = {
   hero: { eyebrow: string; title: string; subtitle: string };
   resources: { icon: string; title: string; body: string; action: string; large?: boolean }[];
+  academicCalendar: {
+    title: string;
+    subtitle: string;
+    note: string;
+    groups: { icon: string; title: string; items: string[] }[];
+  };
   testimonials: { title: string; subtitle: string; items: Testimonial[] };
 };
 

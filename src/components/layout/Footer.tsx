@@ -9,7 +9,7 @@ export function Footer() {
     <footer className="mt-20 border-t border-emerald/10 bg-emerald text-cream">
       <Container className="grid gap-8 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <p className="font-display text-lg">{site.name}</p>
+          <p className="font-display text-lg">{site.name} <span className="text-cream/60">· {site.branch}</span></p>
           <p className="mt-2 text-sm text-cream/70">{site.tagline}</p>
         </div>
         <nav className="text-sm" aria-label="Footer">
@@ -50,7 +50,7 @@ export function Footer() {
         </div>
       </Container>
       <Container className="border-t border-cream/10 py-5 text-xs text-cream/50">
-        © {new Date().getFullYear()} {site.name}. All rights reserved.
+        © {new Date().getFullYear()} {site.name}, {site.branch}. All rights reserved.
       </Container>
     </footer>
   );

@@ -12,7 +12,7 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-emerald/10 bg-cream/80 backdrop-blur">
       <Container className="flex h-16 items-center justify-between">
         <Link href="/" className="font-display text-lg font-semibold text-emerald">
-          {site.name}
+          {site.name} <span className="font-normal text-emerald/60">· {site.branch}</span>
         </Link>
         <nav className="hidden items-center gap-7 md:flex" aria-label="Primary">
           {site.nav.map((n) => (

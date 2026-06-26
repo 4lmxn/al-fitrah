@@ -8,6 +8,11 @@ export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://al-fitrah.web.app"
 ).replace(/\/$/, "");
 
+// Franchise-qualified brand for titles, social, and structured data. "Al Fitrah"
+// operates as several branches; the ", Sarjapura" suffix lets Google distinguish
+// this campus and own "Al Fitrah Sarjapura" searches and its Maps listing.
+export const BRAND_NAME = `${site.name}, ${site.branch}`;
+
 // Full street address used for the contact page, footer, and LocalBusiness schema.
 export const FULL_ADDRESS = {
   street: "3rd Floor, Vivian Complex, Opp HP Petrol Bunk",
@@ -36,7 +41,7 @@ export function schoolJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "Preschool",
-    name: site.name,
+    name: BRAND_NAME,
     description: site.tagline,
     url: SITE_URL,
     telephone: PHONE_E164,

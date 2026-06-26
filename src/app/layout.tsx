@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { site } from "@/content/site";
-import { SITE_URL, schoolJsonLd } from "@/lib/seo";
+import { SITE_URL, BRAND_NAME, schoolJsonLd } from "@/lib/seo";
 import { Analytics } from "@/components/Analytics";
 
 const sans = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -14,11 +14,11 @@ const description =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${site.name} — ${site.tagline}`,
-    template: `%s — ${site.name}`,
+    default: `${BRAND_NAME} — ${site.tagline}`,
+    template: `%s — ${BRAND_NAME}`,
   },
   description,
-  applicationName: site.name,
+  applicationName: BRAND_NAME,
   keywords: [
     "Islamic preschool Bengaluru",
     "preschool Sarjapura",
@@ -31,15 +31,15 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
-    siteName: site.name,
-    title: `${site.name} — ${site.tagline}`,
+    siteName: BRAND_NAME,
+    title: `${BRAND_NAME} — ${site.tagline}`,
     description,
     url: SITE_URL,
     locale: "en_IN",
   },
   twitter: {
     card: "summary_large_image",
-    title: `${site.name} — ${site.tagline}`,
+    title: `${BRAND_NAME} — ${site.tagline}`,
     description,
   },
   robots: {

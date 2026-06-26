@@ -1,6 +1,7 @@
 import type { Site } from "./types";
 export const site: Site = {
   name: "Al Fitrah Pre School",
+  branch: "Sarjapura",
   tagline: "Where young hearts and minds grow with faith.",
   ctaLabel: "Enroll Now",
   nav: [

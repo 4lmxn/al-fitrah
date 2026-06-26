@@ -2,6 +2,7 @@ export type Cta = { label: string; href: string; variant: "primary" | "outline" 
 export type NavItem = { label: string; href: string };
 export type Site = {
   name: string;
+  branch: string;
   tagline: string;
   ctaLabel: string;
   nav: NavItem[];

@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { site } from "@/content/site";
 
-export const alt = "Al Fitrah Pre School — Where young hearts and minds grow with faith";
+export const alt = "Al Fitrah Pre School, Sarjapura — Where young hearts and minds grow with faith";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -36,6 +36,9 @@ export default function OpengraphImage() {
         </div>
         <div style={{ fontSize: 88, fontWeight: 700, lineHeight: 1.05 }}>
           {site.name}
+        </div>
+        <div style={{ fontSize: 34, color: "#e3c97c", marginTop: 14 }}>
+          {`${site.branch}, Bengaluru`}
         </div>
         <div style={{ fontSize: 40, color: "#faf7f0", opacity: 0.85, marginTop: 28, maxWidth: 880 }}>
           {site.tagline}

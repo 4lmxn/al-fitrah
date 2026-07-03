@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/ui/PageHero";
@@ -6,10 +6,10 @@ import { Icon } from "@/components/ui/Icon";
 import { CTABand } from "@/components/ui/CTABand";
 import { Reveal } from "@/components/ui/Reveal";
 
-export const metadata: Metadata = {
+export const metadata = pageMeta("/syllabus", {
   title: "Syllabus",
   description: "The 3-year integrated syllabus: Noor-ul-Bayan Qur'an & Arabic, Aqeedah & Hadith, plus the Oxford Early Learning Curriculum — English, Mathematics, and EVS — by year.",
-};
+});
 
 const strands = [
   { icon: "menu_book", title: "Qur'an & Tajweed", body: "Qur'an reading and fluency with the rules of recitation, building toward memorization of up to 2 Juz of selected Surahs by the end of the program." },

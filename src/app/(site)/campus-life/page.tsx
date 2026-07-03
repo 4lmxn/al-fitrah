@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Image from "next/image";
 import { campus } from "@/content/pages";
 import { Container } from "@/components/ui/Container";
@@ -7,10 +7,10 @@ import { PageHero } from "@/components/ui/PageHero";
 import { FeatureCard } from "@/components/ui/FeatureCard";
 import { Reveal } from "@/components/ui/Reveal";
 
-export const metadata: Metadata = {
+export const metadata = pageMeta("/campus-life", {
   title: "Campus Life",
   description: "A calm, joyful daily rhythm of learning, play, and spiritual connection at Al Fitrah.",
-};
+});
 
 // 6 tiles → 6 cells: big feature + five supporting (4-col / 3-row desktop).
 const spans = [

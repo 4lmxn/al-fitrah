@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { admissions } from "@/content/pages";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
@@ -7,10 +7,10 @@ import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { InquiryForm } from "@/components/pages/InquiryForm";
 
-export const metadata: Metadata = {
+export const metadata = pageMeta("/admissions", {
   title: "Admissions",
   description: "A clear, supportive admissions process for the 2026–27 year. Submit an inquiry and our team will reach out.",
-};
+});
 
 export default function AdmissionsPage() {
   const { hero, process, assist, form } = admissions;

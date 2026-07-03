@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { parent } from "@/content/pages";
 import { Container } from "@/components/ui/Container";
@@ -7,10 +7,10 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 
-export const metadata: Metadata = {
+export const metadata = pageMeta("/parent-resources", {
   title: "Parent Resources",
   description: "Academic calendar, uniform guidelines, parent handbook, and ways to get involved.",
-};
+});
 
 export default function ParentResourcesPage() {
   const { hero, resources, academicCalendar } = parent;

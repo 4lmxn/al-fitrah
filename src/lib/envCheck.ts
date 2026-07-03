@@ -34,6 +34,9 @@ const optional: Check[] = [
   { name: "FIREBASE_SERVICE_ACCOUNT_KEY", impact: "falls back to Application Default Credentials (fine on Firebase App Hosting, required for local dev)" },
   { name: "NEXT_PUBLIC_SITE_URL", impact: "canonical URLs default to https://al-fitrah.web.app" },
   { name: "NEXT_PUBLIC_GA_ID", impact: "Google Analytics disabled" },
+  { name: "NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION", impact: "Search Console meta-tag verification unavailable (use DNS/file method instead)" },
+  { name: "NEXT_PUBLIC_GEO_LAT", impact: "no geo coordinates in LocalBusiness schema — weaker Maps/local ranking" },
+  { name: "NEXT_PUBLIC_GEO_LNG", impact: "no geo coordinates in LocalBusiness schema — weaker Maps/local ranking" },
 ];
 
 // A var counts as set only if present and non-blank. The project-id row checks

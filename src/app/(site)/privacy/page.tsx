@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/ui/PageHero";
@@ -6,10 +6,10 @@ import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { site } from "@/content/site";
 
-export const metadata: Metadata = {
+export const metadata = pageMeta("/privacy", {
   title: "Privacy Policy",
   description: "How Al Fitrah Pre School collects, uses, and protects the personal information shared by families through our website and admissions inquiry form.",
-};
+});
 
 const lastUpdated = "19 June 2026";
 

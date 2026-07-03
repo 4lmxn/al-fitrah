@@ -47,6 +47,9 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
+  // Google Search Console site-ownership tag. Emits only when the token env is
+  // set (undefined → Next omits the meta entirely), so nothing leaks in dev.
+  verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

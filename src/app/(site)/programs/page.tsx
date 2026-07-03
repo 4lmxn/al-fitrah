@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Image from "next/image";
 import { programs } from "@/content/pages";
 import { Container } from "@/components/ui/Container";
@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/Button";
 import { EyebrowPill } from "@/components/ui/EyebrowPill";
 import { Reveal } from "@/components/ui/Reveal";
 
-export const metadata: Metadata = {
+export const metadata = pageMeta("/programs", {
   title: "Our Programs",
   description: "A 3-year integrated program — Noor-ul-Bayan Qur'an & Arabic with the Oxford Early Learning Curriculum (English, Mathematics, EVS). Entry at Pre-KG, ages 2y10m–3y10m.",
-};
+});
 
 export default function ProgramsPage() {
   const { hero, curriculum, outcomes } = programs;

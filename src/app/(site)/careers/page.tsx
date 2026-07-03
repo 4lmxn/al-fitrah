@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/ui/PageHero";
@@ -7,10 +7,10 @@ import { Reveal } from "@/components/ui/Reveal";
 import { CareersForm } from "@/components/pages/CareersForm";
 import { listActiveOpenings } from "@/lib/jobOpenings";
 
-export const metadata: Metadata = {
+export const metadata = pageMeta("/careers", {
   title: "Careers",
   description: "Join the Al Fitrah team. We're looking for nurturing, qualified educators who blend academic excellence with Islamic values for young children in Sarjapura, Bengaluru.",
-};
+});
 
 // Openings change through the year and are managed from the admin console, so
 // this page must reflect Firestore on every request.

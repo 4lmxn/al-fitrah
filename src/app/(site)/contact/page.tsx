@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { contact } from "@/content/pages";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
@@ -6,16 +5,17 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import {
+  pageMeta,
   PHONE_E164,
   WHATSAPP_URL,
   MAPS_DIRECTIONS_URL,
   MAPS_EMBED_URL,
 } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = pageMeta("/contact", {
   title: "Contact Us",
   description: "Visit, call, or email Al Fitrah in Sarjapura, Bengaluru. Campus location and visiting details inside.",
-};
+});
 
 export default function ContactPage() {
   const { hero, details, hours } = contact;

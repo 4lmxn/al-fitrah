@@ -4,6 +4,31 @@ runConfig:
   maxInstances: 1
 
 env:
+  # Canonical origin for metadataBase, canonicals, sitemap.xml and JSON-LD.
+  # MUST be the domain the site is actually served from — the code fallback
+  # (https://al-fitrah.web.app) is a Firebase Hosting domain this app does not
+  # use. Swap to the custom domain the day it goes live, then redeploy.
+  - variable: NEXT_PUBLIC_SITE_URL
+    value: "https://al-fitrah--al-fitrah.asia-east1.hosted.app"
+    availability: [BUILD, RUNTIME]
+
+  # Google Analytics 4 + Search Console. Inert until real values are pasted in
+  # (the code omits the tag/script entirely when unset), so they ship empty.
+  # - variable: NEXT_PUBLIC_GA_ID
+  #   value: "G-XXXXXXXXXX"
+  #   availability: [BUILD, RUNTIME]
+  # - variable: NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+  #   value: "<token from Search Console HTML-tag method>"
+  #   availability: [BUILD, RUNTIME]
+
+  # Exact campus pin for the LocalBusiness geo block (strongest Maps signal).
+  # - variable: NEXT_PUBLIC_GEO_LAT
+  #   value: "12.8xxxx"
+  #   availability: [BUILD, RUNTIME]
+  # - variable: NEXT_PUBLIC_GEO_LNG
+  #   value: "77.7xxxx"
+  #   availability: [BUILD, RUNTIME]
+
   # Public Firebase web config (safe to expose; shipped in the client bundle).
   - variable: NEXT_PUBLIC_FIREBASE_API_KEY
     value: "AIzaSyBnNP4ftDUQxKVXeSUbZeuU2IyIh-7FcBo"

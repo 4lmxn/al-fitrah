@@ -270,7 +270,8 @@ export const contact: ContactPage = {
     subtitle: "Reach out to learn more about our nurturing environment rooted in Fitrah and academic excellence.",
   },
   details: {
-    address: ["3rd Floor, Vivian Complex", "Opp HP Petrol Bunk, Sompura Gate", "Sarjapura 562125"],
+    // Keep in sync with FULL_ADDRESS in src/lib/seo.ts (single source of address truth).
+    address: ["3rd Floor, Vivian Complex", "Opp HP Petrol Bunk, Sompura Gate", "Sarjapura, Bengaluru, Karnataka 562125"],
     phones: ["+91 99865 00718", "+91 99860 49413"],
     email: "alfitrah.sompura@gmail.com",
   },

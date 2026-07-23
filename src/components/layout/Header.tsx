@@ -1,6 +1,6 @@
 // src/components/layout/Header.tsx
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { site } from "@/content/site";
 import { Container } from "@/components/ui/Container";
@@ -8,6 +8,16 @@ import { Button } from "@/components/ui/Button";
 
 export function Header() {
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
   return (
     <header className="sticky top-0 z-40 border-b border-emerald/10 bg-cream/80 backdrop-blur">
       <Container className="flex h-16 items-center justify-between">
@@ -25,7 +35,7 @@ export function Header() {
         <button
           type="button"
           className="md:hidden text-emerald"
-          aria-label="Toggle menu"
+          aria-controls="mobile-nav"
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
         >
@@ -33,7 +43,7 @@ export function Header() {
         </button>
       </Container>
       {open && (
-        <nav className="md:hidden border-t border-emerald/10 bg-cream" aria-label="Mobile">
+        <nav id="mobile-nav" className="md:hidden border-t border-emerald/10 bg-cream" aria-label="Mobile">
           <Container className="flex flex-col gap-3 py-4">
             {site.nav.map((n) => (
               <Link key={n.href} href={n.href} className="text-ink/80" onClick={() => setOpen(false)}>

@@ -8,7 +8,7 @@ import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata = pageMeta("/syllabus", {
   title: "Syllabus",
-  description: "The 3-year integrated syllabus: Noor-ul-Bayan Qur'an & Arabic, Aqeedah & Hadith, plus the Oxford Early Learning Curriculum — English, Mathematics, and EVS — by year.",
+  description: "3-year integrated preschool syllabus: Noor-ul-Bayan Qur'an & Arabic, Aqeedah & Hadith, plus Oxford Early Learning English, Maths & EVS, year by year.",
 });
 
 const strands = [

@@ -11,8 +11,10 @@ export const leadSchema = z.object({
   email: z.string().trim().email("Please enter a valid email").max(120).optional().or(z.literal("")),
   childAge: z.enum(AGE_BANDS, { message: "Please select an age band" }),
   message: z.string().trim().max(1000).optional().or(z.literal("")),
-  // Honeypot — must stay empty (bots fill it).
-  website: z.string().max(0).optional(),
+  // Honeypot — bots fill it. Accept any value here and check emptiness after
+  // parse: a max(0) constraint would fail validation and return a field error
+  // that tells bots exactly which field is the trap.
+  website: z.string().optional(),
 });
 
 export type LeadInput = z.infer<typeof leadSchema>;

@@ -21,10 +21,19 @@ export function getAdminApp(): App {
   }
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
   const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-  app = initializeApp({
-    credential: raw ? cert(JSON.parse(raw)) : applicationDefault(),
-    projectId,
-  });
+  let credential;
+  if (raw) {
+    try {
+      credential = cert(JSON.parse(raw));
+    } catch {
+      throw new Error(
+        "FIREBASE_SERVICE_ACCOUNT_KEY is set but is not valid JSON — check the env value.",
+      );
+    }
+  } else {
+    credential = applicationDefault();
+  }
+  app = initializeApp({ credential, projectId });
   return app;
 }
 

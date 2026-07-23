@@ -58,7 +58,12 @@ export function pageMeta(
       url: `${SITE_URL}${path}`,
       locale: "en_IN",
     },
-    twitter: { card: "summary_large_image", title: fullTitle, description },
+    twitter: {
+      card: "summary_large_image",
+      title: fullTitle,
+      description,
+      images: ["/opengraph-image"],
+    },
   };
 }
 
@@ -76,7 +81,7 @@ const geoPoint = (() => {
 export function schoolJsonLd() {
   return {
     "@context": "https://schema.org",
-    "@type": "Preschool",
+    "@type": ["Preschool", "LocalBusiness"],
     name: BRAND_NAME,
     description: site.tagline,
     url: SITE_URL,
@@ -100,11 +105,6 @@ export function schoolJsonLd() {
       postalCode: FULL_ADDRESS.postalCode,
       addressCountry: FULL_ADDRESS.country,
     },
-    openingHoursSpecification: {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-      opens: "09:00",
-      closes: "13:30",
-    },
+    // openingHoursSpecification: hours schema omitted until school confirms working days.
   };
 }

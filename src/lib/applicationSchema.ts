@@ -15,8 +15,10 @@ export const applicationSchema = z.object({
   email: z.string().trim().email("Please enter a valid email").max(120).optional().or(z.literal("")),
   role: z.string().trim().min(2, "Please select or enter a role").max(100),
   message: z.string().trim().max(2000).optional().or(z.literal("")),
-  // Honeypot — must stay empty (bots fill it).
-  website: z.string().max(0).optional(),
+  // Honeypot — bots fill it. Accept any value here and check emptiness after
+  // parse: a max(0) constraint would fail validation and return a field error
+  // that tells bots exactly which field is the trap.
+  website: z.string().optional(),
 });
 
 export type ApplicationInput = z.infer<typeof applicationSchema>;
@@ -32,6 +34,19 @@ export function validateCvFile(
     return { ok: false, error: "CV must be 5 MB or smaller." };
   }
   return { ok: true };
+}
+
+// Magic-byte signatures for the accepted CV formats: %PDF, OLE compound
+// document (.doc), ZIP (.docx). The browser-supplied MIME type is attacker
+// controlled, so the actual bytes are checked before upload.
+const CV_SIGNATURES: number[][] = [
+  [0x25, 0x50, 0x44, 0x46], // %PDF
+  [0xd0, 0xcf, 0x11, 0xe0], // .doc
+  [0x50, 0x4b, 0x03, 0x04], // .docx
+];
+
+export function hasValidCvSignature(buf: Uint8Array): boolean {
+  return CV_SIGNATURES.some((sig) => sig.every((byte, i) => buf[i] === byte));
 }
 
 export function sanitizeFilename(name: string): string {

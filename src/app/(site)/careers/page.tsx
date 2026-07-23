@@ -9,7 +9,7 @@ import { listActiveOpenings } from "@/lib/jobOpenings";
 
 export const metadata = pageMeta("/careers", {
   title: "Careers",
-  description: "Join the Al Fitrah team. We're looking for nurturing, qualified educators who blend academic excellence with Islamic values for young children in Sarjapura, Bengaluru.",
+  description: "Nurturing, qualified educators wanted at Al Fitrah Pre School, Sarjapura, Bengaluru — blend early-years teaching with Islamic values. Apply today.",
 });
 
 // Openings change through the year and are managed from the admin console, so

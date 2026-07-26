@@ -4,6 +4,7 @@ import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
+import { InquiryForm } from "@/components/pages/InquiryForm";
 import {
   pageMeta,
   PHONE_E164,
@@ -83,6 +84,25 @@ export default function ContactPage() {
                 referrerPolicy="no-referrer-when-downgrade"
                 className="absolute inset-0 h-full w-full border-0"
               />
+            </div>
+          </Reveal>
+        </Container>
+      </Section>
+
+      {/* Parents land here expecting a way to write in, not just phone numbers.
+          Same form and API as the admissions page — one leads pipeline. */}
+      <Section id="message" className="pt-0">
+        <Container className="max-w-3xl">
+          <Reveal>
+            <div className="rounded-xl3 border border-emerald/10 bg-white/80 p-8 shadow-soft sm:p-10">
+              <h2 className="text-2xl text-emerald-deep">Send us a message</h2>
+              <p className="mt-2 text-ink/70">
+                Tell us a little about your child and we&apos;ll get back to you. Prefer to talk? Call or
+                WhatsApp us on {details.phones[0]}.
+              </p>
+              <div className="mt-8">
+                <InquiryForm />
+              </div>
             </div>
           </Reveal>
         </Container>

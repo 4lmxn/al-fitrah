@@ -29,8 +29,20 @@ const benefits = [
   "A meaningful role in children's foundational years",
 ];
 
+// A Firestore blip must not take down the apply form — it is the whole point
+// of the page. Degrade to "no listed openings" and let the general application
+// through instead of throwing the route to the error boundary.
+async function safeOpenings() {
+  try {
+    return await listActiveOpenings();
+  } catch (err) {
+    console.error("careers: openings read failed", err);
+    return [];
+  }
+}
+
 export default async function CareersPage() {
-  const openings = await listActiveOpenings();
+  const openings = await safeOpenings();
   const roleNames = openings.map((o) => o.title);
   return (
     <>

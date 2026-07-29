@@ -64,15 +64,20 @@ env:
     secret: ADMIN_EMAILS
     availability: [RUNTIME]
 
-  # Resend (added later). Once you create the secret:
+  # Resend — transactional email for inquiry + application notifications.
+  # REQUIRED before deploy: create the secret with the API key, or the deploy
+  # fails on the missing secret reference:
   #   firebase apphosting:secrets:set RESEND_API_KEY
-  # then uncomment:
-  # - variable: RESEND_API_KEY
-  #   secret: RESEND_API_KEY
-  #   availability: [RUNTIME]
-  # - variable: INQUIRY_FROM_EMAIL
-  #   value: "onboarding@resend.dev"
-  #   availability: [RUNTIME]
-  # - variable: INQUIRY_ADMIN_EMAIL
-  #   value: "alfitrah.sompura@gmail.com"
-  #   availability: [RUNTIME]
+  - variable: RESEND_API_KEY
+    secret: RESEND_API_KEY
+    availability: [RUNTIME]
+  # onboarding@resend.dev works immediately without domain verification, but in
+  # Resend test mode it only delivers to the address that owns the Resend
+  # account. To send to the school inbox below, either sign up to Resend with
+  # alfitrah.sompura@gmail.com, or verify a sending domain and swap this from.
+  - variable: INQUIRY_FROM_EMAIL
+    value: "onboarding@resend.dev"
+    availability: [RUNTIME]
+  - variable: INQUIRY_ADMIN_EMAIL
+    value: "alfitrah.sompura@gmail.com"
+    availability: [RUNTIME]

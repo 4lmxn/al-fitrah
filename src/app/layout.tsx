@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { SITE_URL, BRAND_NAME, schoolJsonLd } from "@/lib/seo";
@@ -13,6 +13,12 @@ const description =
 // Home title carries the money keywords ("Preschool", "Sarjapura",
 // "Bengaluru") instead of the tagline, which truncated past ~60 chars.
 const homeTitle = `${BRAND_NAME} — Islamic Preschool in Bengaluru`;
+
+// Colours the mobile browser chrome to match the cream page background so the
+// address bar doesn't sit as a jarring white/black strip above the site.
+export const viewport: Viewport = {
+  themeColor: "#faf7f0",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

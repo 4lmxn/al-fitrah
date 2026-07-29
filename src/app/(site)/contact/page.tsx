@@ -5,6 +5,7 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { InquiryForm } from "@/components/pages/InquiryForm";
+import { MapEmbed } from "@/components/pages/MapEmbed";
 import {
   pageMeta,
   PHONE_E164,
@@ -77,12 +78,10 @@ export default function ContactPage() {
           </Reveal>
           <Reveal delay={0.1} className="lg:col-span-7">
             <div className="relative h-full min-h-[360px] overflow-hidden rounded-xl3 border border-emerald/10 shadow-soft">
-              <iframe
-                src={MAPS_EMBED_URL}
+              <MapEmbed
+                embedUrl={MAPS_EMBED_URL}
+                directionsUrl={MAPS_DIRECTIONS_URL}
                 title="Map to Al Fitrah Pre School, Sarjapura, Bengaluru"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="absolute inset-0 h-full w-full border-0"
               />
             </div>
           </Reveal>

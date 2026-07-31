@@ -7,7 +7,7 @@ import { relativeTime } from "@/lib/relativeTime";
 import { Icon } from "@/components/ui/Icon";
 import { LeadAvatar } from "@/components/admin/LeadAvatar";
 import { StagePill } from "@/components/admin/StagePill";
-import { updateStage, addNote } from "./actions";
+import { updateStage, addNote, setFollowUp, snoozeFollowUp } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +26,21 @@ function waLink(phone: string): string | null {
 
 function authorInitials(email: string): string {
   return email.slice(0, 2).toUpperCase();
+}
+
+function startOfToday(): number {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+}
+
+// Local yyyy-mm-dd for a <input type="date"> default (avoids the UTC shift
+// toISOString would introduce for a midnight-local timestamp).
+function toDateInput(ms: number | null): string {
+  if (!ms) return "";
+  const d = new Date(ms);
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
 export default async function LeadDetail({ params }: { params: Promise<{ id: string }> }) {
@@ -227,6 +242,51 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
               })}
             </ol>
             <p className="mt-4 border-t border-emerald/10 pt-3 text-[11px] text-ink/45">Tap a stage to move this lead.</p>
+          </section>
+
+          {/* Follow-up */}
+          <section className="mt-6 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
+            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+              <Icon name="event" className="text-[18px] text-gold" /> Follow-up
+            </h2>
+
+            {lead.followUpMs != null && (
+              <p className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
+                lead.followUpMs < startOfToday()
+                  ? "bg-gold-soft text-[#7a611a] ring-1 ring-gold/30"
+                  : "bg-emerald/8 text-emerald-deep ring-1 ring-emerald/15"
+              }`}>
+                <Icon name={lead.followUpMs < startOfToday() ? "notification_important" : "schedule"} className="text-[15px]" />
+                {lead.followUpMs < startOfToday() ? "Overdue" : "Due"} {relativeTime(lead.followUpMs)}
+              </p>
+            )}
+
+            <form action={setFollowUp} className="mt-4 flex flex-wrap items-center gap-2">
+              <input type="hidden" name="id" value={lead.id} />
+              <input
+                type="date"
+                name="followUpDate"
+                defaultValue={toDateInput(lead.followUpMs)}
+                className="rounded-xl border border-emerald/15 bg-cream/40 px-3 py-2 text-sm text-ink outline-none focus:border-emerald focus:ring-2 focus:ring-emerald/20"
+              />
+              <button type="submit" className="rounded-xl bg-emerald px-4 py-2 text-sm font-semibold text-cream transition hover:bg-emerald-deep">Set</button>
+            </form>
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              {[
+                { label: "+3 days", days: 3 },
+                { label: "+1 week", days: 7 },
+                { label: "+2 weeks", days: 14 },
+              ].map((s) => (
+                <form key={s.days} action={snoozeFollowUp}>
+                  <input type="hidden" name="id" value={lead.id} />
+                  <input type="hidden" name="days" value={s.days} />
+                  <button type="submit" className="rounded-full border border-emerald/20 px-3 py-1.5 text-xs font-semibold text-emerald transition hover:bg-emerald/5">
+                    {s.label}
+                  </button>
+                </form>
+              ))}
+            </div>
           </section>
         </aside>
       </div>

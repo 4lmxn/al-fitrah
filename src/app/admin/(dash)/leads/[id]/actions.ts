@@ -23,6 +23,52 @@ export async function updateStage(formData: FormData) {
   revalidatePath("/admin");
 }
 
+// Set or clear the follow-up date. An empty value clears it (lead drops out of
+// the reminder digest); a "YYYY-MM-DD" value is pinned to local midnight.
+export async function setFollowUp(formData: FormData) {
+  const admin = await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const raw = String(formData.get("followUpDate") ?? "").trim();
+  if (!id) throw new Error("Missing lead id");
+
+  let followUpDate: Date | null = null;
+  if (raw) {
+    const d = new Date(`${raw}T00:00:00`);
+    if (Number.isNaN(d.getTime())) throw new Error("Invalid follow-up date");
+    followUpDate = d;
+  }
+
+  await getDb().collection("leads").doc(id).update({
+    followUpDate,
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+  console.log(`follow-up set id=${id} date=${raw || "cleared"} by=${admin.email}`);
+  revalidatePath(`/admin/leads/${id}`);
+  revalidatePath("/admin");
+}
+
+// Push the follow-up forward by N days from today (a "snooze"). Base is today,
+// so snoozing an overdue lead always lands in the future.
+export async function snoozeFollowUp(formData: FormData) {
+  const admin = await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const days = Number(formData.get("days"));
+  if (!id) throw new Error("Missing lead id");
+  if (!Number.isFinite(days) || days <= 0 || days > 90) throw new Error("Invalid snooze");
+
+  const target = new Date();
+  target.setHours(0, 0, 0, 0);
+  target.setDate(target.getDate() + days);
+
+  await getDb().collection("leads").doc(id).update({
+    followUpDate: target,
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+  console.log(`follow-up snoozed id=${id} +${days}d by=${admin.email}`);
+  revalidatePath(`/admin/leads/${id}`);
+  revalidatePath("/admin");
+}
+
 export async function addNote(formData: FormData) {
   const admin = await requireAdmin();
   const id = String(formData.get("id") ?? "");

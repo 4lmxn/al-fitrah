@@ -1,4 +1,6 @@
 import "server-only";
+import { cache } from "react";
+import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { getAuthAdmin } from "@/lib/firebaseAdmin";
 
@@ -34,16 +36,21 @@ export async function createSession(
   return { ok: true, cookie, email: decoded.email! };
 }
 
-export async function requireAdmin(): Promise<{ email: string }> {
+// Auth gate for every admin page, server action, and the data layer.
+// Redirects (rather than throws) so a stale session lands on the login page
+// from any entry point. Wrapped in React cache() so a page + its data-layer
+// calls verify the session cookie once per request, not once per call.
+export const requireAdmin = cache(async (): Promise<{ email: string }> => {
   const store = await cookies();
   const value = store.get(SESSION_COOKIE)?.value;
-  if (!value) throw new Error("UNAUTHORIZED");
-  let decoded;
+  if (!value) redirect("/admin/login");
+  let email: string | undefined;
   try {
-    decoded = await getAuthAdmin().verifySessionCookie(value, true);
+    const decoded = await getAuthAdmin().verifySessionCookie(value, true);
+    email = decoded.email;
   } catch {
-    throw new Error("UNAUTHORIZED");
+    redirect("/admin/login");
   }
-  if (!isAllowed(decoded.email)) throw new Error("UNAUTHORIZED");
-  return { email: decoded.email! };
-}
+  if (!isAllowed(email)) redirect("/admin/login");
+  return { email: email! };
+});

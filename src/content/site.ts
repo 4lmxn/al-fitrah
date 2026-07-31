@@ -15,6 +15,7 @@ export const site: Site = {
   contact: {
     phone: "+91 99865 00718",
     email: "alfitrah.sompura@gmail.com",
-    address: "Sompura Gate, Sarjapura, Bengaluru 562125",
+    // Keep in sync with FULL_ADDRESS in src/lib/seo.ts (single source of address truth).
+    address: "3rd Floor, Vivian Complex, Opp HP Petrol Bunk, Sompura Gate, Sarjapura, Bengaluru, Karnataka 562125",
   },
 };

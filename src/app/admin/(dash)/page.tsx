@@ -99,6 +99,7 @@ export default async function AdminInbox({
 
         <form action="/admin" method="get" className="relative w-full lg:w-72">
           <input type="hidden" name="type" value={type} />
+          {stage && <input type="hidden" name="stage" value={stage} />}
           <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-ink/35" />
           <input
             name="q"

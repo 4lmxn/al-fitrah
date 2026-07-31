@@ -17,8 +17,10 @@ type ParsedOpening = {
   order: number;
 };
 
+// Length caps mirror the public zod schemas: openings render on the public
+// careers page, so even admin input gets bounded.
 function parse(formData: FormData): ParsedOpening {
-  const title = String(formData.get("title") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim().slice(0, 120);
   if (!title) throw new Error("Title is required");
 
   const employmentTypeRaw = String(formData.get("employmentType") ?? "Full-time");
@@ -28,15 +30,16 @@ function parse(formData: FormData): ParsedOpening {
 
   const requirements = String(formData.get("requirements") ?? "")
     .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
+    .map((line) => line.trim().slice(0, 300))
+    .filter(Boolean)
+    .slice(0, 30);
 
   const orderRaw = Number(formData.get("order"));
 
   return {
     title,
     employmentType,
-    summary: String(formData.get("summary") ?? "").trim(),
+    summary: String(formData.get("summary") ?? "").trim().slice(0, 2000),
     requirements,
     active: formData.get("active") === "on",
     order: Number.isFinite(orderRaw) ? orderRaw : 0,

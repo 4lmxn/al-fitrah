@@ -1,21 +1,31 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createSession, SESSION_COOKIE, SESSION_MAX_AGE_MS } from "@/lib/adminAuth";
+import { getAuthAdmin } from "@/lib/firebaseAdmin";
+import { getClientIp } from "@/lib/clientIp";
+import { rateLimited } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
-  let body: { idToken?: string };
+  const ip = getClientIp(req);
+  if (rateLimited(`login:${ip}`, { max: 10 })) {
+    return NextResponse.json({ ok: false, error: "Too many attempts. Please try again shortly." }, { status: 429 });
+  }
+
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ ok: false, error: "Invalid request." }, { status: 400 });
   }
-  if (!body.idToken) {
+  const idToken =
+    typeof body === "object" && body !== null ? (body as { idToken?: unknown }).idToken : undefined;
+  if (typeof idToken !== "string" || !idToken) {
     return NextResponse.json({ ok: false, error: "Missing token." }, { status: 400 });
   }
 
-  const result = await createSession(body.idToken);
+  const result = await createSession(idToken);
   if (!result.ok) {
     return NextResponse.json({ ok: false, error: result.error }, { status: result.status });
   }
@@ -33,6 +43,17 @@ export async function POST(req: Request) {
 
 export async function DELETE() {
   const store = await cookies();
+  const value = store.get(SESSION_COOKIE)?.value;
+  // Revoke server-side so a stolen cookie dies with the logout instead of
+  // staying valid for the rest of its 5-day lifetime.
+  if (value) {
+    try {
+      const decoded = await getAuthAdmin().verifySessionCookie(value);
+      await getAuthAdmin().revokeRefreshTokens(decoded.sub);
+    } catch {
+      // Cookie already invalid/expired — nothing to revoke.
+    }
+  }
   store.delete(SESSION_COOKIE);
   return NextResponse.json({ ok: true });
 }

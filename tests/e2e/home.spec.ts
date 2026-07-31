@@ -30,6 +30,15 @@ test("home renders hero, h1, CTAs, footer; no console errors", async ({ page }) 
 test("mobile nav toggles", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 800 });
   await page.goto("/");
-  await page.getByRole("button", { name: "Toggle menu" }).click();
-  await expect(page.getByRole("navigation", { name: "Mobile" })).toBeVisible();
+  // The trigger is labelled by its visible text ("Menu" / "Close"), not an
+  // aria-label, so match on aria-controls — the name flips with state.
+  const toggle = page.locator('button[aria-controls="mobile-nav"]');
+  await expect(toggle).toHaveAccessibleName("Menu");
+  await toggle.click();
+  const mobileNav = page.getByRole("navigation", { name: "Mobile" });
+  await expect(mobileNav).toBeVisible();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+
+  await page.keyboard.press("Escape");
+  await expect(mobileNav).toBeHidden();
 });

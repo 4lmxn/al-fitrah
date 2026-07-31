@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { admissions } from "@/content/pages";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
@@ -7,10 +7,10 @@ import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { InquiryForm } from "@/components/pages/InquiryForm";
 
-export const metadata: Metadata = {
+export const metadata = pageMeta("/admissions", {
   title: "Admissions",
-  description: "A clear, supportive admissions process for the 2026–27 year. Submit an inquiry and our team will reach out.",
-};
+  description: "Pre-KG admissions for 2026–27 at Al Fitrah Pre School, Sarjapura, Bengaluru — a clear, welcoming process for children aged 2y10m–3y10m. Enquire today.",
+});
 
 export default function AdmissionsPage() {
   const { hero, process, assist, form } = admissions;
@@ -64,8 +64,9 @@ export default function AdmissionsPage() {
             <div id="enroll" className="scroll-mt-28 rounded-xl3 border border-emerald/10 bg-white/80 p-8 shadow-soft sm:p-10">
               <h2 className="text-2xl text-emerald-deep">{form.title}</h2>
               <p className="mt-2 text-ink/70">{form.subtitle}</p>
+              {/* Privacy consent line lives inside InquiryForm so admissions
+                  and the contact page stay consistent. */}
               <div className="mt-8"><InquiryForm /></div>
-              <p className="mt-4 text-xs text-ink/50">{form.note}</p>
             </div>
           </Reveal>
         </Container>

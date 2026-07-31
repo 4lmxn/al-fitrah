@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { faq } from "@/content/pages";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
@@ -8,10 +8,10 @@ import { CTABand } from "@/components/ui/CTABand";
 import { Reveal } from "@/components/ui/Reveal";
 import { Accordion } from "@/components/pages/Accordion";
 
-export const metadata: Metadata = {
+export const metadata = pageMeta("/faq", {
   title: "FAQ",
-  description: "Answers about admissions, curriculum, Islamic integration, fees, and the daily schedule at Al Fitrah.",
-};
+  description: "Answers about admissions, the Noor-ul-Bayan curriculum, fees, and daily schedule at Al Fitrah Pre School, Sarjapura, Bengaluru.",
+});
 
 const faqJsonLd = {
   "@context": "https://schema.org",

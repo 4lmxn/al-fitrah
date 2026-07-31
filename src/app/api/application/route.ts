@@ -2,13 +2,15 @@ import { NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { rateLimited } from "@/lib/rateLimit";
-import { applicationSchema, validateCvFile } from "@/lib/applicationSchema";
+import { applicationSchema, validateCvFile, hasValidCvSignature } from "@/lib/applicationSchema";
 import { uploadCv, deleteObject } from "@/lib/storage";
+import { sendApplicationEmails } from "@/lib/email";
+import { getClientIp } from "@/lib/clientIp";
 
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const ip = getClientIp(req);
   if (rateLimited(ip)) {
     return NextResponse.json({ ok: false, error: "Too many requests. Please try again shortly." }, { status: 429 });
   }
@@ -56,6 +58,11 @@ export async function POST(req: Request) {
   let cvPath: string | null = null;
   try {
     const buffer = Buffer.from(await cv.arrayBuffer());
+    // The browser-declared MIME type was allowlist-checked above, but it is
+    // client-controlled — verify the actual file signature before storing.
+    if (!hasValidCvSignature(buffer)) {
+      return NextResponse.json({ ok: false, error: "CV must be a PDF, DOC, or DOCX file." }, { status: 422 });
+    }
     const uploaded = await uploadCv(ref.id, { buffer, filename: cv.name, contentType: cv.type });
     cvPath = uploaded.path;
 
@@ -74,11 +81,16 @@ export async function POST(req: Request) {
       updatedAt: FieldValue.serverTimestamp(),
     });
 
+    // Email is best-effort: a delivery failure must not lose the stored lead.
+    await sendApplicationEmails({ id: ref.id, name, phone, email, role }).catch((err) =>
+      console.error("application email failed", err),
+    );
+
     return NextResponse.json({ ok: true, id: ref.id });
   } catch (err) {
     console.error("application intake failed", err);
     // Roll back the uploaded CV so we never leave an orphan file.
-    if (cvPath) await deleteObject(cvPath).catch(() => {});
+    if (cvPath) await deleteObject(cvPath).catch((rollbackErr) => console.error("cv rollback failed", rollbackErr));
     return NextResponse.json({ ok: false, error: "Something went wrong. Please call us instead." }, { status: 500 });
   }
 }

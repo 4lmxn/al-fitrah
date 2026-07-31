@@ -17,11 +17,11 @@ const routes: { path: string; priority: number; changeFrequency: MetadataRoute.S
   { path: "/privacy", priority: 0.3, changeFrequency: "yearly" },
 ];
 
+// No `lastModified`: a build-time `new Date()` stamps every URL on every deploy,
+// which Google learns to distrust. Omit it until we track real per-page dates.
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date();
   return routes.map(({ path, priority, changeFrequency }) => ({
     url: `${SITE_URL}${path}`,
-    lastModified,
     changeFrequency,
     priority,
   }));

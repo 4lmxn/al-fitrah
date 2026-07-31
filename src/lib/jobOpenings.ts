@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "@/lib/firebaseAdmin";
+import { requireAdmin } from "@/lib/adminAuth";
 
 // Job openings are managed from the admin console and stored in Firestore.
 // The public site reads them server-side via the Admin SDK, so no client ever
@@ -49,13 +50,16 @@ export async function listActiveOpenings(): Promise<JobOpening[]> {
   return snap.docs.map((d) => toOpening(d.id, d.data())).sort(sortOpenings);
 }
 
-// Admin console: every opening, active or not.
+// Admin console: every opening, active or not. Auth lives in the data layer
+// because the admin layout alone is not a reliable gate (see leadQueries).
 export async function listAllOpenings(): Promise<JobOpening[]> {
+  await requireAdmin();
   const snap = await getDb().collection(COLLECTION).get();
   return snap.docs.map((d) => toOpening(d.id, d.data())).sort(sortOpenings);
 }
 
 export async function getOpening(id: string): Promise<JobOpening | null> {
+  await requireAdmin();
   const doc = await getDb().collection(COLLECTION).doc(id).get();
   if (!doc.exists) return null;
   return toOpening(doc.id, doc.data()!);

@@ -6,6 +6,9 @@ import { LogoutButton } from "@/components/admin/LogoutButton";
 
 export const dynamic = "force-dynamic";
 
+// Admin console must never be indexed.
+export const metadata = { robots: { index: false, follow: false } };
+
 export default async function AdminDashLayout({ children }: { children: React.ReactNode }) {
   let admin: { email: string };
   try {
@@ -56,11 +59,21 @@ export default async function AdminDashLayout({ children }: { children: React.Re
       </aside>
 
       {/* Mobile topbar */}
-      <header className="flex items-center justify-between bg-emerald px-5 py-3 text-cream lg:hidden">
-        <Link href="/admin" className="flex items-center gap-2 font-display text-lg">
-          <Icon name="mosque" className="text-[20px] text-gold-light" /> Al Fitrah · Admin
-        </Link>
-        <LogoutButton />
+      <header className="bg-emerald text-cream lg:hidden">
+        <div className="flex items-center justify-between px-5 py-3">
+          <Link href="/admin" className="flex items-center gap-2 font-display text-lg">
+            <Icon name="mosque" className="text-[20px] text-gold-light" /> Al Fitrah · Admin
+          </Link>
+          <LogoutButton />
+        </div>
+        <nav aria-label="Admin" className="flex gap-2 border-t border-cream/10 px-5 py-2 text-sm font-semibold">
+          <Link href="/admin" className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition hover:bg-cream/10">
+            <Icon name="inbox" className="text-[18px] text-gold-light" /> Dashboard
+          </Link>
+          <Link href="/admin/openings" className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition hover:bg-cream/10">
+            <Icon name="work" className="text-[18px] text-gold-light" /> Openings
+          </Link>
+        </nav>
       </header>
 
       <main className="px-5 py-8 sm:px-8 lg:px-10 lg:py-10">{children}</main>

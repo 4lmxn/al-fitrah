@@ -26,7 +26,9 @@ export async function updateStage(formData: FormData) {
 export async function addNote(formData: FormData) {
   const admin = await requireAdmin();
   const id = String(formData.get("id") ?? "");
-  const text = String(formData.get("text") ?? "").trim();
+  // Cap note length: unbounded arrayUnion strings could bloat the lead doc
+  // toward Firestore's 1 MiB document limit and brick it.
+  const text = String(formData.get("text") ?? "").trim().slice(0, 2000);
   if (!id) throw new Error("Missing lead id");
   if (!text) return; // ignore empty notes
 

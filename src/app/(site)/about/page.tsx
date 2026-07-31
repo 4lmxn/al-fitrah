@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Image from "next/image";
 import { about } from "@/content/pages";
 import { Container } from "@/components/ui/Container";
@@ -8,10 +8,10 @@ import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 
-export const metadata: Metadata = {
+export const metadata = pageMeta("/about", {
   title: "About Us",
-  description: "Our story, mission, and the certified educators nurturing every child's Deen and Dunya at Al Fitrah.",
-};
+  description: "The story, mission, and values behind Al Fitrah Pre School, Sarjapura — an Islamic preschool in Bengaluru nurturing every child's Deen and Dunya.",
+});
 
 export default function AboutPage() {
   const { hero, mission, vision, team, location } = about;

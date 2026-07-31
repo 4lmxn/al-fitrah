@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "@/lib/firebaseAdmin";
+import { requireAdmin } from "@/lib/adminAuth";
 import { PIPELINES, type LeadType } from "@/lib/leads";
 import { stageMeta, type StageGroup } from "@/lib/stageMeta";
 
@@ -16,6 +17,9 @@ export type LeadRow = {
 };
 
 export async function listLeads(type: LeadType, stage?: string): Promise<LeadRow[]> {
+  // Auth is enforced in the data layer, not just the admin layout: layouts
+  // don't re-render on client navigation, so they are not a reliable gate.
+  await requireAdmin();
   let q = getDb().collection("leads").where("type", "==", type);
   if (stage) q = q.where("stage", "==", stage);
   const snap = await q.get();
@@ -94,6 +98,7 @@ export type LeadDetail = {
 };
 
 export async function getLead(id: string): Promise<LeadDetail | null> {
+  await requireAdmin();
   const doc = await getDb().collection("leads").doc(id).get();
   if (!doc.exists) return null;
   const x = doc.data()!;

@@ -17,11 +17,12 @@ describe("applicationSchema", () => {
     expect(r.success).toBe(false);
   });
 
-  it("treats a filled honeypot as parseable (handled by caller)", () => {
+  it("parses a filled honeypot so the route can fake success without leaking the trap", () => {
     const r = applicationSchema.safeParse({
       name: "A B", phone: "9999999", role: "Assistant", website: "spam",
     });
-    expect(r.success).toBe(false); // website must be empty
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.website).toBe("spam");
   });
 });
 

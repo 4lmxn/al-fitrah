@@ -4,6 +4,37 @@ runConfig:
   maxInstances: 1
 
 env:
+  # Canonical origin for metadataBase, canonicals, sitemap.xml and JSON-LD.
+  # Set to the GoDaddy custom domain (www form, matching what was purchased).
+  # Only takes effect once the domain is connected + verified in Firebase App
+  # Hosting; until then the site is also reachable on its .hosted.app URL.
+  - variable: NEXT_PUBLIC_SITE_URL
+    value: "https://www.alfitrahsarjapura.in"
+    availability: [BUILD, RUNTIME]
+
+  # Coming-soon holding page. "1" rewrites every public route to /coming-soon
+  # (admin + API stay open). Set to "0" and redeploy to reveal the full site.
+  - variable: NEXT_PUBLIC_COMING_SOON
+    value: "1"
+    availability: [BUILD, RUNTIME]
+
+  # Google Analytics 4 + Search Console. Inert until real values are pasted in
+  # (the code omits the tag/script entirely when unset), so they ship empty.
+  # - variable: NEXT_PUBLIC_GA_ID
+  #   value: "G-XXXXXXXXXX"
+  #   availability: [BUILD, RUNTIME]
+  # - variable: NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+  #   value: "<token from Search Console HTML-tag method>"
+  #   availability: [BUILD, RUNTIME]
+
+  # Exact campus pin for the LocalBusiness geo block (strongest Maps signal).
+  # - variable: NEXT_PUBLIC_GEO_LAT
+  #   value: "12.8xxxx"
+  #   availability: [BUILD, RUNTIME]
+  # - variable: NEXT_PUBLIC_GEO_LNG
+  #   value: "77.7xxxx"
+  #   availability: [BUILD, RUNTIME]
+
   # Public Firebase web config (safe to expose; shipped in the client bundle).
   - variable: NEXT_PUBLIC_FIREBASE_API_KEY
     value: "AIzaSyBnNP4ftDUQxKVXeSUbZeuU2IyIh-7FcBo"
@@ -33,15 +64,20 @@ env:
     secret: ADMIN_EMAILS
     availability: [RUNTIME]
 
-  # Resend (added later). Once you create the secret:
+  # Resend — transactional email for inquiry + application notifications.
+  # REQUIRED before deploy: create the secret with the API key, or the deploy
+  # fails on the missing secret reference:
   #   firebase apphosting:secrets:set RESEND_API_KEY
-  # then uncomment:
-  # - variable: RESEND_API_KEY
-  #   secret: RESEND_API_KEY
-  #   availability: [RUNTIME]
-  # - variable: INQUIRY_FROM_EMAIL
-  #   value: "onboarding@resend.dev"
-  #   availability: [RUNTIME]
-  # - variable: INQUIRY_ADMIN_EMAIL
-  #   value: "alfitrah.sompura@gmail.com"
-  #   availability: [RUNTIME]
+  - variable: RESEND_API_KEY
+    secret: RESEND_API_KEY
+    availability: [RUNTIME]
+  # onboarding@resend.dev works immediately without domain verification, but in
+  # Resend test mode it only delivers to the address that owns the Resend
+  # account. To send to the school inbox below, either sign up to Resend with
+  # alfitrah.sompura@gmail.com, or verify a sending domain and swap this from.
+  - variable: INQUIRY_FROM_EMAIL
+    value: "onboarding@resend.dev"
+    availability: [RUNTIME]
+  - variable: INQUIRY_ADMIN_EMAIL
+    value: "alfitrah.sompura@gmail.com"
+    availability: [RUNTIME]

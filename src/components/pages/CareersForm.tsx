@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { MAX_CV_BYTES, ACCEPTED_CV_TYPES } from "@/lib/applicationSchema";
 
@@ -8,14 +8,32 @@ const field =
 const labelCls = "block text-sm font-semibold text-emerald-deep";
 
 type Status = "idle" | "submitting" | "success" | "error";
+type FieldErrors = Record<string, string[]>;
+
+function FieldError({ id, errors }: { id: string; errors?: string[] }) {
+  if (!errors?.length) return null;
+  return <p id={id} className="text-sm text-red-700">{errors[0]}</p>;
+}
 
 export function CareersForm({ roles }: { roles: string[] }) {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string>("");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const successRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (status === "success") successRef.current?.focus();
+  }, [status]);
+
+  const invalidProps = (name: string) =>
+    fieldErrors[name]?.length
+      ? { "aria-invalid": true as const, "aria-describedby": `${name}-error` }
+      : {};
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
+    setFieldErrors({});
     const formEl = e.currentTarget;
     const fd = new FormData(formEl);
     const cv = fd.get("cv");
@@ -30,11 +48,21 @@ export function CareersForm({ roles }: { roles: string[] }) {
       return;
     }
     setStatus("submitting");
+    // Abort if the server hangs so the button can't stay stuck in "Submitting…".
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15_000);
     try {
-      const res = await fetch("/api/application", { method: "POST", body: fd });
-      const data = await res.json();
+      const res = await fetch("/api/application", { method: "POST", body: fd, signal: controller.signal });
+      // Guard non-JSON bodies (e.g. a gateway's HTML error page).
+      let data: { ok?: boolean; error?: string; issues?: FieldErrors } = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = {};
+      }
       if (!res.ok || !data.ok) {
-        setError(data.error || "Please check the form and try again.");
+        setFieldErrors(data.issues ?? {});
+        setError(data.error || "Something went wrong. Please try again or email us.");
         setStatus("error");
         return;
       }
@@ -42,12 +70,14 @@ export function CareersForm({ roles }: { roles: string[] }) {
     } catch {
       setError("Network error. Please try again or email us.");
       setStatus("error");
+    } finally {
+      clearTimeout(timer);
     }
   }
 
   if (status === "success") {
     return (
-      <div data-testid="careers-success" className="flex flex-col items-start gap-3 rounded-2xl border border-emerald/15 bg-emerald/5 p-6">
+      <div ref={successRef} tabIndex={-1} role="status" data-testid="careers-success" className="flex flex-col items-start gap-3 rounded-2xl border border-emerald/15 bg-emerald/5 p-6 outline-none">
         <span className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald text-cream">
           <Icon name="check" className="text-[26px]" />
         </span>
@@ -64,30 +94,35 @@ export function CareersForm({ roles }: { roles: string[] }) {
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="space-y-2">
           <label className={labelCls} htmlFor="name">Full name *</label>
-          <input id="name" name="name" required placeholder="e.g. Fatima Noor" className={field} />
+          <input id="name" name="name" required placeholder="e.g. Fatima Noor" className={field} {...invalidProps("name")} />
+          <FieldError id="name-error" errors={fieldErrors.name} />
         </div>
         <div className="space-y-2">
           <label className={labelCls} htmlFor="phone">Phone number *</label>
-          <input id="phone" name="phone" type="tel" required placeholder="+91  xxxxx xxxxx" className={field} />
+          <input id="phone" name="phone" type="tel" required placeholder="+91  xxxxx xxxxx" className={field} {...invalidProps("phone")} />
+          <FieldError id="phone-error" errors={fieldErrors.phone} />
         </div>
       </div>
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="space-y-2">
           <label className={labelCls} htmlFor="email">Email address</label>
-          <input id="email" name="email" type="email" placeholder="you@example.com" className={field} />
+          <input id="email" name="email" type="email" placeholder="you@example.com" className={field} {...invalidProps("email")} />
+          <FieldError id="email-error" errors={fieldErrors.email} />
         </div>
         <div className="space-y-2">
           <label className={labelCls} htmlFor="role">Role *</label>
-          <select id="role" name="role" required defaultValue="" className={`${field} cursor-pointer`}>
+          <select id="role" name="role" required defaultValue="" className={`${field} cursor-pointer`} {...invalidProps("role")}>
             <option value="" disabled>Select a role</option>
             {roles.map((r) => <option key={r} value={r}>{r}</option>)}
             <option value="Other">Other / general application</option>
           </select>
+          <FieldError id="role-error" errors={fieldErrors.role} />
         </div>
       </div>
       <div className="space-y-2">
         <label className={labelCls} htmlFor="message">Cover note</label>
-        <textarea id="message" name="message" rows={4} placeholder="Tell us about your experience" className={`${field} resize-none`} />
+        <textarea id="message" name="message" rows={4} placeholder="Tell us about your experience" className={`${field} resize-none`} {...invalidProps("message")} />
+        <FieldError id="message-error" errors={fieldErrors.message} />
       </div>
       <div className="space-y-2">
         <label className={labelCls} htmlFor="cv">CV / Resume * <span className="font-normal text-ink/50">(PDF, DOC, DOCX — max 5 MB)</span></label>

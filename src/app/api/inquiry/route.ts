@@ -4,11 +4,12 @@ import { getDb } from "@/lib/firebaseAdmin";
 import { leadSchema } from "@/lib/leadSchema";
 import { sendInquiryEmails } from "@/lib/email";
 import { rateLimited } from "@/lib/rateLimit";
+import { getClientIp } from "@/lib/clientIp";
 
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const ip = getClientIp(req);
   if (rateLimited(ip)) {
     return NextResponse.json({ ok: false, error: "Too many requests. Please try again shortly." }, { status: 429 });
   }
@@ -42,7 +43,9 @@ export async function POST(req: Request) {
       createdAt: FieldValue.serverTimestamp(),
     });
     // Email is best-effort: a delivery failure must not lose the stored lead.
-    await sendInquiryEmails({ id: ref.id, parentName, phone, email, childAge, message }).catch(() => {});
+    await sendInquiryEmails({ id: ref.id, parentName, phone, email, childAge, message }).catch((err) =>
+      console.error("inquiry email failed", err),
+    );
     return NextResponse.json({ ok: true, id: ref.id });
   } catch (err) {
     console.error("inquiry write failed", err);

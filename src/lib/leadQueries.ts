@@ -8,12 +8,18 @@ export type LeadRow = {
   id: string;
   type: LeadType;
   name: string;
+  childName?: string | null;
   phone: string;
+  whatsapp?: boolean;
   email: string | null;
   stage: string;
   role?: string;
   childAge?: string;
+  programInterest?: string | null;
+  source?: string | null;
+  noteCount: number;
   createdAtMs: number | null;
+  followUpMs: number | null;
 };
 
 export async function listLeads(type: LeadType, stage?: string): Promise<LeadRow[]> {
@@ -29,12 +35,18 @@ export async function listLeads(type: LeadType, stage?: string): Promise<LeadRow
       id: d.id,
       type: x.type,
       name: x.name ?? x.parentName ?? "—",
+      childName: x.childName ?? null,
       phone: x.phone ?? "—",
+      whatsapp: x.whatsapp ?? false,
       email: x.email ?? null,
       stage: normalizeStage(x.stage ?? "new"),
       role: x.role,
       childAge: x.childAge,
+      programInterest: x.programInterest ?? null,
+      source: x.source ?? null,
+      noteCount: Array.isArray(x.notes) ? x.notes.length : 0,
       createdAtMs: x.createdAt?.toMillis?.() ?? null,
+      followUpMs: x.followUpDate?.toMillis?.() ?? null,
     };
   });
   // Sort newest first in memory (avoids needing a composite index for type+stage+createdAt).
@@ -86,15 +98,24 @@ export type LeadDetail = {
   id: string;
   type: LeadType;
   name: string;
+  childName: string | null;
   phone: string;
+  whatsapp: boolean;
   email: string | null;
   message: string | null;
   stage: string;
   role?: string;
   childAge?: string;
+  childDob?: string | null;
+  programInterest?: string | null;
+  source?: string | null;
+  utm?: { source?: string; medium?: string; campaign?: string } | null;
+  referredBy?: string | null;
   cv?: { filename: string } | null;
   notes: LeadNote[];
   createdAtMs: number | null;
+  updatedAtMs: number | null;
+  followUpMs: number | null;
 };
 
 export async function getLead(id: string): Promise<LeadDetail | null> {
@@ -106,12 +127,19 @@ export async function getLead(id: string): Promise<LeadDetail | null> {
     id: doc.id,
     type: x.type,
     name: x.name ?? x.parentName ?? "—",
+    childName: x.childName ?? null,
     phone: x.phone ?? "—",
+    whatsapp: x.whatsapp ?? false,
     email: x.email ?? null,
     message: x.message ?? null,
     stage: normalizeStage(x.stage ?? "new"),
     role: x.role,
     childAge: x.childAge,
+    childDob: x.childDob ?? null,
+    programInterest: x.programInterest ?? null,
+    source: x.source ?? null,
+    utm: x.utm ?? null,
+    referredBy: x.referredBy ?? null,
     cv: x.cv ? { filename: x.cv.filename } : null,
     notes: (x.notes ?? []).map((n: { text: string; author: string; at?: { toMillis?: () => number } }) => ({
       text: n.text,
@@ -119,5 +147,7 @@ export async function getLead(id: string): Promise<LeadDetail | null> {
       atMs: n.at?.toMillis?.() ?? null,
     })),
     createdAtMs: x.createdAt?.toMillis?.() ?? null,
+    updatedAtMs: x.updatedAt?.toMillis?.() ?? null,
+    followUpMs: x.followUpDate?.toMillis?.() ?? null,
   };
 }

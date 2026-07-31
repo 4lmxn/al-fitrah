@@ -3,9 +3,11 @@ import { Resend } from "resend";
 type InquiryEmail = {
   id: string;
   parentName: string;
+  childName?: string;
   phone: string;
   email?: string;
   childAge: string;
+  programInterest?: string;
   message?: string;
 };
 
@@ -52,9 +54,11 @@ export async function sendInquiryEmails(lead: InquiryEmail): Promise<void> {
       `New inquiry from the Al Fitrah website.`,
       ``,
       `Parent:  ${lead.parentName}`,
+      `Child:   ${lead.childName || "—"}`,
       `Phone:   ${lead.phone}`,
       `Email:   ${lead.email || "—"}`,
-      `Child:   ${age}`,
+      `Age:     ${age}`,
+      `Program: ${lead.programInterest || "—"}`,
       `Message: ${lead.message || "—"}`,
       ``,
       `Lead ID: ${lead.id}`,

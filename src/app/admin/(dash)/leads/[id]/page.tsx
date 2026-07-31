@@ -58,6 +58,9 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
                 <StagePill stage={lead.stage} />
               </div>
               <h1 className="mt-1.5 font-display text-2xl text-emerald-deep">{lead.name}</h1>
+              {lead.childName && (
+                <p className="text-sm text-ink/60">Child: <span className="font-medium text-ink/80">{lead.childName}</span></p>
+              )}
               <p className="text-xs text-ink/45">Received {relativeTime(lead.createdAtMs)} · {fmt(lead.createdAtMs)}</p>
             </div>
           </div>
@@ -81,10 +84,17 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
         </div>
 
         {/* Detail strip */}
-        <dl className="grid gap-px border-t border-emerald/10 bg-emerald/10 sm:grid-cols-3">
+        <dl className="grid gap-px border-t border-emerald/10 bg-emerald/10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="bg-white/90 p-5">
             <dt className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">Phone</dt>
-            <dd className="mt-1 tabular-nums text-ink/85">{lead.phone}</dd>
+            <dd className="mt-1 flex items-center gap-1.5 tabular-nums text-ink/85">
+              {lead.phone}
+              {lead.whatsapp && lead.type === "admission_inquiry" && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald/8 px-2 py-0.5 text-[10px] font-semibold text-emerald-deep ring-1 ring-emerald/15">
+                  <Icon name="chat" className="text-[12px]" /> WhatsApp
+                </span>
+              )}
+            </dd>
           </div>
           <div className="bg-white/90 p-5">
             <dt className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">Email</dt>
@@ -94,7 +104,22 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
             <dt className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">{lead.type === "staff_application" ? "Role" : "Child age"}</dt>
             <dd className="mt-1 text-ink/85">{lead.type === "staff_application" ? lead.role ?? "—" : lead.childAge ?? "—"}</dd>
           </div>
+          <div className="bg-white/90 p-5">
+            <dt className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">{lead.type === "staff_application" ? "Source" : "Program"}</dt>
+            <dd className="mt-1 text-ink/85">{lead.type === "staff_application" ? (lead.source ?? "—") : (lead.programInterest ?? "—")}</dd>
+          </div>
         </dl>
+
+        {/* Attribution — only when a campaign or referral produced this lead */}
+        {(lead.utm?.source || lead.referredBy) && (
+          <div className="flex flex-wrap items-center gap-2 border-t border-emerald/10 bg-cream/40 px-6 py-3 text-[11px] text-ink/55">
+            <Icon name="campaign" className="text-[15px] text-gold" />
+            {lead.utm?.source && <span>Source: <b className="font-semibold text-ink/70">{lead.utm.source}</b></span>}
+            {lead.utm?.medium && <span>· {lead.utm.medium}</span>}
+            {lead.utm?.campaign && <span>· {lead.utm.campaign}</span>}
+            {lead.referredBy && <span>· Referred by <b className="font-semibold text-ink/70">{lead.referredBy}</b></span>}
+          </div>
+        )}
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">

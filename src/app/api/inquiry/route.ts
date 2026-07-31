@@ -32,18 +32,45 @@ export async function POST(req: Request) {
   // Honeypot tripped — pretend success, store nothing.
   if (parsed.data.website) return NextResponse.json({ ok: true });
 
-  const { parentName, phone, email, childAge, message } = parsed.data;
+  const {
+    parentName, childName, phone, whatsapp, email, childAge, childDob,
+    programInterest, message, utmSource, utmMedium, utmCampaign, referredBy,
+  } = parsed.data;
+
+  // Only persist attribution that was actually present, so leads aren't padded
+  // with empty utm keys.
+  const utm = Object.fromEntries(
+    Object.entries({ source: utmSource, medium: utmMedium, campaign: utmCampaign })
+      .filter(([, v]) => v),
+  );
+
+  // Explicit source lets waitlist/prospectus surfaces reuse this route later;
+  // the plain form is always "website".
+  const source = "website";
+
   try {
     const db = getDb();
     const ref = await db.collection("leads").add({
       type: "admission_inquiry",
-      parentName, phone, email: email || null, childAge, message: message || null,
+      parentName,
+      childName: childName || null,
+      phone,
+      whatsapp: whatsapp ?? false,
+      email: email || null,
+      childAge,
+      childDob: childDob || null,
+      programInterest: programInterest || null,
+      message: message || null,
       stage: "new",
-      source: "website",
+      source,
+      ...(Object.keys(utm).length ? { utm } : {}),
+      ...(referredBy ? { referredBy } : {}),
+      followUpDate: null,
       createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
     // Email is best-effort: a delivery failure must not lose the stored lead.
-    await sendInquiryEmails({ id: ref.id, parentName, phone, email, childAge, message }).catch((err) =>
+    await sendInquiryEmails({ id: ref.id, parentName, childName, phone, email, childAge, programInterest, message }).catch((err) =>
       console.error("inquiry email failed", err),
     );
     return NextResponse.json({ ok: true, id: ref.id });

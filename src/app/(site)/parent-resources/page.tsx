@@ -9,7 +9,7 @@ import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata = pageMeta("/parent-resources", {
   title: "Parent Resources",
-  description: "Academic calendar, uniform guidelines, parent handbook, and ways to get involved.",
+  description: "Parent resources for Al Fitrah Pre School, Sarjapura — the 2026–27 academic calendar, uniform and handbook guidance, and ways to get involved.",
 });
 
 export default function ParentResourcesPage() {

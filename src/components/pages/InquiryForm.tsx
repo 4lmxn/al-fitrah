@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
 import { AGE_BANDS } from "@/lib/leadSchema";
 
@@ -140,6 +141,14 @@ export function InquiryForm() {
         {busy ? "Submitting…" : "Submit inquiry"}
         {!busy && <Icon name="arrow_forward" className="text-base transition-transform group-hover:translate-x-1" />}
       </button>
+
+      <p className="text-xs leading-relaxed text-ink/50">
+        We use your details only to respond to your enquiry. See our{" "}
+        <Link href="/privacy" className="font-medium text-emerald underline underline-offset-2 hover:text-emerald-deep">
+          privacy policy
+        </Link>
+        .
+      </p>
     </form>
   );
 }

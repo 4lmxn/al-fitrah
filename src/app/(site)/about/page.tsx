@@ -10,7 +10,7 @@ import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata = pageMeta("/about", {
   title: "About Us",
-  description: "Our story, mission, and the certified educators nurturing every child's Deen and Dunya at Al Fitrah.",
+  description: "The story, mission, and values behind Al Fitrah Pre School, Sarjapura — an Islamic preschool in Bengaluru nurturing every child's Deen and Dunya.",
 });
 
 export default function AboutPage() {

@@ -10,7 +10,7 @@ import { Accordion } from "@/components/pages/Accordion";
 
 export const metadata = pageMeta("/faq", {
   title: "FAQ",
-  description: "Answers about admissions, curriculum, Islamic integration, fees, and the daily schedule at Al Fitrah.",
+  description: "Answers about admissions, the Noor-ul-Bayan curriculum, fees, and daily schedule at Al Fitrah Pre School, Sarjapura, Bengaluru.",
 });
 
 const faqJsonLd = {

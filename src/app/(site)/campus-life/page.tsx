@@ -9,7 +9,7 @@ import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata = pageMeta("/campus-life", {
   title: "Campus Life",
-  description: "A calm, joyful daily rhythm of learning, play, and spiritual connection at Al Fitrah.",
+  description: "Inside a day at Al Fitrah Pre School, Sarjapura — a calm rhythm of Oxford Early Learning, Qur'an with Noor-ul-Bayan, and joyful play in Bengaluru.",
 });
 
 // 6 tiles → 6 cells: big feature + five supporting (4-col / 3-row desktop).

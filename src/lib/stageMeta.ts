@@ -21,11 +21,16 @@ const LOST   = { pill: "bg-ink/[0.04] text-ink/50 ring-ink/10",          dot: "b
 export const STAGE_META: Record<string, StageMeta> = {
   // shared
   new:       { label: "New",       group: "new",    ...NEW },
-  // student pipeline
+  // student pipeline (new → contacted → visited → applied → admitted → lost)
   contacted: { label: "Contacted", group: "active", ...FAINT },
-  toured:    { label: "Toured",    group: "active", ...MEDIUM },
-  enrolled:  { label: "Enrolled",  group: "won",    ...WON },
-  closed:    { label: "Closed",    group: "lost",   ...LOST },
+  visited:   { label: "Visited",   group: "active", ...MEDIUM },
+  applied:   { label: "Applied",   group: "active", ...MEDIUM },
+  admitted:  { label: "Admitted",  group: "won",    ...WON },
+  lost:      { label: "Lost",      group: "lost",   ...LOST },
+  // legacy student stages — kept so pre-rename docs still render a valid pill
+  toured:    { label: "Visited",   group: "active", ...MEDIUM },
+  enrolled:  { label: "Admitted",  group: "won",    ...WON },
+  closed:    { label: "Lost",      group: "lost",   ...LOST },
   // staff pipeline
   reviewing: { label: "Reviewing", group: "active", ...FAINT },
   interview: { label: "Interview", group: "active", ...MEDIUM },

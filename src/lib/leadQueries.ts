@@ -1,7 +1,7 @@
 import "server-only";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
-import { PIPELINES, type LeadType } from "@/lib/leads";
+import { PIPELINES, normalizeStage, type LeadType } from "@/lib/leads";
 import { stageMeta, type StageGroup } from "@/lib/stageMeta";
 
 export type LeadRow = {
@@ -31,7 +31,7 @@ export async function listLeads(type: LeadType, stage?: string): Promise<LeadRow
       name: x.name ?? x.parentName ?? "—",
       phone: x.phone ?? "—",
       email: x.email ?? null,
-      stage: x.stage ?? "new",
+      stage: normalizeStage(x.stage ?? "new"),
       role: x.role,
       childAge: x.childAge,
       createdAtMs: x.createdAt?.toMillis?.() ?? null,
@@ -109,7 +109,7 @@ export async function getLead(id: string): Promise<LeadDetail | null> {
     phone: x.phone ?? "—",
     email: x.email ?? null,
     message: x.message ?? null,
-    stage: x.stage ?? "new",
+    stage: normalizeStage(x.stage ?? "new"),
     role: x.role,
     childAge: x.childAge,
     cv: x.cv ? { filename: x.cv.filename } : null,

@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { PIPELINES, isValidStage, stageLabel, LEAD_TYPE_LABEL } from "@/lib/leads";
+import { PIPELINES, isValidStage, stageLabel, LEAD_TYPE_LABEL, normalizeStage } from "@/lib/leads";
 
 describe("lead pipelines", () => {
   it("defines the student pipeline in order", () => {
     expect(PIPELINES.admission_inquiry).toEqual([
-      "new", "contacted", "toured", "enrolled", "closed",
+      "new", "contacted", "visited", "applied", "admitted", "lost",
     ]);
   });
 
@@ -15,17 +15,24 @@ describe("lead pipelines", () => {
   });
 
   it("accepts a stage valid for the type", () => {
-    expect(isValidStage("admission_inquiry", "toured")).toBe(true);
+    expect(isValidStage("admission_inquiry", "visited")).toBe(true);
     expect(isValidStage("staff_application", "interview")).toBe(true);
   });
 
   it("rejects a stage from the wrong type", () => {
     expect(isValidStage("admission_inquiry", "interview")).toBe(false);
-    expect(isValidStage("staff_application", "toured")).toBe(false);
+    expect(isValidStage("staff_application", "visited")).toBe(false);
   });
 
   it("rejects an unknown stage", () => {
     expect(isValidStage("admission_inquiry", "banana")).toBe(false);
+  });
+
+  it("maps legacy admission stages to the renamed pipeline", () => {
+    expect(normalizeStage("toured")).toBe("visited");
+    expect(normalizeStage("enrolled")).toBe("admitted");
+    expect(normalizeStage("closed")).toBe("lost");
+    expect(normalizeStage("contacted")).toBe("contacted"); // unchanged
   });
 
   it("humanizes stage and type labels", () => {

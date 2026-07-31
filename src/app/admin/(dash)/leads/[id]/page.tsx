@@ -171,32 +171,37 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
             </section>
           )}
 
-          {/* Notes */}
+          {/* Activity timeline — notes + stage changes, newest first */}
           <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
             <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
-              <Icon name="sticky_note_2" className="text-[18px] text-gold" /> Internal notes
+              <Icon name="history" className="text-[18px] text-gold" /> Activity
             </h2>
             <form action={addNote} className="mt-4 flex gap-2">
               <input type="hidden" name="id" value={lead.id} />
-              <input name="text" placeholder="Add a note…" className="w-full rounded-xl border border-emerald/15 bg-cream/40 px-4 py-2.5 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20" />
+              <input name="text" placeholder="Log a call, visit, or decision…" className="w-full rounded-xl border border-emerald/15 bg-cream/40 px-4 py-2.5 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20" />
               <button type="submit" className="shrink-0 rounded-xl bg-emerald px-4 py-2.5 text-sm font-semibold text-cream transition hover:bg-emerald-deep">Add</button>
             </form>
 
             {notes.length === 0 ? (
-              <p className="mt-5 text-sm text-ink/45">No notes yet. Log calls, tours, and decisions here.</p>
+              <p className="mt-5 text-sm text-ink/45">No activity yet. Log calls, visits, and decisions here.</p>
             ) : (
               <ol className="mt-6 space-y-5">
-                {notes.map((n, i) => (
-                  <li key={i} className="relative flex gap-3 pl-1">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald/8 text-[11px] font-semibold text-emerald-deep ring-1 ring-emerald/15">
-                      {authorInitials(n.author)}
-                    </span>
-                    <div className="min-w-0 flex-1 rounded-xl bg-cream/50 p-3.5 ring-1 ring-emerald/5">
-                      <p className="text-sm leading-relaxed text-ink/85">{n.text}</p>
-                      <p className="mt-1.5 text-[11px] text-ink/45">{n.author} · {relativeTime(n.atMs)}</p>
-                    </div>
-                  </li>
-                ))}
+                {notes.map((n, i) => {
+                  const isStage = n.kind === "stage";
+                  return (
+                    <li key={i} className="relative flex gap-3 pl-1">
+                      <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ring-1 ${
+                        isStage ? "bg-gold-soft text-[#7a611a] ring-gold/30" : "bg-emerald/8 text-emerald-deep ring-emerald/15"
+                      }`}>
+                        {isStage ? <Icon name="trending_flat" className="text-[16px]" /> : authorInitials(n.author)}
+                      </span>
+                      <div className={`min-w-0 flex-1 rounded-xl p-3.5 ring-1 ${isStage ? "bg-gold-soft/30 ring-gold/15" : "bg-cream/50 ring-emerald/5"}`}>
+                        <p className={`text-sm leading-relaxed ${isStage ? "font-medium text-emerald-deep" : "text-ink/85"}`}>{n.text}</p>
+                        <p className="mt-1.5 text-[11px] text-ink/45">{n.author} · {relativeTime(n.atMs)}</p>
+                      </div>
+                    </li>
+                  );
+                })}
               </ol>
             )}
           </section>

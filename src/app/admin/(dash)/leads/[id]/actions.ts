@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
-import { isValidStage, type LeadType } from "@/lib/leads";
+import { isValidStage, normalizeStage, stageLabel, type LeadType } from "@/lib/leads";
 
 export async function updateStage(formData: FormData) {
   const admin = await requireAdmin();
@@ -14,10 +14,24 @@ export async function updateStage(formData: FormData) {
   const ref = getDb().collection("leads").doc(id);
   const doc = await ref.get();
   if (!doc.exists) throw new Error("Lead not found");
-  const type = doc.data()!.type as LeadType;
+  const data = doc.data()!;
+  const type = data.type as LeadType;
   if (!isValidStage(type, stage)) throw new Error("Invalid stage for this lead type");
 
-  await ref.update({ stage, updatedAt: FieldValue.serverTimestamp() });
+  // No-op if unchanged, so the timeline doesn't fill with duplicate entries.
+  if (normalizeStage(data.stage ?? "new") === stage) return;
+
+  await ref.update({
+    stage,
+    // Log the move onto the shared activity timeline (kind:"stage").
+    notes: FieldValue.arrayUnion({
+      text: `Moved to ${stageLabel(stage)}`,
+      author: admin.email,
+      at: new Date(),
+      kind: "stage",
+    }),
+    updatedAt: FieldValue.serverTimestamp(),
+  });
   console.log(`stage updated id=${id} stage=${stage} by=${admin.email}`);
   revalidatePath(`/admin/leads/${id}`);
   revalidatePath("/admin");
@@ -80,7 +94,7 @@ export async function addNote(formData: FormData) {
 
   const ref = getDb().collection("leads").doc(id);
   await ref.update({
-    notes: FieldValue.arrayUnion({ text, author: admin.email, at: new Date() }),
+    notes: FieldValue.arrayUnion({ text, author: admin.email, at: new Date(), kind: "note" }),
     updatedAt: FieldValue.serverTimestamp(),
   });
   revalidatePath(`/admin/leads/${id}`);

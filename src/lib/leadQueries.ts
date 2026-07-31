@@ -92,7 +92,7 @@ export async function getInbox(
   return { rows, counts, kpis };
 }
 
-export type LeadNote = { text: string; author: string; atMs: number | null };
+export type LeadNote = { text: string; author: string; atMs: number | null; kind: "note" | "stage" };
 
 export type LeadDetail = {
   id: string;
@@ -141,10 +141,11 @@ export async function getLead(id: string): Promise<LeadDetail | null> {
     utm: x.utm ?? null,
     referredBy: x.referredBy ?? null,
     cv: x.cv ? { filename: x.cv.filename } : null,
-    notes: (x.notes ?? []).map((n: { text: string; author: string; at?: { toMillis?: () => number } }) => ({
+    notes: (x.notes ?? []).map((n: { text: string; author: string; at?: { toMillis?: () => number }; kind?: string }) => ({
       text: n.text,
       author: n.author,
       atMs: n.at?.toMillis?.() ?? null,
+      kind: n.kind === "stage" ? "stage" as const : "note" as const,
     })),
     createdAtMs: x.createdAt?.toMillis?.() ?? null,
     updatedAtMs: x.updatedAt?.toMillis?.() ?? null,

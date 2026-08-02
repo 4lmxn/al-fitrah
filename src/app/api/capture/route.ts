@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
-import { leadSchema } from "@/lib/leadSchema";
+import { captureSchema } from "@/lib/leadSchema";
 import { sendInquiryEmails } from "@/lib/email";
 import { rateLimited } from "@/lib/rateLimit";
 import { getClientIp } from "@/lib/clientIp";
 
 export const runtime = "nodejs";
 
+// Low-friction lead capture shared by the waitlist and prospectus magnet. Lands
+// the same `leads` collection with type "admission_inquiry" so these show up in
+// the CRM alongside form enquiries, tagged by `source`.
 export async function POST(req: Request) {
   const ip = getClientIp(req);
   if (rateLimited(ip)) {
@@ -21,7 +24,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Invalid request." }, { status: 400 });
   }
 
-  const parsed = leadSchema.safeParse(json);
+  const parsed = captureSchema.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json(
       { ok: false, error: "Please check the form.", issues: parsed.error.flatten().fieldErrors },
@@ -32,35 +35,24 @@ export async function POST(req: Request) {
   // Honeypot tripped — pretend success, store nothing.
   if (parsed.data.website) return NextResponse.json({ ok: true });
 
-  const {
-    parentName, childName, phone, whatsapp, email, childAge, childDob,
-    programInterest, message, utmSource, utmMedium, utmCampaign, referredBy,
-  } = parsed.data;
+  const { parentName, phone, whatsapp, email, childAge, source, utmSource, utmMedium, utmCampaign, referredBy } = parsed.data;
 
-  // Only persist attribution that was actually present, so leads aren't padded
-  // with empty utm keys.
   const utm = Object.fromEntries(
-    Object.entries({ source: utmSource, medium: utmMedium, campaign: utmCampaign })
-      .filter(([, v]) => v),
+    Object.entries({ source: utmSource, medium: utmMedium, campaign: utmCampaign }).filter(([, v]) => v),
   );
-
-  // Explicit source lets waitlist/prospectus surfaces reuse this route later;
-  // the plain form is always "website".
-  const source = "website";
 
   try {
     const db = getDb();
     const ref = await db.collection("leads").add({
       type: "admission_inquiry",
       parentName,
-      childName: childName || null,
+      childName: null,
       phone,
       whatsapp: whatsapp ?? false,
       email: email || null,
-      childAge,
-      childDob: childDob || null,
-      programInterest: programInterest || null,
-      message: message || null,
+      childAge: childAge || null,
+      programInterest: null,
+      message: null,
       stage: "new",
       source,
       ...(Object.keys(utm).length ? { utm } : {}),
@@ -69,13 +61,13 @@ export async function POST(req: Request) {
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });
-    // Email is best-effort: a delivery failure must not lose the stored lead.
-    await sendInquiryEmails({ id: ref.id, parentName, childName, phone, email, childAge, programInterest, message }).catch((err) =>
-      console.error("inquiry email failed", err),
+    // Best-effort admin notification; a delivery failure must not lose the lead.
+    await sendInquiryEmails({ id: ref.id, parentName, phone, email, childAge: childAge || "—" }).catch((err) =>
+      console.error(`${source} capture email failed`, err),
     );
     return NextResponse.json({ ok: true, id: ref.id });
   } catch (err) {
-    console.error("inquiry write failed", err);
+    console.error("capture write failed", err);
     return NextResponse.json({ ok: false, error: "Something went wrong. Please call us instead." }, { status: 500 });
   }
 }

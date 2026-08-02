@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
 import { AGE_BANDS } from "@/lib/leadSchema";
+import { PROGRAM_INTERESTS } from "@/lib/leads";
 
 const field =
   "w-full rounded-xl border border-emerald/15 bg-cream/40 px-4 py-3 text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20 placeholder:text-ink/35";
@@ -43,7 +44,16 @@ export function InquiryForm() {
     setError("");
     setFieldErrors({});
     const fd = new FormData(e.currentTarget);
-    const payload = Object.fromEntries(fd.entries());
+    // Capture campaign attribution from the landing URL at submit time. Read
+    // from window (not useSearchParams) so the host pages stay static.
+    const p = new URLSearchParams(window.location.search);
+    const payload = {
+      ...Object.fromEntries(fd.entries()),
+      utmSource: p.get("utm_source") ?? "",
+      utmMedium: p.get("utm_medium") ?? "",
+      utmCampaign: p.get("utm_campaign") ?? "",
+      referredBy: p.get("ref") ?? p.get("referredBy") ?? "",
+    };
     // Abort if the server hangs so the button can't stay stuck in "Submitting…".
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 15_000);
@@ -101,17 +111,28 @@ export function InquiryForm() {
           <FieldError id="parentName-error" errors={fieldErrors.parentName} />
         </div>
         <div className="space-y-2">
-          <label className={labelCls} htmlFor="phone">Phone number *</label>
-          <input id="phone" name="phone" type="tel" required placeholder="+91  xxxxx xxxxx" className={field} {...invalidProps("phone")} />
-          <FieldError id="phone-error" errors={fieldErrors.phone} />
+          <label className={labelCls} htmlFor="childName">Child&apos;s name</label>
+          <input id="childName" name="childName" placeholder="e.g. Yusuf" className={field} {...invalidProps("childName")} />
+          <FieldError id="childName-error" errors={fieldErrors.childName} />
         </div>
       </div>
       <div className="grid gap-5 sm:grid-cols-2">
+        <div className="space-y-2">
+          <label className={labelCls} htmlFor="phone">Phone number *</label>
+          <input id="phone" name="phone" type="tel" required placeholder="+91  xxxxx xxxxx" className={field} {...invalidProps("phone")} />
+          <FieldError id="phone-error" errors={fieldErrors.phone} />
+          <label className="flex items-center gap-2 pt-1 text-sm text-ink/70">
+            <input type="checkbox" name="whatsapp" defaultChecked className="h-4 w-4 rounded border-emerald/30 accent-emerald" />
+            This number is on WhatsApp
+          </label>
+        </div>
         <div className="space-y-2">
           <label className={labelCls} htmlFor="email">Email address</label>
           <input id="email" name="email" type="email" placeholder="you@example.com" className={field} {...invalidProps("email")} />
           <FieldError id="email-error" errors={fieldErrors.email} />
         </div>
+      </div>
+      <div className="grid gap-5 sm:grid-cols-2">
         <div className="space-y-2">
           <label className={labelCls} htmlFor="childAge">Child&apos;s age (entry at Pre-KG) *</label>
           <select id="childAge" name="childAge" required defaultValue="" className={`${field} cursor-pointer`} {...invalidProps("childAge")}>
@@ -121,6 +142,16 @@ export function InquiryForm() {
             ))}
           </select>
           <FieldError id="childAge-error" errors={fieldErrors.childAge} />
+        </div>
+        <div className="space-y-2">
+          <label className={labelCls} htmlFor="programInterest">Program of interest</label>
+          <select id="programInterest" name="programInterest" defaultValue="" className={`${field} cursor-pointer`} {...invalidProps("programInterest")}>
+            <option value="">No preference yet</option>
+            {PROGRAM_INTERESTS.map((p) => (
+              <option key={p} value={p}>{p}</option>
+            ))}
+          </select>
+          <FieldError id="programInterest-error" errors={fieldErrors.programInterest} />
         </div>
       </div>
       <div className="space-y-2">

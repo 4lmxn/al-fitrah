@@ -27,6 +27,7 @@ const degraded: Check[] = [
   { name: "INQUIRY_FROM_EMAIL", impact: "inquiry & application emails won't send (leads still saved)" },
   { name: "INQUIRY_ADMIN_EMAIL", impact: "inquiry & application emails won't send (leads still saved)" },
   { name: "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET", impact: "career CV uploads will fail" },
+  { name: "CRON_SECRET", impact: "daily follow-up reminder digest is disabled (endpoint returns 401)" },
 ];
 
 // Optional: sensible fallback exists; worth noting but harmless.

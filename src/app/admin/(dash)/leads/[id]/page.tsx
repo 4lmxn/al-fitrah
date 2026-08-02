@@ -7,7 +7,9 @@ import { relativeTime } from "@/lib/relativeTime";
 import { Icon } from "@/components/ui/Icon";
 import { LeadAvatar } from "@/components/admin/LeadAvatar";
 import { StagePill } from "@/components/admin/StagePill";
-import { updateStage, addNote } from "./actions";
+import { CopyButton } from "@/components/admin/CopyButton";
+import { referralCode, referralLink, referralShareLink } from "@/lib/referral";
+import { updateStage, addNote, setFollowUp, snoozeFollowUp } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +30,21 @@ function authorInitials(email: string): string {
   return email.slice(0, 2).toUpperCase();
 }
 
+function startOfToday(): number {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+}
+
+// Local yyyy-mm-dd for a <input type="date"> default (avoids the UTC shift
+// toISOString would introduce for a midnight-local timestamp).
+function toDateInput(ms: number | null): string {
+  if (!ms) return "";
+  const d = new Date(ms);
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
 export default async function LeadDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const lead = await getLead(id);
@@ -37,6 +54,11 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
   const currentIdx = pipeline.indexOf(lead.stage);
   const wa = waLink(lead.phone);
   const notes = [...lead.notes].sort((a, b) => (b.atMs ?? 0) - (a.atMs ?? 0));
+
+  // Admitted parents are the highest-ROI referral channel — surface a personal
+  // link they can forward. Code is derived deterministically, no extra storage.
+  const showReferral = lead.type === "admission_inquiry" && lead.stage === "admitted";
+  const refCode = showReferral ? referralCode(lead.name, lead.phone) : "";
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -58,6 +80,9 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
                 <StagePill stage={lead.stage} />
               </div>
               <h1 className="mt-1.5 font-display text-2xl text-emerald-deep">{lead.name}</h1>
+              {lead.childName && (
+                <p className="text-sm text-ink/60">Child: <span className="font-medium text-ink/80">{lead.childName}</span></p>
+              )}
               <p className="text-xs text-ink/45">Received {relativeTime(lead.createdAtMs)} · {fmt(lead.createdAtMs)}</p>
             </div>
           </div>
@@ -81,10 +106,17 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
         </div>
 
         {/* Detail strip */}
-        <dl className="grid gap-px border-t border-emerald/10 bg-emerald/10 sm:grid-cols-3">
+        <dl className="grid gap-px border-t border-emerald/10 bg-emerald/10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="bg-white/90 p-5">
             <dt className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">Phone</dt>
-            <dd className="mt-1 tabular-nums text-ink/85">{lead.phone}</dd>
+            <dd className="mt-1 flex items-center gap-1.5 tabular-nums text-ink/85">
+              {lead.phone}
+              {lead.whatsapp && lead.type === "admission_inquiry" && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald/8 px-2 py-0.5 text-[10px] font-semibold text-emerald-deep ring-1 ring-emerald/15">
+                  <Icon name="chat" className="text-[12px]" /> WhatsApp
+                </span>
+              )}
+            </dd>
           </div>
           <div className="bg-white/90 p-5">
             <dt className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">Email</dt>
@@ -94,7 +126,22 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
             <dt className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">{lead.type === "staff_application" ? "Role" : "Child age"}</dt>
             <dd className="mt-1 text-ink/85">{lead.type === "staff_application" ? lead.role ?? "—" : lead.childAge ?? "—"}</dd>
           </div>
+          <div className="bg-white/90 p-5">
+            <dt className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">{lead.type === "staff_application" ? "Source" : "Program"}</dt>
+            <dd className="mt-1 text-ink/85">{lead.type === "staff_application" ? (lead.source ?? "—") : (lead.programInterest ?? "—")}</dd>
+          </div>
         </dl>
+
+        {/* Attribution — only when a campaign or referral produced this lead */}
+        {(lead.utm?.source || lead.referredBy) && (
+          <div className="flex flex-wrap items-center gap-2 border-t border-emerald/10 bg-cream/40 px-6 py-3 text-[11px] text-ink/55">
+            <Icon name="campaign" className="text-[15px] text-gold" />
+            {lead.utm?.source && <span>Source: <b className="font-semibold text-ink/70">{lead.utm.source}</b></span>}
+            {lead.utm?.medium && <span>· {lead.utm.medium}</span>}
+            {lead.utm?.campaign && <span>· {lead.utm.campaign}</span>}
+            {lead.referredBy && <span>· Referred by <b className="font-semibold text-ink/70">{lead.referredBy}</b></span>}
+          </div>
+        )}
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
@@ -131,32 +178,37 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
             </section>
           )}
 
-          {/* Notes */}
+          {/* Activity timeline — notes + stage changes, newest first */}
           <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
             <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
-              <Icon name="sticky_note_2" className="text-[18px] text-gold" /> Internal notes
+              <Icon name="history" className="text-[18px] text-gold" /> Activity
             </h2>
             <form action={addNote} className="mt-4 flex gap-2">
               <input type="hidden" name="id" value={lead.id} />
-              <input name="text" placeholder="Add a note…" className="w-full rounded-xl border border-emerald/15 bg-cream/40 px-4 py-2.5 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20" />
+              <input name="text" placeholder="Log a call, visit, or decision…" className="w-full rounded-xl border border-emerald/15 bg-cream/40 px-4 py-2.5 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20" />
               <button type="submit" className="shrink-0 rounded-xl bg-emerald px-4 py-2.5 text-sm font-semibold text-cream transition hover:bg-emerald-deep">Add</button>
             </form>
 
             {notes.length === 0 ? (
-              <p className="mt-5 text-sm text-ink/45">No notes yet. Log calls, tours, and decisions here.</p>
+              <p className="mt-5 text-sm text-ink/45">No activity yet. Log calls, visits, and decisions here.</p>
             ) : (
               <ol className="mt-6 space-y-5">
-                {notes.map((n, i) => (
-                  <li key={i} className="relative flex gap-3 pl-1">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald/8 text-[11px] font-semibold text-emerald-deep ring-1 ring-emerald/15">
-                      {authorInitials(n.author)}
-                    </span>
-                    <div className="min-w-0 flex-1 rounded-xl bg-cream/50 p-3.5 ring-1 ring-emerald/5">
-                      <p className="text-sm leading-relaxed text-ink/85">{n.text}</p>
-                      <p className="mt-1.5 text-[11px] text-ink/45">{n.author} · {relativeTime(n.atMs)}</p>
-                    </div>
-                  </li>
-                ))}
+                {notes.map((n, i) => {
+                  const isStage = n.kind === "stage";
+                  return (
+                    <li key={i} className="relative flex gap-3 pl-1">
+                      <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ring-1 ${
+                        isStage ? "bg-gold-soft text-[#7a611a] ring-gold/30" : "bg-emerald/8 text-emerald-deep ring-emerald/15"
+                      }`}>
+                        {isStage ? <Icon name="trending_flat" className="text-[16px]" /> : authorInitials(n.author)}
+                      </span>
+                      <div className={`min-w-0 flex-1 rounded-xl p-3.5 ring-1 ${isStage ? "bg-gold-soft/30 ring-gold/15" : "bg-cream/50 ring-emerald/5"}`}>
+                        <p className={`text-sm leading-relaxed ${isStage ? "font-medium text-emerald-deep" : "text-ink/85"}`}>{n.text}</p>
+                        <p className="mt-1.5 text-[11px] text-ink/45">{n.author} · {relativeTime(n.atMs)}</p>
+                      </div>
+                    </li>
+                  );
+                })}
               </ol>
             )}
           </section>
@@ -203,6 +255,76 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
             </ol>
             <p className="mt-4 border-t border-emerald/10 pt-3 text-[11px] text-ink/45">Tap a stage to move this lead.</p>
           </section>
+
+          {/* Follow-up */}
+          <section className="mt-6 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
+            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+              <Icon name="event" className="text-[18px] text-gold" /> Follow-up
+            </h2>
+
+            {lead.followUpMs != null && (
+              <p className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
+                lead.followUpMs < startOfToday()
+                  ? "bg-gold-soft text-[#7a611a] ring-1 ring-gold/30"
+                  : "bg-emerald/8 text-emerald-deep ring-1 ring-emerald/15"
+              }`}>
+                <Icon name={lead.followUpMs < startOfToday() ? "notification_important" : "schedule"} className="text-[15px]" />
+                {lead.followUpMs < startOfToday() ? "Overdue" : "Due"} {relativeTime(lead.followUpMs)}
+              </p>
+            )}
+
+            <form action={setFollowUp} className="mt-4 flex flex-wrap items-center gap-2">
+              <input type="hidden" name="id" value={lead.id} />
+              <input
+                type="date"
+                name="followUpDate"
+                defaultValue={toDateInput(lead.followUpMs)}
+                className="rounded-xl border border-emerald/15 bg-cream/40 px-3 py-2 text-sm text-ink outline-none focus:border-emerald focus:ring-2 focus:ring-emerald/20"
+              />
+              <button type="submit" className="rounded-xl bg-emerald px-4 py-2 text-sm font-semibold text-cream transition hover:bg-emerald-deep">Set</button>
+            </form>
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              {[
+                { label: "+3 days", days: 3 },
+                { label: "+1 week", days: 7 },
+                { label: "+2 weeks", days: 14 },
+              ].map((s) => (
+                <form key={s.days} action={snoozeFollowUp}>
+                  <input type="hidden" name="id" value={lead.id} />
+                  <input type="hidden" name="days" value={s.days} />
+                  <button type="submit" className="rounded-full border border-emerald/20 px-3 py-1.5 text-xs font-semibold text-emerald transition hover:bg-emerald/5">
+                    {s.label}
+                  </button>
+                </form>
+              ))}
+            </div>
+          </section>
+
+          {/* Referral — only once a family is admitted */}
+          {showReferral && (
+            <section className="mt-6 rounded-2xl border border-gold/25 bg-gold-soft/30 p-6 shadow-soft">
+              <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-[#7a611a]">
+                <Icon name="handshake" className="text-[18px]" /> Referral link
+              </h2>
+              <p className="mt-2 text-xs leading-relaxed text-ink/60">
+                Parents trust parents. Share this with {lead.name.split(" ")[0]} — enquiries from it are tagged{" "}
+                <b className="font-semibold text-ink/75">{refCode}</b> and show up in Insights.
+              </p>
+              <div className="mt-3 flex items-center gap-2 rounded-xl bg-white/80 p-2.5 ring-1 ring-emerald/10">
+                <span className="min-w-0 flex-1 truncate text-xs text-ink/70">{referralLink(refCode)}</span>
+                <CopyButton value={referralLink(refCode)} />
+              </div>
+              <a
+                href={referralShareLink(refCode)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-emerald/25 px-3 py-2 text-xs font-semibold text-emerald transition hover:bg-emerald/5"
+              >
+                <Icon name="chat" className="text-[16px]" /> Share via WhatsApp
+              </a>
+            </section>
+          )}
         </aside>
       </div>
     </div>

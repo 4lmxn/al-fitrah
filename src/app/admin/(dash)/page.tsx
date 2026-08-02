@@ -3,10 +3,12 @@ import { getInbox } from "@/lib/leadQueries";
 import { PIPELINES, LEAD_TYPE_LABEL, type LeadType } from "@/lib/leads";
 import { stageMeta } from "@/lib/stageMeta";
 import { relativeTime } from "@/lib/relativeTime";
+import { followUpWaLink } from "@/lib/followup";
+import { snoozeFollowUp } from "@/app/admin/(dash)/leads/[id]/actions";
 import { Icon } from "@/components/ui/Icon";
 import { StatCard } from "@/components/admin/StatCard";
-import { StagePill } from "@/components/admin/StagePill";
 import { LeadAvatar } from "@/components/admin/LeadAvatar";
+import { InlineStageSelect } from "@/components/admin/InlineStageSelect";
 
 export const dynamic = "force-dynamic";
 
@@ -19,15 +21,23 @@ const TYPE_ICON: Record<LeadType, string> = {
 export default async function AdminInbox({
   searchParams,
 }: {
-  searchParams: Promise<{ type?: string; stage?: string; q?: string }>;
+  searchParams: Promise<{ type?: string; stage?: string; q?: string; view?: string }>;
 }) {
   const sp = await searchParams;
   const type: LeadType = TYPES.includes(sp.type as LeadType) ? (sp.type as LeadType) : "admission_inquiry";
-  const stage = sp.stage && PIPELINES[type].includes(sp.stage) ? sp.stage : undefined;
+  const attention = sp.view === "attention";
+  const stage = !attention && sp.stage && PIPELINES[type].includes(sp.stage) ? sp.stage : undefined;
   const q = sp.q?.trim() || "";
 
-  const { rows, counts, kpis } = await getInbox(type, { stage, q });
-  const wonLabel = type === "staff_application" ? "Hired" : "Enrolled";
+  const { rows, counts, kpis, attentionCount } = await getInbox(type, { stage, q, attention });
+  const wonLabel = type === "staff_application" ? "Hired" : "Admitted";
+  // This page is force-dynamic; "today" is intentionally the request time.
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const startTodayMs = startOfToday.getTime();
+
+  // Options for the inline stage changer, labelled from the pipeline.
+  const stageOptions = PIPELINES[type].map((s) => ({ value: s, label: stageMeta(s).label }));
 
   const base = (extra: Record<string, string>) => {
     const params = new URLSearchParams({ type, ...(q ? { q } : {}), ...extra });
@@ -67,13 +77,41 @@ export default async function AdminInbox({
         <StatCard label={wonLabel} value={kpis.won} icon="verified" tone="deep" />
       </div>
 
+      {/* Needs-attention banner — overdue follow-ups + untouched new leads */}
+      {attentionCount > 0 && !attention && (
+        <Link
+          href={`/admin?type=${type}&view=attention`}
+          className="mt-6 flex items-center gap-3 rounded-2xl border border-gold/30 bg-gold-soft/50 px-5 py-3.5 text-sm transition hover:bg-gold-soft"
+        >
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-[#7a611a]">
+            <Icon name="notification_important" className="text-[20px]" />
+          </span>
+          <span className="font-semibold text-[#7a611a]">
+            {attentionCount} lead{attentionCount > 1 ? "s" : ""} need attention
+          </span>
+          <span className="hidden text-[#7a611a]/70 sm:inline">— overdue follow-ups or untouched new enquiries</span>
+          <Icon name="arrow_forward" className="ml-auto text-[18px] text-[#7a611a]" />
+        </Link>
+      )}
+
       {/* Toolbar: stage filter + search */}
       <div className="mt-7 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap gap-2">
+          {attentionCount > 0 && (
+            <Link
+              href={attention ? `/admin?type=${type}` : `/admin?type=${type}&view=attention`}
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset transition ${
+                attention ? "bg-gold text-ink ring-gold" : "bg-white text-[#7a611a] ring-gold/30 hover:bg-gold-soft/50"
+              }`}
+            >
+              <Icon name="notification_important" className="text-[14px]" /> Needs attention
+              <span className="tabular-nums opacity-70">{attentionCount}</span>
+            </Link>
+          )}
           <Link
             href={base({})}
             className={`rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset transition ${
-              !stage ? "bg-emerald text-cream ring-emerald" : "bg-white text-ink/65 ring-emerald/10 hover:bg-emerald/5"
+              !stage && !attention ? "bg-emerald text-cream ring-emerald" : "bg-white text-ink/65 ring-emerald/10 hover:bg-emerald/5"
             }`}
           >
             All <span className="ml-1 tabular-nums opacity-70">{kpis.total}</span>
@@ -115,17 +153,17 @@ export default async function AdminInbox({
         {rows.length === 0 ? (
           <div className="flex flex-col items-center gap-3 p-16 text-center">
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald/5 text-emerald/40">
-              <Icon name={q || stage ? "search_off" : "inbox"} className="text-[30px]" />
+              <Icon name={attention ? "task_alt" : q || stage ? "search_off" : "inbox"} className="text-[30px]" />
             </span>
             <p className="font-display text-lg text-emerald-deep">
-              {q || stage ? "No matching leads" : "No leads yet"}
+              {attention ? "All caught up" : q || stage ? "No matching leads" : "No leads yet"}
             </p>
             <p className="max-w-xs text-sm text-ink/50">
-              {q || stage ? "Try clearing the filter or search." : "New submissions from the website will land here automatically."}
+              {attention ? "No overdue follow-ups or untouched enquiries. Nice work." : q || stage ? "Try clearing the filter or search." : "New submissions from the website will land here automatically."}
             </p>
-            {(q || stage) && (
+            {(q || stage || attention) && (
               <Link href={`/admin?type=${type}`} className="mt-1 text-sm font-semibold text-emerald hover:text-emerald-deep">
-                Clear filters
+                {attention ? "Back to all leads" : "Clear filters"}
               </Link>
             )}
           </div>
@@ -155,15 +193,49 @@ export default async function AdminInbox({
                   </td>
                   <td className="hidden px-5 py-3.5 text-ink/70 sm:table-cell">{type === "staff_application" ? l.role ?? "—" : l.childAge ?? "—"}</td>
                   <td className="hidden px-5 py-3.5 text-ink/70 md:table-cell tabular-nums">{l.phone}</td>
-                  <td className="px-5 py-3.5"><StagePill stage={l.stage} /></td>
-                  <td className="hidden px-5 py-3.5 text-ink/55 sm:table-cell">{relativeTime(l.createdAtMs)}</td>
-                  <td className="px-5 py-3.5 text-right">
-                    <Link
-                      href={`/admin/leads/${l.id}`}
-                      className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold text-emerald opacity-70 transition group-hover:bg-emerald/5 group-hover:opacity-100"
-                    >
-                      Open <Icon name="arrow_forward" className="text-[16px]" />
-                    </Link>
+                  <td className="px-5 py-3.5"><InlineStageSelect id={l.id} stage={l.stage} options={stageOptions} /></td>
+                  <td className="hidden px-5 py-3.5 sm:table-cell">
+                    <div className="text-ink/55">{relativeTime(l.createdAtMs)}</div>
+                    {l.followUpMs != null && (
+                      <div className={`mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold ${l.followUpMs < startTodayMs ? "text-[#9a7b18]" : "text-emerald"}`}>
+                        <Icon name={l.followUpMs < startTodayMs ? "notification_important" : "event"} className="text-[13px]" />
+                        {l.followUpMs < startTodayMs ? "Overdue" : "Follow-up"} {relativeTime(l.followUpMs)}
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <div className="flex items-center justify-end gap-1">
+                      {type === "admission_inquiry" && (() => {
+                        const wa = followUpWaLink(l.phone, l.name);
+                        return wa ? (
+                          <a
+                            href={wa}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Send a WhatsApp follow-up"
+                            aria-label={`Send a WhatsApp follow-up to ${l.name}`}
+                            className="flex h-8 w-8 items-center justify-center rounded-full text-emerald transition hover:bg-emerald/10"
+                          >
+                            <Icon name="chat" className="text-[18px]" />
+                          </a>
+                        ) : null;
+                      })()}
+                      {l.followUpMs != null && l.followUpMs < startTodayMs && (
+                        <form action={snoozeFollowUp}>
+                          <input type="hidden" name="id" value={l.id} />
+                          <input type="hidden" name="days" value={7} />
+                          <button type="submit" title="Snooze follow-up by a week" aria-label={`Snooze ${l.name} by a week`} className="flex h-8 w-8 items-center justify-center rounded-full text-ink/45 transition hover:bg-emerald/10 hover:text-emerald">
+                            <Icon name="snooze" className="text-[18px]" />
+                          </button>
+                        </form>
+                      )}
+                      <Link
+                        href={`/admin/leads/${l.id}`}
+                        className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold text-emerald opacity-70 transition group-hover:bg-emerald/5 group-hover:opacity-100"
+                      >
+                        Open <Icon name="arrow_forward" className="text-[16px]" />
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -173,7 +245,7 @@ export default async function AdminInbox({
       </div>
 
       {rows.length > 0 && (
-        <p className="mt-3 text-xs text-ink/45">Showing {rows.length} {rows.length === 1 ? "lead" : "leads"}{stage ? ` in ${stageMeta(stage).label}` : ""}{q ? ` matching “${q}”` : ""}.</p>
+        <p className="mt-3 text-xs text-ink/45">Showing {rows.length} {rows.length === 1 ? "lead" : "leads"}{attention ? " needing attention" : stage ? ` in ${stageMeta(stage).label}` : ""}{q ? ` matching “${q}”` : ""}.</p>
       )}
     </div>
   );

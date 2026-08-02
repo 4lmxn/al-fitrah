@@ -81,3 +81,11 @@ env:
   - variable: INQUIRY_ADMIN_EMAIL
     value: "alfitrah.sompura@gmail.com"
     availability: [RUNTIME]
+
+  # Shared secret for the daily follow-up cron (/api/cron/followups). Create it,
+  # then point a Cloud Scheduler job (daily) at the endpoint with header
+  # "x-cron-secret: <this value>":
+  #   firebase apphosting:secrets:set CRON_SECRET
+  - variable: CRON_SECRET
+    secret: CRON_SECRET
+    availability: [RUNTIME]

@@ -3,9 +3,11 @@ import { Resend } from "resend";
 type InquiryEmail = {
   id: string;
   parentName: string;
+  childName?: string;
   phone: string;
   email?: string;
   childAge: string;
+  programInterest?: string;
   message?: string;
 };
 
@@ -52,9 +54,11 @@ export async function sendInquiryEmails(lead: InquiryEmail): Promise<void> {
       `New inquiry from the Al Fitrah website.`,
       ``,
       `Parent:  ${lead.parentName}`,
+      `Child:   ${lead.childName || "—"}`,
       `Phone:   ${lead.phone}`,
       `Email:   ${lead.email || "—"}`,
-      `Child:   ${age}`,
+      `Age:     ${age}`,
+      `Program: ${lead.programInterest || "—"}`,
       `Message: ${lead.message || "—"}`,
       ``,
       `Lead ID: ${lead.id}`,
@@ -109,4 +113,49 @@ export async function sendApplicationEmails(app: ApplicationEmail): Promise<void
       `CV and details: review lead ${app.id} in the admin console.`,
     ].join("\n"),
   });
+}
+
+export type FollowUpDigestLead = {
+  id: string;
+  name: string;
+  phone: string;
+  stage: string;
+  overdue: boolean;
+  waLink: string | null;
+};
+
+/**
+ * Daily reminder digest of leads whose follow-up is due or overdue. Called from
+ * the scheduled cron route. Same env gating; no-ops (and returns false) when
+ * Resend isn't configured so the cron still reports success.
+ */
+export async function sendFollowUpDigest(leads: FollowUpDigestLead[], siteUrl: string): Promise<boolean> {
+  const key = process.env.RESEND_API_KEY;
+  const from = process.env.INQUIRY_FROM_EMAIL;
+  const adminTo = process.env.INQUIRY_ADMIN_EMAIL;
+  if (!key || !from || !adminTo || leads.length === 0) return false;
+
+  const overdue = leads.filter((l) => l.overdue).length;
+  const lines = leads.map((l) => {
+    const tag = l.overdue ? "[OVERDUE]" : "[due today]";
+    const wa = l.waLink ? `  ${l.waLink}` : "";
+    return `${tag} ${l.name} — ${l.phone} — ${l.stage}${wa}\n   ${siteUrl}/admin/leads/${l.id}`;
+  });
+
+  const resend = new Resend(key);
+  await resend.emails.send({
+    from,
+    to: adminTo,
+    subject: `${leads.length} lead${leads.length > 1 ? "s" : ""} need follow-up today${overdue ? ` (${overdue} overdue)` : ""}`,
+    text: [
+      `Follow-up reminder — Al Fitrah admissions.`,
+      ``,
+      `${leads.length} lead${leads.length > 1 ? "s" : ""} to follow up today${overdue ? `, ${overdue} of them overdue` : ""}:`,
+      ``,
+      ...lines,
+      ``,
+      `Open the console to log a call or snooze: ${siteUrl}/admin`,
+    ].join("\n"),
+  });
+  return true;
 }

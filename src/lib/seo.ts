@@ -29,6 +29,16 @@ const digits = (phone: string) => phone.replace(/[^\d]/g, "");
 
 export const PHONE_E164 = `+${digits(site.contact.phone)}`;
 export const WHATSAPP_URL = `https://wa.me/${digits(site.contact.phone)}`;
+const WA_DIGITS = digits(site.contact.phone);
+
+// wa.me enquiry link with a pre-filled message. `context` (usually the page
+// path or a section name) is folded into the text so replies arrive tagged with
+// where the parent was on the site when they reached out.
+export function waEnquiryLink(context?: string): string {
+  const where = context ? ` (from ${context})` : "";
+  const text = `Assalamu alaikum, I'd like to know more about admissions at Al Fitrah Pre School, Sarjapura${where}.`;
+  return `https://wa.me/${WA_DIGITS}?text=${encodeURIComponent(text)}`;
+}
 
 // Keyless Google Maps query + embed (no API key required).
 const MAPS_QUERY = encodeURIComponent(

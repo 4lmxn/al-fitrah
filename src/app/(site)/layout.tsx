@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
 
 // Marketing chrome lives here — admin routes sit outside this group, so they
@@ -21,6 +22,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         <main id="content">{children}</main>
         <Footer />
       </div>
+      <FloatingWhatsApp />
     </>
   );
 }

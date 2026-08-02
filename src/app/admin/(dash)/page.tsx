@@ -85,6 +85,34 @@ export default async function AdminInbox({
         <StatCard label={wonLabel} value={kpis.won} icon="verified" tone="deep" />
       </div>
 
+      {/* Pipeline snapshot — count at each stage, at a glance (admission only) */}
+      {type === "admission_inquiry" && kpis.total > 0 && (() => {
+        const steps = PIPELINES[type].filter((s) => s !== "lost");
+        const top = Math.max(1, ...steps.map((s) => counts[s] ?? 0));
+        return (
+          <div className="mt-4 rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">Pipeline snapshot</p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-5">
+              {steps.map((s) => {
+                const c = counts[s] ?? 0;
+                const m = stageMeta(s);
+                return (
+                  <Link key={s} href={base({ stage: s })} className="group rounded-xl px-2 py-1.5 transition hover:bg-emerald/[0.04]">
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-xs font-semibold text-emerald-deep">{m.label}</span>
+                      <span className="tabular-nums text-sm font-semibold text-ink/70">{c}</span>
+                    </div>
+                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-emerald/8">
+                      <div className={`h-full rounded-full ${m.dot}`} style={{ width: `${Math.round((c / top) * 100)}%` }} />
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Needs-attention banner — overdue follow-ups + untouched new leads */}
       {attentionCount > 0 && !attention && (
         <Link

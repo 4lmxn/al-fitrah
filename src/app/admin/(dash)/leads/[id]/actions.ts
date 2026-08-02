@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
-import { isValidStage, normalizeStage, stageLabel, type LeadType } from "@/lib/leads";
+import { isValidStage, normalizeStage, stageLabel, PROGRAM_INTERESTS, type LeadType } from "@/lib/leads";
 
 export async function updateStage(formData: FormData) {
   const admin = await requireAdmin();
@@ -83,19 +83,77 @@ export async function snoozeFollowUp(formData: FormData) {
   revalidatePath("/admin");
 }
 
-export async function addNote(formData: FormData) {
+// Log a note and, optionally, schedule the next follow-up in one submit — the
+// core "what happened + what's next" loop. A blank note is ignored; a follow-up
+// date (or a +Nd quick value) is applied when present, "clear" removes it.
+export async function logContact(formData: FormData) {
   const admin = await requireAdmin();
   const id = String(formData.get("id") ?? "");
   // Cap note length: unbounded arrayUnion strings could bloat the lead doc
   // toward Firestore's 1 MiB document limit and brick it.
   const text = String(formData.get("text") ?? "").trim().slice(0, 2000);
   if (!id) throw new Error("Missing lead id");
-  if (!text) return; // ignore empty notes
 
-  const ref = getDb().collection("leads").doc(id);
-  await ref.update({
-    notes: FieldValue.arrayUnion({ text, author: admin.email, at: new Date(), kind: "note" }),
+  const update: Record<string, unknown> = { updatedAt: FieldValue.serverTimestamp() };
+  if (text) {
+    update.notes = FieldValue.arrayUnion({ text, author: admin.email, at: new Date(), kind: "note" });
+  }
+
+  // Next follow-up: either an explicit date, a "+N" day offset, or "clear".
+  const nextRaw = String(formData.get("followUpDate") ?? "").trim();
+  const offset = Number(formData.get("followUpDays"));
+  if (nextRaw === "clear") {
+    update.followUpDate = null;
+  } else if (Number.isFinite(offset) && offset > 0 && offset <= 90) {
+    const t = new Date();
+    t.setHours(0, 0, 0, 0);
+    t.setDate(t.getDate() + offset);
+    update.followUpDate = t;
+  } else if (nextRaw) {
+    const d = new Date(`${nextRaw}T00:00:00`);
+    if (Number.isNaN(d.getTime())) throw new Error("Invalid follow-up date");
+    update.followUpDate = d;
+  }
+
+  if (!text && !("followUpDate" in update)) return; // nothing to do
+
+  await getDb().collection("leads").doc(id).update(update);
+  console.log(`contact logged id=${id} note=${text ? "y" : "n"} by=${admin.email}`);
+  revalidatePath(`/admin/leads/${id}`);
+  revalidatePath("/admin");
+}
+
+// Kept for compatibility — a plain note with no follow-up change.
+export async function addNote(formData: FormData) {
+  return logContact(formData);
+}
+
+// Edit the contact fields of a lead (fix a typo, fill in a walk-in's details).
+export async function editContact(formData: FormData) {
+  const admin = await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) throw new Error("Missing lead id");
+
+  const parentName = String(formData.get("parentName") ?? "").trim().slice(0, 80);
+  const phone = String(formData.get("phone") ?? "").trim().slice(0, 20);
+  if (parentName.length < 2) throw new Error("Parent name is required");
+  if (!/^[0-9+\-\s()]{7,20}$/.test(phone)) throw new Error("A valid phone number is required");
+
+  const childName = String(formData.get("childName") ?? "").trim().slice(0, 80);
+  const email = String(formData.get("email") ?? "").trim().slice(0, 120);
+  const programRaw = String(formData.get("programInterest") ?? "").trim();
+  const programInterest = (PROGRAM_INTERESTS as readonly string[]).includes(programRaw) ? programRaw : null;
+
+  await getDb().collection("leads").doc(id).update({
+    parentName,
+    childName: childName || null,
+    phone,
+    email: email || null,
+    whatsapp: formData.get("whatsapp") === "on",
+    programInterest,
     updatedAt: FieldValue.serverTimestamp(),
   });
+  console.log(`contact edited id=${id} by=${admin.email}`);
   revalidatePath(`/admin/leads/${id}`);
+  revalidatePath("/admin");
 }

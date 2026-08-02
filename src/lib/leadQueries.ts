@@ -17,6 +17,8 @@ export type LeadRow = {
   childAge?: string;
   programInterest?: string | null;
   source?: string | null;
+  utmSource?: string | null;
+  referredBy?: string | null;
   noteCount: number;
   createdAtMs: number | null;
   followUpMs: number | null;
@@ -44,6 +46,8 @@ export async function listLeads(type: LeadType, stage?: string): Promise<LeadRow
       childAge: x.childAge,
       programInterest: x.programInterest ?? null,
       source: x.source ?? null,
+      utmSource: x.utm?.source ?? null,
+      referredBy: x.referredBy ?? null,
       noteCount: Array.isArray(x.notes) ? x.notes.length : 0,
       createdAtMs: x.createdAt?.toMillis?.() ?? null,
       followUpMs: x.followUpDate?.toMillis?.() ?? null,
@@ -112,6 +116,72 @@ export async function getInbox(
   }
 
   return { rows, counts, kpis, attentionCount };
+}
+
+// ── Marketing insights ──────────────────────────────────────────────────────
+
+export type SourceCount = { source: string; total: number; thisMonth: number };
+export type FunnelStep = { stage: string; label: string; count: number };
+export type ReferrerCount = { code: string; total: number; admitted: number };
+
+export type Insights = {
+  totalThisMonth: number;
+  sources: SourceCount[];
+  funnel: FunnelStep[];
+  referrers: ReferrerCount[];
+};
+
+// Single-read marketing summary over admission leads: which channels produced
+// enquiries (all-time + this month), how many sit at each funnel stage, and who
+// referred whom. All derived in one in-memory pass — no extra Firestore reads.
+export async function getInsights(): Promise<Insights> {
+  const all = await listLeads("admission_inquiry");
+
+  const monthStart = new Date();
+  monthStart.setDate(1);
+  monthStart.setHours(0, 0, 0, 0);
+  const monthStartMs = monthStart.getTime();
+
+  const sourceMap = new Map<string, { total: number; thisMonth: number }>();
+  const referrerMap = new Map<string, { total: number; admitted: number }>();
+  const funnelStages = ["new", "contacted", "visited", "applied", "admitted"];
+  const funnelCounts: Record<string, number> = Object.fromEntries(funnelStages.map((s) => [s, 0]));
+
+  let totalThisMonth = 0;
+  for (const r of all) {
+    const isThisMonth = r.createdAtMs != null && r.createdAtMs >= monthStartMs;
+    if (isThisMonth) totalThisMonth += 1;
+
+    // Prefer an explicit UTM source; fall back to the capture surface (source).
+    const src = r.utmSource || r.source || "direct";
+    const s = sourceMap.get(src) ?? { total: 0, thisMonth: 0 };
+    s.total += 1;
+    if (isThisMonth) s.thisMonth += 1;
+    sourceMap.set(src, s);
+
+    if (r.referredBy) {
+      const ref = referrerMap.get(r.referredBy) ?? { total: 0, admitted: 0 };
+      ref.total += 1;
+      if (r.stage === "admitted") ref.admitted += 1;
+      referrerMap.set(r.referredBy, ref);
+    }
+
+    // Funnel is cumulative: reaching a later stage implies the earlier ones.
+    const idx = funnelStages.indexOf(r.stage);
+    if (idx >= 0) for (let i = 0; i <= idx; i++) funnelCounts[funnelStages[i]] += 1;
+  }
+
+  const sources = [...sourceMap.entries()]
+    .map(([source, v]) => ({ source, ...v }))
+    .sort((a, b) => b.total - a.total);
+
+  const funnel = funnelStages.map((stage) => ({ stage, label: stageMeta(stage).label, count: funnelCounts[stage] }));
+
+  const referrers = [...referrerMap.entries()]
+    .map(([code, v]) => ({ code, ...v }))
+    .sort((a, b) => b.total - a.total);
+
+  return { totalThisMonth, sources, funnel, referrers };
 }
 
 export type LeadNote = { text: string; author: string; atMs: number | null; kind: "note" | "stage" };

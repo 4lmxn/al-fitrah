@@ -176,7 +176,60 @@ export default async function AdminInbox({
             )}
           </div>
         ) : (
-          <table className="w-full text-left text-sm">
+          <>
+          {/* Mobile: card per lead (the table is too wide for a phone) */}
+          <ul className="divide-y divide-emerald/5 sm:hidden">
+            {rows.map((l) => {
+              const overdue = l.followUpMs != null && l.followUpMs < startTodayMs;
+              const wa = type === "admission_inquiry" ? followUpWaLink(l.phone, l.name) : null;
+              return (
+                <li key={l.id} className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <Link href={`/admin/leads/${l.id}`} className="flex min-w-0 items-center gap-3">
+                      <LeadAvatar name={l.name} />
+                      <span className="min-w-0">
+                        <span className="block truncate font-semibold text-emerald-deep">{l.name}</span>
+                        <span className="block truncate text-xs text-ink/45 tabular-nums">{l.phone}</span>
+                      </span>
+                    </Link>
+                    <InlineStageSelect id={l.id} stage={l.stage} options={stageOptions} />
+                  </div>
+                  <div className="mt-3 flex items-center justify-between gap-2">
+                    <span className="text-xs text-ink/50">
+                      {relativeTime(l.createdAtMs)}
+                      {l.followUpMs != null && (
+                        <span className={`ml-2 font-semibold ${overdue ? "text-[#9a7b18]" : "text-emerald"}`}>
+                          · {overdue ? "Overdue" : "Follow-up"} {relativeTime(l.followUpMs)}
+                        </span>
+                      )}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      {wa && (
+                        <a href={wa} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp follow-up to ${l.name}`} className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald/8 text-emerald transition active:bg-emerald/15">
+                          <Icon name="chat" className="text-[18px]" />
+                        </a>
+                      )}
+                      {overdue && (
+                        <form action={snoozeFollowUp}>
+                          <input type="hidden" name="id" value={l.id} />
+                          <input type="hidden" name="days" value={7} />
+                          <button type="submit" aria-label={`Snooze ${l.name} by a week`} className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald/8 text-ink/55 transition active:bg-emerald/15">
+                            <Icon name="snooze" className="text-[18px]" />
+                          </button>
+                        </form>
+                      )}
+                      <Link href={`/admin/leads/${l.id}`} aria-label={`Open ${l.name}`} className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald text-cream transition active:bg-emerald-deep">
+                        <Icon name="arrow_forward" className="text-[18px]" />
+                      </Link>
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* Desktop: full table */}
+          <table className="hidden w-full text-left text-sm sm:table">
             <thead className="border-b border-emerald/10 bg-cream/40 text-[11px] uppercase tracking-wide text-ink/45">
               <tr>
                 <th className="px-5 py-3 font-semibold">Name</th>
@@ -249,6 +302,7 @@ export default async function AdminInbox({
               ))}
             </tbody>
           </table>
+          </>
         )}
       </div>
 

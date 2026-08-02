@@ -32,3 +32,25 @@ export const leadSchema = z.object({
 });
 
 export type LeadInput = z.infer<typeof leadSchema>;
+
+// Low-friction capture for the waitlist and prospectus magnet: name + phone
+// only, age optional. `source` is constrained so the public endpoint can't be
+// used to forge an arbitrary lead source.
+export const CAPTURE_SOURCES = ["waitlist", "prospectus"] as const;
+
+export const captureSchema = z.object({
+  parentName: z.string().trim().min(2, "Please enter a name").max(80),
+  phone: z.string().trim().min(7, "Please enter a valid phone number").max(20)
+    .regex(/^[0-9+\-\s()]+$/, "Phone may only contain digits and + - ( )"),
+  whatsapp: z.preprocess((v) => v === "on" || v === "true" || v === true, z.boolean()).optional(),
+  email: z.string().trim().email("Please enter a valid email").max(120).optional().or(z.literal("")),
+  childAge: z.enum(AGE_BANDS).optional().or(z.literal("")),
+  source: z.enum(CAPTURE_SOURCES),
+  utmSource: optionalText(120),
+  utmMedium: optionalText(120),
+  utmCampaign: optionalText(120),
+  referredBy: optionalText(60),
+  website: z.string().optional(),
+});
+
+export type CaptureInput = z.infer<typeof captureSchema>;

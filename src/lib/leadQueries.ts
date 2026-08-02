@@ -60,36 +60,58 @@ export type Inbox = {
   rows: LeadRow[];
   counts: Record<string, number>; // per-stage counts (unfiltered by stage)
   kpis: InboxKpis;
+  attentionCount: number;
 };
 
+const TERMINAL_STAGES = new Set(["admitted", "lost", "hired", "rejected"]);
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+// A lead "needs attention" if its follow-up is overdue, or it's still new and
+// untouched (no notes) more than 48h after arriving. Terminal stages never do.
+export function needsAttention(l: LeadRow, now = Date.now()): boolean {
+  if (TERMINAL_STAGES.has(l.stage)) return false;
+  const startToday = new Date(now);
+  startToday.setHours(0, 0, 0, 0);
+  if (l.followUpMs != null && l.followUpMs < startToday.getTime()) return true;
+  if (l.stage === "new" && l.noteCount === 0 && l.createdAtMs != null && now - l.createdAtMs > 2 * DAY_MS) {
+    return true;
+  }
+  return false;
+}
+
 // One read per inbox view: fetch all leads of a type, derive per-stage counts
-// and KPI groups, then apply the stage + search filters in memory.
+// and KPI groups, then apply the stage/search/attention filters in memory.
 export async function getInbox(
   type: LeadType,
-  opts: { stage?: string; q?: string } = {},
+  opts: { stage?: string; q?: string; attention?: boolean } = {},
 ): Promise<Inbox> {
   const all = await listLeads(type); // newest-first, all stages
 
   const counts: Record<string, number> = {};
   for (const s of PIPELINES[type]) counts[s] = 0;
   const kpis: InboxKpis = { total: all.length, new: 0, active: 0, won: 0, lost: 0 };
+  const now = Date.now();
+  let attentionCount = 0;
   for (const r of all) {
     if (r.stage in counts) counts[r.stage] += 1;
     kpis[stageMeta(r.stage).group] += 1;
+    if (needsAttention(r, now)) attentionCount += 1;
   }
 
   const q = opts.q?.trim().toLowerCase();
   let rows = all;
-  if (opts.stage) rows = rows.filter((r) => r.stage === opts.stage);
+  // The attention view ignores the stage filter — it's a cross-stage triage list.
+  if (opts.attention) rows = rows.filter((r) => needsAttention(r, now));
+  else if (opts.stage) rows = rows.filter((r) => r.stage === opts.stage);
   if (q) {
     rows = rows.filter((r) =>
-      [r.name, r.phone, r.email, r.role, r.childAge]
+      [r.name, r.childName, r.phone, r.email, r.role, r.childAge]
         .filter(Boolean)
         .some((v) => String(v).toLowerCase().includes(q)),
     );
   }
 
-  return { rows, counts, kpis };
+  return { rows, counts, kpis, attentionCount };
 }
 
 export type LeadNote = { text: string; author: string; atMs: number | null; kind: "note" | "stage" };

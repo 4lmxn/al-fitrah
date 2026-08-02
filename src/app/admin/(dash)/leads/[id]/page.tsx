@@ -7,6 +7,8 @@ import { relativeTime } from "@/lib/relativeTime";
 import { Icon } from "@/components/ui/Icon";
 import { LeadAvatar } from "@/components/admin/LeadAvatar";
 import { StagePill } from "@/components/admin/StagePill";
+import { CopyButton } from "@/components/admin/CopyButton";
+import { referralCode, referralLink, referralShareLink } from "@/lib/referral";
 import { updateStage, addNote, setFollowUp, snoozeFollowUp } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -52,6 +54,11 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
   const currentIdx = pipeline.indexOf(lead.stage);
   const wa = waLink(lead.phone);
   const notes = [...lead.notes].sort((a, b) => (b.atMs ?? 0) - (a.atMs ?? 0));
+
+  // Admitted parents are the highest-ROI referral channel — surface a personal
+  // link they can forward. Code is derived deterministically, no extra storage.
+  const showReferral = lead.type === "admission_inquiry" && lead.stage === "admitted";
+  const refCode = showReferral ? referralCode(lead.name, lead.phone) : "";
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -293,6 +300,31 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
               ))}
             </div>
           </section>
+
+          {/* Referral — only once a family is admitted */}
+          {showReferral && (
+            <section className="mt-6 rounded-2xl border border-gold/25 bg-gold-soft/30 p-6 shadow-soft">
+              <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-[#7a611a]">
+                <Icon name="handshake" className="text-[18px]" /> Referral link
+              </h2>
+              <p className="mt-2 text-xs leading-relaxed text-ink/60">
+                Parents trust parents. Share this with {lead.name.split(" ")[0]} — enquiries from it are tagged{" "}
+                <b className="font-semibold text-ink/75">{refCode}</b> and show up in Insights.
+              </p>
+              <div className="mt-3 flex items-center gap-2 rounded-xl bg-white/80 p-2.5 ring-1 ring-emerald/10">
+                <span className="min-w-0 flex-1 truncate text-xs text-ink/70">{referralLink(refCode)}</span>
+                <CopyButton value={referralLink(refCode)} />
+              </div>
+              <a
+                href={referralShareLink(refCode)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-emerald/25 px-3 py-2 text-xs font-semibold text-emerald transition hover:bg-emerald/5"
+              >
+                <Icon name="chat" className="text-[16px]" /> Share via WhatsApp
+              </a>
+            </section>
+          )}
         </aside>
       </div>
     </div>

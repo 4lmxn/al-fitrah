@@ -6,6 +6,7 @@ import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
+import { ProspectusMagnet } from "@/components/pages/ProspectusMagnet";
 
 export const metadata = pageMeta("/parent-resources", {
   title: "Parent Resources",
@@ -41,7 +42,11 @@ export default function ParentResourcesPage() {
             ))}
           </div>
 
-          <Reveal className="mt-10 flex flex-col items-center gap-4 rounded-xl3 border border-emerald/10 bg-emerald/5 p-8 text-center sm:flex-row sm:justify-between sm:text-left">
+          <Reveal className="mt-10">
+            <ProspectusMagnet />
+          </Reveal>
+
+          <Reveal className="mt-6 flex flex-col items-center gap-4 rounded-xl3 border border-emerald/10 bg-emerald/5 p-8 text-center sm:flex-row sm:justify-between sm:text-left">
             <p className="max-w-xl leading-relaxed text-ink/75">
               Need the parent handbook or uniform details? Our team will share the latest copy with you directly.
             </p>

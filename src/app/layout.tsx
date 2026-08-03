@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import { SITE_URL, BRAND_NAME, schoolJsonLd } from "@/lib/seo";
+import { SITE_URL, BRAND_NAME, schoolJsonLd, jsonLdHtml } from "@/lib/seo";
 import { Analytics } from "@/components/Analytics";
 
 const sans = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -81,7 +81,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="relative bg-cream text-ink font-sans antialiased">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schoolJsonLd()) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdHtml(schoolJsonLd()) }}
         />
         {children}
         <Analytics />

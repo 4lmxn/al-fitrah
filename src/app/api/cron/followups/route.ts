@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createHash, timingSafeEqual } from "node:crypto";
 import { getDb } from "@/lib/firebaseAdmin";
 import { normalizeStage } from "@/lib/leads";
 import { stageMeta } from "@/lib/stageMeta";
@@ -10,6 +11,16 @@ export const dynamic = "force-dynamic";
 
 // Leads in these stages are done — never chase them.
 const TERMINAL = new Set(["admitted", "lost"]);
+
+// Constant-time secret check. Hashing both sides to a fixed 32 bytes lets us
+// use timingSafeEqual (which throws on length mismatch) without leaking the
+// secret's length or short-circuiting on the first differing byte.
+function secretMatches(provided: string | null, expected: string): boolean {
+  if (!provided) return false;
+  const a = createHash("sha256").update(provided).digest();
+  const b = createHash("sha256").update(expected).digest();
+  return timingSafeEqual(a, b);
+}
 
 function waLink(phone: string): string | null {
   const digits = phone.replace(/\D/g, "");
@@ -23,7 +34,7 @@ function waLink(phone: string): string | null {
 // therefore the Firestore bill minimal — it never scans the whole collection.
 export async function GET(req: Request) {
   const secret = process.env.CRON_SECRET;
-  if (!secret || req.headers.get("x-cron-secret") !== secret) {
+  if (!secret || !secretMatches(req.headers.get("x-cron-secret"), secret)) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 

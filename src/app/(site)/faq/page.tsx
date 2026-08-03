@@ -1,4 +1,4 @@
-import { pageMeta } from "@/lib/seo";
+import { pageMeta, jsonLdHtml } from "@/lib/seo";
 import { faq } from "@/content/pages";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
@@ -29,7 +29,7 @@ export default function FaqPage() {
   const { hero, groups, cta } = faq;
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(faqJsonLd) }} />
       <PageHero eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.subtitle} />
 
       <Section className="pt-0">

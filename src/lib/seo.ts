@@ -87,6 +87,21 @@ const geoPoint = (() => {
   return { "@type": "GeoCoordinates", latitude: lat, longitude: lng } as const;
 })();
 
+// Serialise an object as a JSON-LD `<script>` inner HTML. Plain JSON.stringify
+// leaves `<`, `>` and `&` raw, so a value containing `</script>` would break
+// out of the tag — a stored-XSS sink if user-derived data ever lands in the
+// graph. Escaping these to their \uXXXX forms keeps the JSON valid while making
+// tag breakout impossible. U+2028/U+2029 are also escaped: valid in JSON but
+// illegal raw in a JS string literal, so they'd break inline-script parsing.
+export function jsonLdHtml(data: unknown): string {
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+}
+
 // JSON-LD structured data describing the school for rich results + Maps.
 export function schoolJsonLd() {
   return {

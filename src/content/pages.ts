@@ -11,7 +11,7 @@ export const about: AboutPage = {
   },
   mission: {
     title: "Our mission",
-    body: "To provide the best Islamic and academic foundation, seamlessly integrating rigorous modern education with profound spiritual nurturing so our students excel in both Deen and Dunya.",
+    body: "To give children a strong start in both Deen and Dunya — a modern academic foundation taught alongside everyday Islamic learning, with care and patience.",
   },
   vision: {
     title: "Holistic growth",
@@ -29,7 +29,7 @@ export const about: AboutPage = {
   },
   location: {
     eyebrow: "Visit us",
-    title: "Our sanctuary",
+    title: "Where we are",
     lines: ["3rd Floor, Vivian Complex", "Opp HP Petrol Bunk, Sompura Gate", "Sarjapura, Bengaluru 562125"],
     image: "/images/real/lobby.jpg",
     imageAlt: "The welcoming reception area at Al Fitrah Pre School, Sarjapura",
@@ -38,10 +38,10 @@ export const about: AboutPage = {
 
 export const programs: ProgramsPage = {
   hero: {
-    eyebrow: "Nurturing the innate goodness",
+    eyebrow: "Our programme",
     title: "A 3-year integrated program.",
     subtitle:
-      "A holistic journey that balances rigorous academic foundations with deep spiritual nurturing, preparing your child for both this world and the hereafter.",
+      "Three years that pair a solid academic foundation with daily Qur'an and Islamic learning — preparing your child for school, and for life.",
     stats: [
       { icon: "child_care", label: "Age group", value: "2.10 – 3.10 yrs" },
       { icon: "schedule", label: "Duration", value: "3 years" },
@@ -49,7 +49,7 @@ export const programs: ProgramsPage = {
   },
   curriculum: {
     title: "A comprehensive curriculum",
-    subtitle: "The Oxford Early Learning Curriculum blended with the Noor-ul-Bayan Islamic system, delivered in a sanctuary of learning.",
+    subtitle: "The Oxford Early Learning Curriculum alongside the Noor-ul-Bayan method for Qur'an and Arabic.",
     quran: {
       title: "Islamic curriculum · Noor-ul-Bayan",
       items: [
@@ -116,7 +116,7 @@ export const campus: CampusPage = {
     eyebrow: "Campus life",
     title: "A calm, joyful daily rhythm.",
     subtitle:
-      "A sanctuary for growth, learning, and spiritual connection. Every moment of the Al Fitrah day is designed to nurture the goodness within.",
+      "A calm, structured day built around learning, play, and Qur'an — with room for every child to grow at their own pace.",
   },
   gallery: [
     { title: "A warm welcome", caption: "Our bright, welcoming entrance", image: "/images/real/entrance-wide.jpg" },
@@ -252,22 +252,13 @@ export const parent: ParentPage = {
       },
     ],
   },
-  testimonials: {
-    title: "Voices from our community",
-    subtitle: "How Al Fitrah is nurturing the innate goodness within families across our community.",
-    items: [
-      { author: "Aisha M.", relation: "Parent of a Pre-KG student", quote: "The balance between a strong academic foundation and spiritual grounding is exceptional. I feel truly partnered with the teachers." },
-      { author: "Omar K.", relation: "Parent of a Senior KG student", quote: "The transparency gives us peace of mind. Seeing the halal menu and daily schedule helps us reinforce lessons at home." },
-      { author: "Sarah & Tariq", relation: "Al Fitrah parents", quote: "Clear expectations from day one. A professional, beautifully organized system that respects our time as parents." },
-    ],
-  },
 };
 
 export const contact: ContactPage = {
   hero: {
     eyebrow: "Get in touch",
     title: "We'd love to hear from you.",
-    subtitle: "Reach out to learn more about our nurturing environment rooted in Fitrah and academic excellence.",
+    subtitle: "Have a question about admissions or want to arrange a visit? We're happy to help.",
   },
   details: {
     // Keep in sync with FULL_ADDRESS in src/lib/seo.ts (single source of address truth).

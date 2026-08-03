@@ -14,7 +14,6 @@ export type Home = {
   approach: { eyebrow: string; title: string; items: { icon: string; title: string; body: string }[] };
   highlights: { title: string; caption: string; image: string }[];
   welcome: { eyebrow: string; title: string; body: string[]; by: string; role: string };
-  testimonials: { title: string; subtitle: string; items: { author: string; relation: string; quote: string }[] };
   seats: { title: string; subtitle: string; cta: Cta };
   contact: { title: string; subtitle: string; address: string; phone: string; email: string; image: string; imageAlt: string };
 };
@@ -24,7 +23,6 @@ export type Feature = { icon: string; title: string; body: string };
 export type Step = { icon: string; title: string; body: string };
 export type FaqItem = { q: string; a: string };
 export type FaqGroup = { id: string; icon: string; category: string; items: FaqItem[] };
-export type Testimonial = { author: string; relation: string; quote: string };
 export type ImageTile = { title: string; caption?: string; image: string };
 
 export type AboutPage = {
@@ -78,7 +76,6 @@ export type ParentPage = {
     note: string;
     groups: { icon: string; title: string; items: string[] }[];
   };
-  testimonials: { title: string; subtitle: string; items: Testimonial[] };
 };
 
 export type ContactPage = {

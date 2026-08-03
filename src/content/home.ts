@@ -42,19 +42,10 @@ export const home: Home = {
     by: "The Al Fitrah Team",
     role: "Sompura, Sarjapura",
   },
-  testimonials: {
-    title: "Trusted by our families",
-    subtitle: "What parents say about the Al Fitrah experience.",
-    items: [
-      { author: "Aisha M.", relation: "Parent of a Pre-KG student", quote: "The balance between a strong academic foundation and spiritual grounding is exceptional. I feel truly partnered with the teachers." },
-      { author: "Omar K.", relation: "Parent of a Senior KG student", quote: "The transparency gives us peace of mind. Seeing the daily rhythm helps us reinforce lessons at home." },
-      { author: "Sarah & Tariq", relation: "Al Fitrah parents", quote: "Clear expectations from day one. A professional, beautifully organized system that respects our time." },
-    ],
-  },
   seats: {
     title: "Limited seats available",
     subtitle:
-      "Join the Al Fitrah family and give your child a three-year foundation that balances academic excellence with timeless spiritual wisdom.",
+      "Register your interest for 2026–27 and give your child a three-year start that pairs strong academics with a grounded Islamic upbringing.",
     cta: { label: "Enroll today", href: "/admissions#enroll", variant: "gold" },
   },
   contact: {

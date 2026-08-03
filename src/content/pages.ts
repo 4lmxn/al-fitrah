@@ -14,12 +14,12 @@ export const about: AboutPage = {
     body: "To give children a strong start in both Deen and Dunya — a modern academic foundation taught alongside everyday Islamic learning, with care and patience.",
   },
   vision: {
-    title: "Holistic growth",
-    body: "Developing mind, body, and soul together in a calm, nurturing environment.",
+    title: "Growing the whole child",
+    body: "Developing mind, body, and character together in a calm, caring environment.",
   },
   team: {
     title: "Guided by experts",
-    subtitle: "Our educators are the heart of Al Fitrah, dedicated to academic excellence and moral character.",
+    subtitle: "Our teachers are the heart of Al Fitrah — patient with young children, and steady on both learning and good character.",
     image: "/images/circle-time.png",
     imageAlt: "An Al Fitrah teacher leading circle time with children, illustrated",
     points: [
@@ -48,7 +48,7 @@ export const programs: ProgramsPage = {
     ],
   },
   curriculum: {
-    title: "A comprehensive curriculum",
+    title: "What your child learns",
     subtitle: "The Oxford Early Learning Curriculum alongside the Noor-ul-Bayan method for Qur'an and Arabic.",
     quran: {
       title: "Islamic curriculum · Noor-ul-Bayan",
@@ -141,7 +141,7 @@ export const faq: FaqPage = {
   hero: {
     eyebrow: "Help centre",
     title: "Frequently asked questions.",
-    subtitle: "Answers to common questions about our admissions process, holistic curriculum, and daily life at Al Fitrah.",
+    subtitle: "Common questions about admissions, the curriculum, and daily life at Al Fitrah.",
   },
   groups: [
     {
@@ -184,7 +184,7 @@ export const parent: ParentPage = {
   hero: {
     eyebrow: "Family gateway",
     title: "Parent resources.",
-    subtitle: "Everything you need to stay connected with your child's journey, from academic calendars to uniform guidelines, curated for our community.",
+    subtitle: "Academic calendars, uniform guidance, and the practical details families ask about most.",
   },
   resources: [
     { icon: "event", title: "Academic calendar", body: "Holidays, assessments, parent meetings, and celebrations for 2026–27 — see the full year below.", action: "See dates below", large: true },

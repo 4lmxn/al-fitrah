@@ -13,7 +13,9 @@ export const runtime = "nodejs";
 // the CRM alongside form enquiries, tagged by `source`.
 export async function POST(req: Request) {
   const ip = getClientIp(req);
-  if (rateLimited(ip)) {
+  // Fail open when the client IP is unknown: never funnel every visitor into a
+  // single shared "unknown" bucket, which would rate-limit real families en masse.
+  if (ip !== "unknown" && rateLimited(ip)) {
     return NextResponse.json({ ok: false, error: "Too many requests. Please try again shortly." }, { status: 429 });
   }
 

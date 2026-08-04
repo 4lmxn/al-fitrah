@@ -57,6 +57,27 @@ describe("cost invariant: unbounded growth lives in subcollections, not document
   });
 });
 
+describe("cost invariant: no unbounded fetch of the leads collection", () => {
+  const queries = files.find((f) => f.path.endsWith(join("lib", "leadQueries.ts")))!;
+
+  it("the fetch-everything helper is gone", () => {
+    // listLeads() fetched every lead of a type with no limit, on every admin
+    // page load. Reintroducing it makes the dashboard's read count linear in
+    // collection size again — the single most expensive thing this codebase did.
+    expect(queries.text).not.toMatch(/export\s+(async\s+)?function\s+listLeads/);
+  });
+
+  it("every leads query is bounded, counted, or a single document", () => {
+    // Each `.get()` in the data layer must be reachable only via .limit(),
+    // .count(), or .doc() — never a bare collection read.
+    const bare = queries.text
+      .split(/\n\s*\n/)
+      .filter((block) => /\.get\(\)/.test(block))
+      .filter((block) => !/\.limit\(|\.count\(\)|\.doc\(/.test(block));
+    expect(bare).toEqual([]);
+  });
+});
+
 describe("cost invariant: the follow-up digest query is bounded at both ends", () => {
   const cron = files.find((f) => f.path.endsWith(join("api", "cron", "followups", "route.ts")));
 

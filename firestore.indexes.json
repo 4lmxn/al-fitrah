@@ -20,6 +20,35 @@
       ]
     },
     {
+      "//": "Inbox attention badge + view, half 1: overdue follow-ups. No stage filter is needed because updateStage deletes followUpDate on reaching a terminal stage, so admitted/lost leads are not in this index.",
+      "collectionGroup": "leads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "type", "order": "ASCENDING" },
+        { "fieldPath": "followUpDate", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "//": "Inbox attention badge + view, half 2: new leads with no notes older than 48h.",
+      "collectionGroup": "leads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "type", "order": "ASCENDING" },
+        { "fieldPath": "stage", "order": "ASCENDING" },
+        { "fieldPath": "noteCount", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "//": "Insights: this month's enquiry count as an aggregation rather than a scan.",
+      "collectionGroup": "leads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "type", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "ASCENDING" }
+      ]
+    },
+    {
       "//": "Public careers page: active openings in display order.",
       "collectionGroup": "jobOpenings",
       "queryScope": "COLLECTION",

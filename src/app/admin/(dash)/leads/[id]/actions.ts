@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { isValidStage, normalizeStage, stageLabel, PROGRAM_INTERESTS, type LeadType } from "@/lib/leads";
 import { resolveFollowUp } from "@/lib/followup";
 import { queueNote } from "@/lib/notes";
+import { TERMINAL_STAGES } from "@/lib/attention";
 
 export async function updateStage(formData: FormData) {
   const admin = await requireAdmin();
@@ -27,7 +28,14 @@ export async function updateStage(formData: FormData) {
   // logged leaves no record of who advanced the lead or when.
   const db = getDb();
   const batch = db.batch();
-  batch.update(ref, { stage });
+  // Reaching a terminal stage clears any pending follow-up. Nobody should be
+  // chased after they've enrolled or gone elsewhere — and the inbox's overdue
+  // query relies on this: because terminal leads carry no followUpDate, that
+  // query needs no stage filter, which is what keeps it a cheap aggregation.
+  batch.update(ref, {
+    stage,
+    ...(TERMINAL_STAGES.has(stage) ? { followUpDate: FieldValue.delete() } : {}),
+  });
   queueNote(db, batch, id, {
     text: `Moved to ${stageLabel(stage)}`,
     author: admin.email,

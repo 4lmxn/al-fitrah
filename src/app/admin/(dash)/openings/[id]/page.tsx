@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getOpening } from "@/lib/jobOpenings";
+import { requireAdmin } from "@/lib/adminAuth";
 import { Icon } from "@/components/ui/Icon";
 import { OpeningForm } from "@/components/admin/OpeningForm";
 import { updateOpening, deleteOpening } from "../actions";
@@ -9,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export default async function EditOpeningPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const opening = await getOpening(id);
+  const [{ role }, opening] = await Promise.all([requireAdmin(), getOpening(id)]);
   if (!opening) notFound();
 
   return (
@@ -24,18 +25,23 @@ export default async function EditOpeningPage({ params }: { params: Promise<{ id
         <OpeningForm action={updateOpening} opening={opening} submitLabel="Save changes" />
       </div>
 
-      <div className="mt-6 flex items-center justify-between rounded-2xl border border-red-200 bg-red-50/50 p-5">
-        <div>
-          <p className="text-sm font-semibold text-red-800">Delete this opening</p>
-          <p className="text-xs text-red-700/70">Permanently removes it. This cannot be undone.</p>
+      {/* Owners only. Hiding this is a courtesy so staff aren't shown a control
+          that will fail — the real gate is requireOwner() in the action, since
+          a hidden button is not a permission. */}
+      {role === "owner" && (
+        <div className="mt-6 flex items-center justify-between rounded-2xl border border-red-200 bg-red-50/50 p-5">
+          <div>
+            <p className="text-sm font-semibold text-red-800">Delete this opening</p>
+            <p className="text-xs text-red-700/70">Permanently removes it. This cannot be undone.</p>
+          </div>
+          <form action={deleteOpening}>
+            <input type="hidden" name="id" value={opening.id} />
+            <button type="submit" className="rounded-full border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100">
+              Delete
+            </button>
+          </form>
         </div>
-        <form action={deleteOpening}>
-          <input type="hidden" name="id" value={opening.id} />
-          <button type="submit" className="rounded-full border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100">
-            Delete
-          </button>
-        </form>
-      </div>
+      )}
     </div>
   );
 }

@@ -94,6 +94,26 @@ describe("cost invariant: the follow-up digest query is bounded at both ends", (
   });
 });
 
+describe("consistency invariant: one implementation per rule", () => {
+  // These were each written out two or three times. The failure mode is silent:
+  // fix one copy and the others keep the bug, and a wrong country-code prefix
+  // still produces a valid-looking wa.me link — to the wrong person.
+  it("only lib/phone decides what a dialable number looks like", () => {
+    const offenders = files
+      .filter((f) => !f.path.endsWith(join("lib", "phone.ts")))
+      .filter((f) => /length === 10/.test(f.text))
+      .map((f) => f.path);
+    expect(offenders).toEqual([]);
+  });
+
+  it("only lib/stageMeta names a stage", () => {
+    // Two label sources meant the activity timeline and the pipeline chips
+    // could disagree about what a stage is called.
+    const offenders = files.filter((f) => /export function stageLabel/.test(f.text)).map((f) => f.path);
+    expect(offenders).toEqual([]);
+  });
+});
+
 describe("compliance invariant: analytics never loads without consent", () => {
   // DPDP 2023 bars behavioural tracking directed at children, and this site
   // collects a child's name and date of birth. The measurement scripts must

@@ -53,7 +53,3 @@ export const LEAD_TYPE_LABEL: Record<LeadType, string> = {
 export function isValidStage(type: LeadType, stage: string): boolean {
   return PIPELINES[type]?.includes(stage) ?? false;
 }
-
-export function stageLabel(stage: string): string {
-  return stage.charAt(0).toUpperCase() + stage.slice(1);
-}

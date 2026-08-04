@@ -7,19 +7,21 @@ import { isValidStage, normalizeStage, stageLabel, PROGRAM_INTERESTS, type LeadT
 import { resolveFollowUp } from "@/lib/followup";
 import { queueNote } from "@/lib/notes";
 import { TERMINAL_STAGES } from "@/lib/attention";
+import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 
-export async function updateStage(formData: FormData) {
+export async function updateStage(formData: FormData): Promise<ActionResult> {
+  return attempt("updateStage", async () => {
   const admin = await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const stage = String(formData.get("stage") ?? "");
-  if (!id) throw new Error("Missing lead id");
+  if (!id) return fail("Missing lead id");
 
   const ref = getDb().collection("leads").doc(id);
   const doc = await ref.get();
-  if (!doc.exists) throw new Error("Lead not found");
+  if (!doc.exists) return fail("Lead not found");
   const data = doc.data()!;
   const type = data.type as LeadType;
-  if (!isValidStage(type, stage)) throw new Error("Invalid stage for this lead type");
+  if (!isValidStage(type, stage)) return fail("Invalid stage for this lead type");
 
   // No-op if unchanged, so the timeline doesn't fill with duplicate entries.
   if (normalizeStage(data.stage ?? "new") === stage) return;
@@ -47,15 +49,17 @@ export async function updateStage(formData: FormData) {
   // optimistically (InboxBoard), so we deliberately DON'T revalidate "/admin" —
   // that would force a full listLeads() re-read (N docs) on every stage click.
   revalidatePath(`/admin/leads/${id}`);
+  });
 }
 
 // Set or clear the follow-up date. An empty value clears it (lead drops out of
 // the reminder digest); a "YYYY-MM-DD" value is pinned to local midnight.
-export async function setFollowUp(formData: FormData) {
+export async function setFollowUp(formData: FormData): Promise<ActionResult> {
+  return attempt("setFollowUp", async () => {
   const admin = await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const raw = String(formData.get("followUpDate") ?? "").trim();
-  if (!id) throw new Error("Missing lead id");
+  if (!id) return fail("Missing lead id");
 
   // Clearing DELETES the field rather than writing null. A null still occupies
   // the followUpDate index and would be swept into the digest's range query;
@@ -63,7 +67,7 @@ export async function setFollowUp(formData: FormData) {
   let followUpDate: Date | FieldValue = FieldValue.delete();
   if (raw) {
     const d = new Date(`${raw}T00:00:00`);
-    if (Number.isNaN(d.getTime())) throw new Error("Invalid follow-up date");
+    if (Number.isNaN(d.getTime())) return fail("Invalid follow-up date");
     followUpDate = d;
   }
 
@@ -73,16 +77,18 @@ export async function setFollowUp(formData: FormData) {
   });
   console.log(`follow-up set id=${id} date=${raw || "cleared"} by=${admin.email}`);
   revalidatePath(`/admin/leads/${id}`);
+  });
 }
 
 // Push the follow-up forward by N days from today (a "snooze"). Base is today,
 // so snoozing an overdue lead always lands in the future.
-export async function snoozeFollowUp(formData: FormData) {
+export async function snoozeFollowUp(formData: FormData): Promise<ActionResult> {
+  return attempt("snoozeFollowUp", async () => {
   const admin = await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const days = Number(formData.get("days"));
-  if (!id) throw new Error("Missing lead id");
-  if (!Number.isFinite(days) || days <= 0 || days > 90) throw new Error("Invalid snooze");
+  if (!id) return fail("Missing lead id");
+  if (!Number.isFinite(days) || days <= 0 || days > 90) return fail("Invalid snooze");
 
   const target = new Date();
   target.setHours(0, 0, 0, 0);
@@ -94,18 +100,20 @@ export async function snoozeFollowUp(formData: FormData) {
   });
   console.log(`follow-up snoozed id=${id} +${days}d by=${admin.email}`);
   revalidatePath(`/admin/leads/${id}`);
+  });
 }
 
 // Log what happened and schedule what's next in one submit — the loop staff
 // actually run after every call. A blank note is fine if a follow-up is set,
 // and vice versa; if neither is present the action is a no-op.
-export async function logContact(formData: FormData) {
+export async function logContact(formData: FormData): Promise<ActionResult> {
+  return attempt("logContact", async () => {
   const admin = await requireAdmin();
   const id = String(formData.get("id") ?? "");
   // Cap note length. The 1 MiB ceiling no longer applies now that notes are a
   // subcollection, but an unbounded textarea is still worth bounding.
   const text = String(formData.get("text") ?? "").trim().slice(0, 2000);
-  if (!id) throw new Error("Missing lead id");
+  if (!id) return fail("Missing lead id");
 
   const update: Record<string, unknown> = { updatedAt: FieldValue.serverTimestamp() };
 
@@ -128,19 +136,21 @@ export async function logContact(formData: FormData) {
   await batch.commit();
   console.log(`contact logged id=${id} note=${text ? "y" : "n"} by=${admin.email}`);
   revalidatePath(`/admin/leads/${id}`);
+  });
 }
 
 // Edit a lead's contact fields — fix a typo, or fill in the details of a
 // walk-in that was logged from the front desk with only a name and number.
-export async function editContact(formData: FormData) {
+export async function editContact(formData: FormData): Promise<ActionResult> {
+  return attempt("editContact", async () => {
   const admin = await requireAdmin();
   const id = String(formData.get("id") ?? "");
-  if (!id) throw new Error("Missing lead id");
+  if (!id) return fail("Missing lead id");
 
   const parentName = String(formData.get("parentName") ?? "").trim().slice(0, 80);
   const phone = String(formData.get("phone") ?? "").trim().slice(0, 20);
-  if (parentName.length < 2) throw new Error("Parent name is required");
-  if (!/^[0-9+\-\s()]{7,20}$/.test(phone)) throw new Error("A valid phone number is required");
+  if (parentName.length < 2) return fail("Parent name is required");
+  if (!/^[0-9+\-\s()]{7,20}$/.test(phone)) return fail("A valid phone number is required");
 
   const childName = String(formData.get("childName") ?? "").trim().slice(0, 80);
   const email = String(formData.get("email") ?? "").trim().slice(0, 120);
@@ -158,4 +168,5 @@ export async function editContact(formData: FormData) {
   });
   console.log(`contact edited id=${id} by=${admin.email}`);
   revalidatePath(`/admin/leads/${id}`);
+  });
 }

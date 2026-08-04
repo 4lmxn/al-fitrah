@@ -3,8 +3,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
-import { requireAdmin, requireOwner } from "@/lib/adminAuth";
+import { requireAdmin } from "@/lib/adminAuth";
 import { EMPLOYMENT_TYPES } from "@/lib/jobOpenings";
+import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 
 const COLLECTION = "jobOpenings";
 
@@ -19,9 +20,14 @@ type ParsedOpening = {
 
 // Length caps mirror the public zod schemas: openings render on the public
 // careers page, so even admin input gets bounded.
-function parse(formData: FormData): ParsedOpening {
+// Returns a result rather than throwing so a validation message survives to the
+// UI intact — routed through attempt() it would collapse to "something went
+// wrong", which tells an admin nothing about the empty title field.
+type Parsed = { ok: true; data: ParsedOpening } | { ok: false; error: string };
+
+function parse(formData: FormData): Parsed {
   const title = String(formData.get("title") ?? "").trim().slice(0, 120);
-  if (!title) throw new Error("Title is required");
+  if (!title) return { ok: false, error: "Title is required" };
 
   const employmentTypeRaw = String(formData.get("employmentType") ?? "Full-time");
   const employmentType = (EMPLOYMENT_TYPES as readonly string[]).includes(employmentTypeRaw)
@@ -37,12 +43,15 @@ function parse(formData: FormData): ParsedOpening {
   const orderRaw = Number(formData.get("order"));
 
   return {
-    title,
-    employmentType,
-    summary: String(formData.get("summary") ?? "").trim().slice(0, 2000),
-    requirements,
-    active: formData.get("active") === "on",
-    order: Number.isFinite(orderRaw) ? orderRaw : 0,
+    ok: true,
+    data: {
+      title,
+      employmentType,
+      summary: String(formData.get("summary") ?? "").trim().slice(0, 2000),
+      requirements,
+      active: formData.get("active") === "on",
+      order: Number.isFinite(orderRaw) ? orderRaw : 0,
+    },
   };
 }
 
@@ -53,9 +62,12 @@ function revalidateAll(id?: string) {
   revalidatePath("/careers");
 }
 
-export async function createOpening(formData: FormData) {
+export async function createOpening(formData: FormData): Promise<ActionResult> {
+  return attempt("createOpening", async () => {
   const admin = await requireAdmin();
-  const data = parse(formData);
+  const parsed = parse(formData);
+  if (!parsed.ok) return fail(parsed.error);
+  const data = parsed.data;
   const ref = await getDb().collection(COLLECTION).add({
     ...data,
     createdAt: FieldValue.serverTimestamp(),
@@ -64,13 +76,17 @@ export async function createOpening(formData: FormData) {
   console.log(`opening created id=${ref.id} by=${admin.email}`);
   revalidateAll();
   redirect("/admin/openings");
+  });
 }
 
-export async function updateOpening(formData: FormData) {
+export async function updateOpening(formData: FormData): Promise<ActionResult> {
+  return attempt("updateOpening", async () => {
   const admin = await requireAdmin();
   const id = String(formData.get("id") ?? "");
-  if (!id) throw new Error("Missing opening id");
-  const data = parse(formData);
+  if (!id) return fail("Missing opening id");
+  const parsed = parse(formData);
+  if (!parsed.ok) return fail(parsed.error);
+  const data = parsed.data;
   await getDb().collection(COLLECTION).doc(id).update({
     ...data,
     updatedAt: FieldValue.serverTimestamp(),
@@ -78,28 +94,36 @@ export async function updateOpening(formData: FormData) {
   console.log(`opening updated id=${id} by=${admin.email}`);
   revalidateAll(id);
   redirect("/admin/openings");
+  });
 }
 
 // Toggle active straight from the list — formData carries id + next state.
-export async function toggleOpening(formData: FormData) {
+export async function toggleOpening(formData: FormData): Promise<ActionResult> {
+  return attempt("toggleOpening", async () => {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const active = formData.get("active") === "true";
-  if (!id) throw new Error("Missing opening id");
+  if (!id) return fail("Missing opening id");
   await getDb().collection(COLLECTION).doc(id).update({
     active,
     updatedAt: FieldValue.serverTimestamp(),
   });
   revalidateAll(id);
+  });
 }
 
-export async function deleteOpening(formData: FormData) {
-  // Deletion is irreversible and leaves no record — owners only.
-  const admin = await requireOwner();
+export async function deleteOpening(formData: FormData): Promise<ActionResult> {
+  return attempt("deleteOpening", async () => {
+  // Deletion is irreversible and leaves no record — owners only. Checked here
+  // rather than via requireOwner() so the refusal reaches the admin as a
+  // message; a throw would be flattened to "something went wrong" by attempt().
+  const admin = await requireAdmin();
+  if (admin.role !== "owner") return fail("Deleting an opening needs an owner account.");
   const id = String(formData.get("id") ?? "");
-  if (!id) throw new Error("Missing opening id");
+  if (!id) return fail("Missing opening id");
   await getDb().collection(COLLECTION).doc(id).delete();
   console.log(`opening deleted id=${id} by=${admin.email}`);
   revalidateAll();
   redirect("/admin/openings");
+  });
 }

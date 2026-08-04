@@ -2,6 +2,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import type { LeadRow, InboxKpis } from "@/lib/leadQueries";
+import type { ActionResult } from "@/lib/actionResult";
 import { PIPELINES, type LeadType } from "@/lib/leads";
 import { stageMeta } from "@/lib/stageMeta";
 import { needsAttention } from "@/lib/attention";
@@ -105,7 +106,7 @@ export function InboxBoard({
   function mutate(
     before: LeadRow,
     after: LeadRow,
-    run: () => Promise<unknown>,
+    run: () => Promise<ActionResult>,
     failMsg: string,
   ) {
     const snapshot = state;
@@ -114,7 +115,15 @@ export function InboxBoard({
     markPending(before.id, true);
     startTransition(async () => {
       try {
-        await run();
+        // Actions now report expected failures by returning rather than
+        // throwing, so a result that isn't ok must roll back too — otherwise
+        // the optimistic change sticks on screen over a write that never
+        // happened, and the board quietly disagrees with Firestore.
+        const result = await run();
+        if (!result.ok) {
+          setState(snapshot);
+          setError(result.error);
+        }
       } catch {
         setState(snapshot); // roll back the optimistic change
         setError(failMsg);

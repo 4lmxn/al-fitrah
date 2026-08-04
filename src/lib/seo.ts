@@ -2,6 +2,7 @@
 // canonical site URL, social links, and the structured-data payload.
 import type { Metadata } from "next";
 import { site } from "@/content/site";
+import { normalizeIndianPhone, waLink } from "@/lib/phone";
 
 // Canonical production origin. Override per-environment with NEXT_PUBLIC_SITE_URL
 // (no trailing slash). Falls back to the Firebase App Hosting default domain.
@@ -24,12 +25,13 @@ export const FULL_ADDRESS = {
   country: "IN",
 } as const;
 
-// Phone digits only (no "+" or spaces) for wa.me / tel: links.
-const digits = (phone: string) => phone.replace(/[^\d]/g, "");
+// The school's own number is stored with its country code, so normalisation is
+// a no-op here — but it goes through the same helper as every other wa.me link
+// so there is exactly one place that decides what a dialable number looks like.
+const WA_DIGITS = normalizeIndianPhone(site.contact.phone) ?? "";
 
-export const PHONE_E164 = `+${digits(site.contact.phone)}`;
-export const WHATSAPP_URL = `https://wa.me/${digits(site.contact.phone)}`;
-const WA_DIGITS = digits(site.contact.phone);
+export const PHONE_E164 = `+${WA_DIGITS}`;
+export const WHATSAPP_URL = `https://wa.me/${WA_DIGITS}`;
 
 // wa.me enquiry link with a pre-filled message. `context` (usually the page
 // path or a section name) is folded into the text so replies arrive tagged with
@@ -37,7 +39,7 @@ const WA_DIGITS = digits(site.contact.phone);
 export function waEnquiryLink(context?: string): string {
   const where = context ? ` (from ${context})` : "";
   const text = `Assalamu alaikum, I'd like to know more about admissions at Al Fitrah Pre School, Sarjapura${where}.`;
-  return `https://wa.me/${WA_DIGITS}?text=${encodeURIComponent(text)}`;
+  return waLink(site.contact.phone, text) ?? WHATSAPP_URL;
 }
 
 // Keyless Google Maps query + embed (no API key required).

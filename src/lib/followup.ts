@@ -1,3 +1,4 @@
+import { waLink } from "@/lib/phone";
 // One place to edit the follow-up WhatsApp copy staff send from the console.
 // {first} is replaced with the lead's first name.
 export const FOLLOW_UP_TEMPLATE =
@@ -39,12 +40,8 @@ export function resolveFollowUp(
   return d;
 }
 
-// wa.me link with the follow-up template pre-filled. Assumes +91 for bare
-// 10-digit Indian numbers. Returns null if the phone has no digits.
+// wa.me link with the follow-up template pre-filled. Returns null if the phone
+// has no digits to dial.
 export function followUpWaLink(phone: string, name: string): string | null {
-  const digits = phone.replace(/\D/g, "");
-  if (!digits) return null;
-  const full = digits.length === 10 ? `91${digits}` : digits;
-  const text = FOLLOW_UP_TEMPLATE.replace("{first}", firstName(name));
-  return `https://wa.me/${full}?text=${encodeURIComponent(text)}`;
+  return waLink(phone, FOLLOW_UP_TEMPLATE.replace("{first}", firstName(name)));
 }

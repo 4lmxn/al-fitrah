@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A newer push to the same branch makes the in-flight run irrelevant.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      # Build is its own step so a type error is distinguishable from a test
+      # failure in the checks list. The e2e job builds again via Playwright's
+      # webServer; that duplication is cheap next to debugging a merged break.
+      - name: Build
+        run: npm run build
+        env:
+          # Build-time public config. Real values live in apphosting.yaml; CI
+          # only needs them present so metadataBase and the Firebase client
+          # initialise. Never put a secret here — this file is public.
+          NEXT_PUBLIC_SITE_URL: https://ci.invalid
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: al-fitrah-ci
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run e2e
+        run: npm run test:e2e
+        env:
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: al-fitrah-ci
+          # The suite exercises public pages, so the holding-page gate must be
+          # off or every route would render /coming-soon and the specs would
+          # fail for the wrong reason.
+          NEXT_PUBLIC_COMING_SOON: "0"
+
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

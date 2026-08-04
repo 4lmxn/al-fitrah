@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo";
+import { COMING_SOON } from "@/lib/flags";
 
 // Public, indexable routes. Admin (/admin) and API (/api) are intentionally
 // excluded — they are blocked in robots.ts too.
@@ -20,7 +21,12 @@ const routes: { path: string; priority: number; changeFrequency: MetadataRoute.S
 // No `lastModified`: a build-time `new Date()` stamps every URL on every deploy,
 // which Google learns to distrust. Omit it until we track real per-page dates.
 export default function sitemap(): MetadataRoute.Sitemap {
-  return routes.map(({ path, priority, changeFrequency }) => ({
+  // While gated, every path below returns the holding page. Submitting them
+  // would hand Google 11 URLs of identical content to crawl and distrust, so
+  // the sitemap narrows to the one page that is genuinely live.
+  const live = COMING_SOON ? routes.filter((r) => r.path === "/") : routes;
+
+  return live.map(({ path, priority, changeFrequency }) => ({
     url: `${SITE_URL}${path}`,
     changeFrequency,
     priority,

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getInbox } from "@/lib/leadQueries";
+import { getInbox, SEARCH_SCAN_LIMIT } from "@/lib/leadQueries";
 import { PIPELINES, LEAD_TYPE_LABEL, type LeadType } from "@/lib/leads";
 import { stageMeta } from "@/lib/stageMeta";
 import { Icon } from "@/components/ui/Icon";
@@ -16,7 +16,7 @@ const TYPE_ICON: Record<LeadType, string> = {
 export default async function AdminInbox({
   searchParams,
 }: {
-  searchParams: Promise<{ type?: string; stage?: string; q?: string; view?: string }>;
+  searchParams: Promise<{ type?: string; stage?: string; q?: string; view?: string; after?: string }>;
 }) {
   const sp = await searchParams;
   const type: LeadType = TYPES.includes(sp.type as LeadType) ? (sp.type as LeadType) : "admission_inquiry";
@@ -24,8 +24,20 @@ export default async function AdminInbox({
   const stage = !attention && sp.stage && PIPELINES[type].includes(sp.stage) ? sp.stage : undefined;
   const q = sp.q?.trim() || "";
 
-  const { rows, counts, kpis, attentionCount } = await getInbox(type, { stage, q, attention });
+  const { rows, counts, kpis, attentionCount, nextCursor, searchTruncated } = await getInbox(type, {
+    stage,
+    q,
+    attention,
+    cursor: sp.after,
+  });
   const wonLabel = type === "staff_application" ? "Hired" : "Admitted";
+
+  // "Next page" preserves the active filter; anything else resets to page one,
+  // since a cursor from one filter is meaningless under another.
+  const nextHref = nextCursor
+    ? `/admin?${new URLSearchParams({ type, ...(stage ? { stage } : {}), after: nextCursor }).toString()}`
+    : null;
+  const isPaged = Boolean(sp.after);
 
   // Options for the inline stage changer, labelled from the pipeline.
   const stageOptions = PIPELINES[type].map((s) => ({ value: s, label: stageMeta(s).label }));
@@ -68,7 +80,7 @@ export default async function AdminInbox({
           active filter so a navigation remounts it with fresh server data;
           between navigations it updates optimistically without re-reading. */}
       <InboxBoard
-        key={`${type}|${stage ?? ""}|${attention ? "attn" : ""}|${q}`}
+        key={`${type}|${stage ?? ""}|${attention ? "attn" : ""}|${q}|${sp.after ?? ""}`}
         type={type}
         activeStage={stage}
         attention={attention}
@@ -77,6 +89,41 @@ export default async function AdminInbox({
         stageOptions={stageOptions}
         initial={{ rows, counts, kpis, attentionCount }}
       />
+
+      {/* Search scans a bounded window rather than the whole collection, so say
+          so instead of quietly implying these are all the matches there are. */}
+      {searchTruncated && (
+        <p className="mt-4 flex items-center gap-2 rounded-xl border border-gold/30 bg-gold-soft/40 px-4 py-3 text-xs text-[#7a611a]">
+          <Icon name="info" className="text-[16px]" />
+          Searched the {SEARCH_SCAN_LIMIT} most recent {LEAD_TYPE_LABEL[type].toLowerCase()} records. Narrow the
+          search, or filter by stage first, if you expect an older match.
+        </p>
+      )}
+
+      {/* Cursor paging. No page numbers: that needs a total, and counting the
+          whole collection on every view is exactly the cost this replaced. */}
+      {(nextHref || isPaged) && (
+        <nav aria-label="Pagination" className="mt-5 flex items-center justify-between gap-3">
+          {isPaged ? (
+            <Link
+              href={`/admin?${new URLSearchParams({ type, ...(stage ? { stage } : {}) }).toString()}`}
+              className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep shadow-soft ring-1 ring-emerald/10 transition hover:bg-emerald/5"
+            >
+              <Icon name="first_page" className="text-[18px]" /> First page
+            </Link>
+          ) : (
+            <span />
+          )}
+          {nextHref && (
+            <Link
+              href={nextHref}
+              className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep shadow-soft ring-1 ring-emerald/10 transition hover:bg-emerald/5"
+            >
+              Older <Icon name="arrow_forward" className="text-[18px]" />
+            </Link>
+          )}
+        </nav>
+      )}
     </div>
   );
 }

@@ -6,7 +6,9 @@ import type { NextRequest } from "next/server";
 // /coming-soon. Admin and API stay reachable so the team can still sign in and
 // test the leads pipeline before the public launch. Flip the env to "0" (or
 // remove it) and redeploy to reveal the finished site.
-const COMING_SOON = process.env.NEXT_PUBLIC_COMING_SOON === "1";
+// Shared with robots.ts and sitemap.ts so the gate, the crawl rules, and the
+// submitted URLs can never disagree about whether the site is live.
+import { COMING_SOON } from "@/lib/flags";
 
 export function proxy(request: NextRequest) {
   if (!COMING_SOON) return NextResponse.next();

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { SubmitErrorFallback } from "@/components/pages/SubmitErrorFallback";
 
 type Status = "idle" | "submitting" | "success" | "error";
 type FieldErrors = Record<string, string[]>;
@@ -66,13 +67,13 @@ export function CaptureForm({
       }
       if (!res.ok || !data.ok) {
         setFieldErrors(data.issues ?? {});
-        setError(data.error || "Something went wrong. Please try again or call us.");
+        setError(data.error || "Something went wrong. Please try again.");
         setStatus("error");
         return;
       }
       setStatus("success");
     } catch {
-      setError("Network error. Please try again or call us.");
+      setError("Network error — that didn't send.");
       setStatus("error");
     } finally {
       clearTimeout(timer);
@@ -115,7 +116,9 @@ export function CaptureForm({
         <input type="checkbox" name="whatsapp" defaultChecked className="h-4 w-4 rounded accent-emerald" />
         This number is on WhatsApp
       </label>
-      {status === "error" && <p role="alert" className={`text-sm ${dark ? "text-gold-light" : "text-red-700"}`}>{error}</p>}
+      {status === "error" && (
+        <SubmitErrorFallback message={error} context={source === "prospectus" ? "prospectus form" : "waitlist form"} dark={dark} />
+      )}
       <button
         type="submit"
         disabled={busy}

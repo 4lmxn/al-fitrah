@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
+import { SubmitErrorFallback } from "@/components/pages/SubmitErrorFallback";
 import { AGE_BANDS } from "@/lib/leadSchema";
 import { PROGRAM_INTERESTS } from "@/lib/leads";
 
@@ -73,13 +74,13 @@ export function InquiryForm() {
       }
       if (!res.ok || !data.ok) {
         setFieldErrors(data.issues ?? {});
-        setError(data.error || "Something went wrong. Please try again or call us.");
+        setError(data.error || "Something went wrong. Please try again.");
         setStatus("error");
         return;
       }
       setStatus("success");
     } catch {
-      setError("Network error. Please try again or call us.");
+      setError("Network error — your enquiry didn't send.");
       setStatus("error");
     } finally {
       clearTimeout(timer);
@@ -161,7 +162,7 @@ export function InquiryForm() {
       </div>
 
       {status === "error" && (
-        <p role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+        <SubmitErrorFallback message={error} context="admissions enquiry form" />
       )}
 
       <button

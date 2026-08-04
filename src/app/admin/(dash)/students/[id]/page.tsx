@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getStudent, PROGRAMS, STUDENT_STATUSES, STUDENT_STATUS_LABEL } from "@/lib/students";
+import { getStudent, CLASS_SECTIONS, PROGRAMS, STUDENT_STATUSES, STUDENT_STATUS_LABEL } from "@/lib/students";
 import { updateStudent } from "../actions";
 import { Icon } from "@/components/ui/Icon";
 import { ActionForm } from "@/components/admin/ActionForm";
@@ -106,7 +106,14 @@ export default async function StudentDetail({ params }: { params: Promise<{ id: 
             </label>
             <label className="block">
               <span className={label}>Class / section</span>
-              <input name="classSection" defaultValue={student.classSection ?? ""} placeholder="e.g. Rose" className={field} />
+              {/* A fixed list, not free text: attendance groups by this value,
+                  and "Rose" vs "rose" would silently split the register. */}
+              <select name="classSection" defaultValue={student.classSection ?? ""} className={field}>
+                <option value="">Not assigned</option>
+                {CLASS_SECTIONS.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
             </label>
             <label className="block">
               <span className={label}>Status</span>

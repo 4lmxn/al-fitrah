@@ -174,8 +174,14 @@ export function InquiryForm() {
         {!busy && <Icon name="arrow_forward" className="text-base transition-transform group-hover:translate-x-1" />}
       </button>
 
+      {/* DPDP: a child's data may only be processed with verifiable parental
+          consent, so the enquiry has to state who is submitting it. Kept as a
+          statement above the button rather than another checkbox — one more
+          tick box costs conversions and adds no legal weight over an
+          unambiguous notice at the point of submission. */}
       <p className="text-xs leading-relaxed text-ink/50">
-        We use your details only to respond to your enquiry. See our{" "}
+        By submitting, you confirm you are the parent or legal guardian of the child named above.
+        We use your details only to respond to your enquiry, and never for advertising. See our{" "}
         <Link href="/privacy" className="font-medium text-emerald underline underline-offset-2 hover:text-emerald-deep">
           privacy policy
         </Link>

@@ -94,6 +94,28 @@ describe("cost invariant: the follow-up digest query is bounded at both ends", (
   });
 });
 
+describe("compliance invariant: analytics never loads without consent", () => {
+  // DPDP 2023 bars behavioural tracking directed at children, and this site
+  // collects a child's name and date of birth. The measurement scripts must
+  // stay behind an explicit opt-in — a regression here is a legal problem, not
+  // a performance one, and nothing else in the suite would notice it.
+  const analytics = files.find((f) => f.path.endsWith(join("components", "Analytics.tsx")))!;
+
+  it("reads a consent decision before rendering anything", () => {
+    expect(analytics.text).toMatch(/useSyncExternalStore|consent/i);
+  });
+
+  it("returns early when consent is absent or refused", () => {
+    expect(analytics.text).toMatch(/consent === "undecided"/);
+    expect(analytics.text).toMatch(/consent === "denied"\)\s*return null/);
+  });
+
+  it("disables ad personalisation and Google signals on the tag", () => {
+    expect(analytics.text).toMatch(/allow_google_signals:\s*false/);
+    expect(analytics.text).toMatch(/allow_ad_personalization_signals:\s*false/);
+  });
+});
+
 describe("cost invariant: public pages do not read Firestore per request", () => {
   // force-dynamic on a public page means one Firestore read per visitor. A
   // shared campaign link can then burn the daily read budget on content that

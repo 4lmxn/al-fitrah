@@ -18,4 +18,15 @@ export const site: Site = {
     // Keep in sync with FULL_ADDRESS in src/lib/seo.ts (single source of address truth).
     address: "3rd Floor, Vivian Complex, Opp HP Petrol Bunk, Sompura Gate, Sarjapura, Bengaluru, Karnataka 562125",
   },
+  // ⚠️ NEEDS A REAL NAME BEFORE LAUNCH.
+  // India's DPDP Act 2023 requires a named, contactable person for data
+  // grievances — the school collects children's names, dates of birth and age
+  // bands, which the Act treats as a special category. Until `name` is filled
+  // in, the privacy page falls back to naming the school itself, which is
+  // weaker than the Act asks for. Ask the school who owns this and put them
+  // here; no code change needed beyond this line.
+  grievanceOfficer: {
+    name: "",
+    email: "alfitrah.sompura@gmail.com",
+  },
 };

@@ -7,6 +7,8 @@ export type Site = {
   ctaLabel: string;
   nav: NavItem[];
   contact: { phone: string; email: string; address: string };
+  /** DPDP grievance contact. `name` empty means "not yet supplied by the school". */
+  grievanceOfficer: { name: string; email: string };
 };
 export type Home = {
   hero: { eyebrow: string; title: string; subtitle: string; cta: Cta; image: string; imageAlt: string; badge: string };

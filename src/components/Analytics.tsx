@@ -1,24 +1,114 @@
+"use client";
+import { useSyncExternalStore } from "react";
 import Script from "next/script";
 
-// Google Analytics 4. Renders nothing until NEXT_PUBLIC_GA_ID is set, so it is
-// safe to ship before the measurement ID exists. Set the env var (e.g.
-// "G-XXXXXXXXXX") to switch analytics on — no code change needed.
+// Analytics, gated behind explicit consent.
+//
+// India's DPDP Act 2023 treats children's data as a special category and bars
+// behavioural tracking and targeted advertising directed at children. This site
+// collects a child's name, date of birth and age band on the same pages that
+// were loading GA4 unconditionally. Consent has to be opt-IN: no measurement
+// until someone chooses it, and a refusal that sticks.
+//
+// Stored in localStorage rather than a cookie on purpose — nothing needs to
+// reach the server, and a consent cookie sent on every request is the sort of
+// thing that ends up in a log.
+
+const STORAGE_KEY = "alfitrah.analytics-consent";
+
+// "unknown" is the server's answer: during SSR there is no storage to read, and
+// rendering the banner there would flash it at someone who already answered.
+type Consent = "granted" | "denied" | "undecided" | "unknown";
+
+// Consent lives in localStorage, which React can't see. useSyncExternalStore is
+// the supported way to read that without a setState-in-effect: it also keeps
+// every mounted copy — and other tabs, via the `storage` event — in agreement.
+const listeners = new Set<() => void>();
+
+function subscribe(onChange: () => void): () => void {
+  listeners.add(onChange);
+  window.addEventListener("storage", onChange);
+  return () => {
+    listeners.delete(onChange);
+    window.removeEventListener("storage", onChange);
+  };
+}
+
+// Must return a primitive: a fresh object each call would loop forever.
+function getSnapshot(): Consent {
+  try {
+    const v = localStorage.getItem(STORAGE_KEY);
+    return v === "granted" || v === "denied" ? v : "undecided";
+  } catch {
+    // Private browsing or storage disabled. Treat as undecided — and since a
+    // choice can't be persisted, analytics never loads.
+    return "undecided";
+  }
+}
+
+const getServerSnapshot = (): Consent => "unknown";
+
 export function Analytics() {
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
-  if (!gaId) return null;
+  const consent = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+  function choose(next: "granted" | "denied") {
+    try {
+      localStorage.setItem(STORAGE_KEY, next);
+    } catch {
+      // Can't persist — the choice still applies for this page view.
+    }
+    for (const l of listeners) l();
+  }
+
+  // No measurement ID configured, or still server-rendering: no scripts, no banner.
+  if (!gaId || consent === "unknown") return null;
+
+  if (consent === "undecided") {
+    return (
+      <div
+        role="dialog"
+        aria-label="Analytics consent"
+        className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-xl rounded-2xl border border-emerald/15 bg-white/95 p-4 shadow-lift backdrop-blur sm:inset-x-auto sm:bottom-4 sm:right-4"
+      >
+        <p className="text-sm text-ink/75">
+          We&apos;d like to measure how families find this site, using Google Analytics. Nothing is
+          measured unless you agree, and we never use it to advertise to children.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => choose("granted")}
+            className="rounded-full bg-emerald px-4 py-2 text-xs font-semibold text-cream transition hover:bg-emerald-deep"
+          >
+            Allow
+          </button>
+          <button
+            type="button"
+            onClick={() => choose("denied")}
+            className="rounded-full px-4 py-2 text-xs font-semibold text-emerald-deep ring-1 ring-inset ring-emerald/20 transition hover:bg-emerald/5"
+          >
+            No thanks
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (consent === "denied") return null;
 
   return (
     <>
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-        strategy="afterInteractive"
-      />
+      <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="afterInteractive" />
       <Script id="ga4-init" strategy="afterInteractive">
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', '${gaId}');
+          // Measurement only: no ad signals, no cross-site identifiers. DPDP
+          // bars targeted advertising directed at children, and this site is
+          // about children by definition.
+          gtag('config', '${gaId}', { anonymize_ip: true, allow_google_signals: false, allow_ad_personalization_signals: false });
         `}
       </Script>
     </>

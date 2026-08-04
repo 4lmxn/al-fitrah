@@ -19,6 +19,11 @@ service cloud.firestore {
     match /attendance/{doc=**} {
       allow read, write: if false;
     }
+    // The fee ledger. Server-only, and append-only in application code — a
+    // client able to write here could rewrite what a family has paid.
+    match /payments/{doc=**} {
+      allow read, write: if false;
+    }
     // CMS content collections (added in Plan 3) will allow public read here.
     // Default: deny everything not explicitly allowed.
     match /{document=**} {

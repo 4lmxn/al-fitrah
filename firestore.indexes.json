@@ -165,6 +165,36 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "//": "A student's payment history, newest first.",
+      "collectionGroup": "payments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "studentId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "receivedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "//": "Receipt-number allocation: highest receipt issued in a calendar year.",
+      "collectionGroup": "payments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "receiptYear",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "receiptNumber",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []

@@ -9,6 +9,8 @@ import { LeadAvatar } from "@/components/admin/LeadAvatar";
 import { StagePill } from "@/components/admin/StagePill";
 import { CopyButton } from "@/components/admin/CopyButton";
 import { ActionForm } from "@/components/admin/ActionForm";
+import { PROGRAMS, studentForLead } from "@/lib/students";
+import { createStudentFromLead } from "../../students/actions";
 import { EditContact } from "@/components/admin/EditContact";
 import { sourceLabel } from "@/lib/leads";
 import { referralCode, referralLink, referralShareLink } from "@/lib/referral";
@@ -61,6 +63,9 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
   // Admitted parents are the highest-ROI referral channel — surface a personal
   // link they can forward. Code is derived deterministically, no extra storage.
   const showReferral = lead.type === "admission_inquiry" && lead.stage === "admitted";
+  // Only looked up for admitted leads: an extra read on every other lead page
+  // would be paid by every view to answer a question that can't be yes.
+  const enrolled = showReferral ? await studentForLead(lead.id) : null;
   const refCode = showReferral ? referralCode(lead.name, lead.phone) : "";
 
   return (
@@ -329,6 +334,80 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
               ))}
             </div>
           </section>
+
+          {/* Enrolment — the one way a student record gets created, so the
+              pipeline stays the single entry point and every student keeps a
+              traceable line back to the enquiry that produced them. */}
+          {showReferral && (
+            <section className="mt-6 rounded-2xl border border-emerald/15 bg-white/90 p-6 shadow-soft">
+              <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+                <Icon name="school" className="text-[18px] text-gold" /> Enrolment
+              </h2>
+              {enrolled ? (
+                <p className="mt-3 text-sm text-ink/70">
+                  Enrolled as{" "}
+                  <Link href={`/admin/students/${enrolled.id}`} className="font-semibold text-emerald hover:text-emerald-deep">
+                    {enrolled.fullName} ({enrolled.admissionNumber})
+                  </Link>
+                  .
+                </p>
+              ) : (
+                <>
+                  <p className="mt-2 text-xs leading-relaxed text-ink/60">
+                    Creates the student record and issues an admission number. The enquiry stays as the
+                    record of how this family found the school.
+                  </p>
+                  <ActionForm action={createStudentFromLead} className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <input type="hidden" name="leadId" value={lead.id} />
+                    <label className="block">
+                      <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/45">Child&apos;s first name</span>
+                      <input
+                        name="firstName"
+                        required
+                        defaultValue={(lead.childName ?? "").split(" ")[0] ?? ""}
+                        className="w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm outline-none focus:border-emerald focus:ring-2 focus:ring-emerald/20"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/45">Last name</span>
+                      <input
+                        name="lastName"
+                        defaultValue={(lead.childName ?? "").split(" ").slice(1).join(" ")}
+                        className="w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm outline-none focus:border-emerald focus:ring-2 focus:ring-emerald/20"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/45">Program</span>
+                      <select
+                        name="program"
+                        defaultValue={lead.programInterest ?? "Pre-KG"}
+                        className="w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm outline-none focus:border-emerald focus:ring-2 focus:ring-emerald/20"
+                      >
+                        {PROGRAMS.map((p) => (
+                          <option key={p} value={p}>{p}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="block">
+                      <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/45">Date of birth</span>
+                      <input
+                        type="date"
+                        name="dob"
+                        defaultValue={lead.childDob ?? ""}
+                        className="w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm outline-none focus:border-emerald focus:ring-2 focus:ring-emerald/20"
+                      />
+                    </label>
+                    <button
+                      type="submit"
+                      className="sm:col-span-2 inline-flex items-center justify-center gap-2 rounded-full bg-emerald px-5 py-2.5 text-sm font-semibold text-cream transition hover:bg-emerald-deep"
+                    >
+                      <Icon name="school" className="text-[18px]" /> Enrol as student
+                    </button>
+                  </ActionForm>
+                </>
+              )}
+            </section>
+          )}
 
           {/* Referral — only once a family is admitted */}
           {showReferral && (

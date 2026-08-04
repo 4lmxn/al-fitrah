@@ -33,8 +33,10 @@ export async function updateStage(formData: FormData) {
     updatedAt: FieldValue.serverTimestamp(),
   });
   console.log(`stage updated id=${id} stage=${stage} by=${admin.email}`);
+  // Only the detail page is revalidated. The inbox list updates itself
+  // optimistically (InboxBoard), so we deliberately DON'T revalidate "/admin" —
+  // that would force a full listLeads() re-read (N docs) on every stage click.
   revalidatePath(`/admin/leads/${id}`);
-  revalidatePath("/admin");
 }
 
 // Set or clear the follow-up date. An empty value clears it (lead drops out of
@@ -58,7 +60,6 @@ export async function setFollowUp(formData: FormData) {
   });
   console.log(`follow-up set id=${id} date=${raw || "cleared"} by=${admin.email}`);
   revalidatePath(`/admin/leads/${id}`);
-  revalidatePath("/admin");
 }
 
 // Push the follow-up forward by N days from today (a "snooze"). Base is today,
@@ -80,7 +81,6 @@ export async function snoozeFollowUp(formData: FormData) {
   });
   console.log(`follow-up snoozed id=${id} +${days}d by=${admin.email}`);
   revalidatePath(`/admin/leads/${id}`);
-  revalidatePath("/admin");
 }
 
 export async function addNote(formData: FormData) {

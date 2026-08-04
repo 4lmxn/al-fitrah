@@ -43,6 +43,20 @@ describe("cost invariant: never write a placeholder null into an indexed field",
   });
 });
 
+describe("cost invariant: unbounded growth lives in subcollections, not documents", () => {
+  // Appending to an array on the lead document rewrites the whole document on
+  // every note and walks it toward Firestore's 1 MiB ceiling, past which the
+  // lead rejects every further write — including stage changes, which append to
+  // the same array. It also forces list views to transfer every lead's entire
+  // note history just to read `notes.length`.
+  it("nothing appends to a notes array", () => {
+    const offenders = files
+      .filter((f) => /notes:\s*FieldValue\.arrayUnion/.test(f.text))
+      .map((f) => f.path);
+    expect(offenders).toEqual([]);
+  });
+});
+
 describe("cost invariant: the follow-up digest query is bounded at both ends", () => {
   const cron = files.find((f) => f.path.endsWith(join("api", "cron", "followups", "route.ts")));
 

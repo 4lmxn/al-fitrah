@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { PIPELINES, normalizeStage, type LeadType } from "@/lib/leads";
 import { stageMeta, type StageGroup } from "@/lib/stageMeta";
 import { needsAttention } from "@/lib/attention";
+import { noteCountOf, readNotes } from "@/lib/notes";
 
 export { needsAttention };
 
@@ -51,7 +52,7 @@ export async function listLeads(type: LeadType, stage?: string): Promise<LeadRow
       source: x.source ?? null,
       utmSource: x.utm?.source ?? null,
       referredBy: x.referredBy ?? null,
-      noteCount: Array.isArray(x.notes) ? x.notes.length : 0,
+      noteCount: noteCountOf(x),
       createdAtMs: x.createdAt?.toMillis?.() ?? null,
       followUpMs: x.followUpDate?.toMillis?.() ?? null,
     };
@@ -199,9 +200,11 @@ export type LeadDetail = {
 
 export async function getLead(id: string): Promise<LeadDetail | null> {
   await requireAdmin();
-  const doc = await getDb().collection("leads").doc(id).get();
+  const db = getDb();
+  const doc = await db.collection("leads").doc(id).get();
   if (!doc.exists) return null;
   const x = doc.data()!;
+  const notes = await readNotes(db, id, x);
   return {
     id: doc.id,
     type: x.type,
@@ -220,12 +223,7 @@ export async function getLead(id: string): Promise<LeadDetail | null> {
     utm: x.utm ?? null,
     referredBy: x.referredBy ?? null,
     cv: x.cv ? { filename: x.cv.filename } : null,
-    notes: (x.notes ?? []).map((n: { text: string; author: string; at?: { toMillis?: () => number }; kind?: string }) => ({
-      text: n.text,
-      author: n.author,
-      atMs: n.at?.toMillis?.() ?? null,
-      kind: n.kind === "stage" ? "stage" as const : "note" as const,
-    })),
+    notes,
     createdAtMs: x.createdAt?.toMillis?.() ?? null,
     updatedAtMs: x.updatedAt?.toMillis?.() ?? null,
     followUpMs: x.followUpDate?.toMillis?.() ?? null,

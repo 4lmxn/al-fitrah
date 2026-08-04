@@ -2,8 +2,12 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // Leads are written only by the server (Admin SDK bypasses these rules).
-    // No client may read or write them.
-    match /leads/{doc} {
+    // No client may read or write them. The `=**` recursive wildcard is what
+    // covers the notes subcollection: `match /leads/{doc}` alone would NOT —
+    // a rule matches one path segment unless it is recursive. The catch-all
+    // below also denies it, but being explicit here means adding a real client
+    // rule for leads later can't silently open the timeline with it.
+    match /leads/{doc=**} {
       allow read, write: if false;
     }
     // CMS content collections (added in Plan 3) will allow public read here.

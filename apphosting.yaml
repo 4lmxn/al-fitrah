@@ -64,6 +64,15 @@ env:
     secret: ADMIN_EMAILS
     availability: [RUNTIME]
 
+  # Subset of ADMIN_EMAILS allowed to delete things. Everyone else is "staff":
+  # full access to leads and the pipeline, no destructive actions. Blank (or
+  # absent) means every admin is an owner — today's behaviour — so this can be
+  # rolled out without locking anyone out. Create with:
+  #   firebase apphosting:secrets:set ADMIN_OWNERS
+  # - variable: ADMIN_OWNERS
+  #   secret: ADMIN_OWNERS
+  #   availability: [RUNTIME]
+
   # Resend — transactional email for inquiry + application notifications.
   # REQUIRED before deploy: create the secret with the API key, or the deploy
   # fails on the missing secret reference:

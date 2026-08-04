@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
-import { requireAdmin } from "@/lib/adminAuth";
+import { requireAdmin, requireOwner } from "@/lib/adminAuth";
 import { EMPLOYMENT_TYPES } from "@/lib/jobOpenings";
 
 const COLLECTION = "jobOpenings";
@@ -94,7 +94,8 @@ export async function toggleOpening(formData: FormData) {
 }
 
 export async function deleteOpening(formData: FormData) {
-  const admin = await requireAdmin();
+  // Deletion is irreversible and leaves no record — owners only.
+  const admin = await requireOwner();
   const id = String(formData.get("id") ?? "");
   if (!id) throw new Error("Missing opening id");
   await getDb().collection(COLLECTION).doc(id).delete();

@@ -3,7 +3,8 @@ import { revalidatePath } from "next/cache";
 import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
-import { isValidStage, normalizeStage, stageLabel, type LeadType } from "@/lib/leads";
+import { isValidStage, normalizeStage, stageLabel, PROGRAM_INTERESTS, type LeadType } from "@/lib/leads";
+import { resolveFollowUp } from "@/lib/followup";
 
 export async function updateStage(formData: FormData) {
   const admin = await requireAdmin();
@@ -83,19 +84,63 @@ export async function snoozeFollowUp(formData: FormData) {
   revalidatePath(`/admin/leads/${id}`);
 }
 
-export async function addNote(formData: FormData) {
+// Log what happened and schedule what's next in one submit — the loop staff
+// actually run after every call. A blank note is fine if a follow-up is set,
+// and vice versa; if neither is present the action is a no-op.
+export async function logContact(formData: FormData) {
   const admin = await requireAdmin();
   const id = String(formData.get("id") ?? "");
   // Cap note length: unbounded arrayUnion strings could bloat the lead doc
   // toward Firestore's 1 MiB document limit and brick it.
   const text = String(formData.get("text") ?? "").trim().slice(0, 2000);
   if (!id) throw new Error("Missing lead id");
-  if (!text) return; // ignore empty notes
 
-  const ref = getDb().collection("leads").doc(id);
-  await ref.update({
-    notes: FieldValue.arrayUnion({ text, author: admin.email, at: new Date(), kind: "note" }),
+  const update: Record<string, unknown> = { updatedAt: FieldValue.serverTimestamp() };
+  if (text) {
+    update.notes = FieldValue.arrayUnion({ text, author: admin.email, at: new Date(), kind: "note" });
+  }
+
+  // Next follow-up: an explicit date, a "+N days" offset, or "clear".
+  // `undefined` means the staff member didn't touch it — leave it alone.
+  const nextFollowUp = resolveFollowUp(
+    String(formData.get("followUpDate") ?? ""),
+    formData.get("followUpDays"),
+  );
+  if (nextFollowUp !== undefined) update.followUpDate = nextFollowUp;
+
+  if (!text && !("followUpDate" in update)) return; // nothing to do
+
+  await getDb().collection("leads").doc(id).update(update);
+  console.log(`contact logged id=${id} note=${text ? "y" : "n"} by=${admin.email}`);
+  revalidatePath(`/admin/leads/${id}`);
+}
+
+// Edit a lead's contact fields — fix a typo, or fill in the details of a
+// walk-in that was logged from the front desk with only a name and number.
+export async function editContact(formData: FormData) {
+  const admin = await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) throw new Error("Missing lead id");
+
+  const parentName = String(formData.get("parentName") ?? "").trim().slice(0, 80);
+  const phone = String(formData.get("phone") ?? "").trim().slice(0, 20);
+  if (parentName.length < 2) throw new Error("Parent name is required");
+  if (!/^[0-9+\-\s()]{7,20}$/.test(phone)) throw new Error("A valid phone number is required");
+
+  const childName = String(formData.get("childName") ?? "").trim().slice(0, 80);
+  const email = String(formData.get("email") ?? "").trim().slice(0, 120);
+  const programRaw = String(formData.get("programInterest") ?? "").trim();
+  const programInterest = (PROGRAM_INTERESTS as readonly string[]).includes(programRaw) ? programRaw : null;
+
+  await getDb().collection("leads").doc(id).update({
+    parentName,
+    childName: childName || null,
+    phone,
+    email: email || null,
+    whatsapp: formData.get("whatsapp") === "on",
+    programInterest,
     updatedAt: FieldValue.serverTimestamp(),
   });
+  console.log(`contact edited id=${id} by=${admin.email}`);
   revalidatePath(`/admin/leads/${id}`);
 }

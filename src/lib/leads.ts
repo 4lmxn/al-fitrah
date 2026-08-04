@@ -24,8 +24,26 @@ export type ProgramInterest = (typeof PROGRAM_INTERESTS)[number];
 
 // Where a lead came from. "website" is the plain enquiry form; the rest are set
 // by specific capture surfaces (waitlist, prospectus magnet) or entered by staff.
-export const LEAD_SOURCES = ["website", "waitlist", "prospectus", "walk-in", "referral", "whatsapp"] as const;
+export const LEAD_SOURCES = ["website", "waitlist", "prospectus", "walk-in", "phone", "referral", "whatsapp"] as const;
 export type LeadSource = (typeof LEAD_SOURCES)[number];
+
+// Sources a staff member can pick when logging a lead by hand.
+export const MANUAL_SOURCES = ["walk-in", "phone", "whatsapp", "referral"] as const;
+
+export const SOURCE_LABEL: Record<string, string> = {
+  website: "Website form",
+  waitlist: "Waitlist",
+  prospectus: "Prospectus",
+  "walk-in": "Walk-in",
+  phone: "Phone call",
+  referral: "Referral",
+  whatsapp: "WhatsApp",
+};
+
+export function sourceLabel(source?: string | null): string {
+  if (!source) return "—";
+  return SOURCE_LABEL[source] ?? source;
+}
 
 export const LEAD_TYPE_LABEL: Record<LeadType, string> = {
   admission_inquiry: "Admission inquiry",

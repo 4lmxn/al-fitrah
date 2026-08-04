@@ -11,6 +11,34 @@ function firstName(name: string): string {
   return n && n !== "—" ? n : "there";
 }
 
+// Resolve the "next follow-up" a staff member picked when logging contact.
+// Three inputs, in precedence order: the literal "clear", a +N-day offset from
+// today, or a "YYYY-MM-DD" date. Returns `undefined` when nothing was chosen,
+// which the caller distinguishes from `null` (an explicit clear).
+// Dates are pinned to local midnight — the digest compares against local
+// start/end of day, so a UTC-parsed date would land on the wrong day in IST.
+export function resolveFollowUp(
+  dateRaw: string,
+  offsetRaw: unknown,
+  now = new Date(),
+): Date | null | undefined {
+  const raw = dateRaw.trim();
+  if (raw === "clear") return null;
+
+  const offset = Number(offsetRaw);
+  if (Number.isFinite(offset) && offset > 0 && offset <= 90) {
+    const t = new Date(now);
+    t.setHours(0, 0, 0, 0);
+    t.setDate(t.getDate() + offset);
+    return t;
+  }
+
+  if (!raw) return undefined;
+  const d = new Date(`${raw}T00:00:00`);
+  if (Number.isNaN(d.getTime())) throw new Error("Invalid follow-up date");
+  return d;
+}
+
 // wa.me link with the follow-up template pre-filled. Assumes +91 for bare
 // 10-digit Indian numbers. Returns null if the phone has no digits.
 export function followUpWaLink(phone: string, name: string): string | null {

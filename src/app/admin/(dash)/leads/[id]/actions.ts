@@ -5,6 +5,7 @@ import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
 import { isValidStage, normalizeStage, stageLabel, PROGRAM_INTERESTS, type LeadType } from "@/lib/leads";
 import { resolveFollowUp } from "@/lib/followup";
+import { queueNote } from "@/lib/notes";
 
 export async function updateStage(formData: FormData) {
   const admin = await requireAdmin();
@@ -22,17 +23,17 @@ export async function updateStage(formData: FormData) {
   // No-op if unchanged, so the timeline doesn't fill with duplicate entries.
   if (normalizeStage(data.stage ?? "new") === stage) return;
 
-  await ref.update({
-    stage,
-    // Log the move onto the shared activity timeline (kind:"stage").
-    notes: FieldValue.arrayUnion({
-      text: `Moved to ${stageLabel(stage)}`,
-      author: admin.email,
-      at: new Date(),
-      kind: "stage",
-    }),
-    updatedAt: FieldValue.serverTimestamp(),
+  // Stage change and its timeline entry commit together: a move that isn't
+  // logged leaves no record of who advanced the lead or when.
+  const db = getDb();
+  const batch = db.batch();
+  batch.update(ref, { stage });
+  queueNote(db, batch, id, {
+    text: `Moved to ${stageLabel(stage)}`,
+    author: admin.email,
+    kind: "stage",
   });
+  await batch.commit();
   console.log(`stage updated id=${id} stage=${stage} by=${admin.email}`);
   // Only the detail page is revalidated. The inbox list updates itself
   // optimistically (InboxBoard), so we deliberately DON'T revalidate "/admin" —
@@ -93,15 +94,12 @@ export async function snoozeFollowUp(formData: FormData) {
 export async function logContact(formData: FormData) {
   const admin = await requireAdmin();
   const id = String(formData.get("id") ?? "");
-  // Cap note length: unbounded arrayUnion strings could bloat the lead doc
-  // toward Firestore's 1 MiB document limit and brick it.
+  // Cap note length. The 1 MiB ceiling no longer applies now that notes are a
+  // subcollection, but an unbounded textarea is still worth bounding.
   const text = String(formData.get("text") ?? "").trim().slice(0, 2000);
   if (!id) throw new Error("Missing lead id");
 
   const update: Record<string, unknown> = { updatedAt: FieldValue.serverTimestamp() };
-  if (text) {
-    update.notes = FieldValue.arrayUnion({ text, author: admin.email, at: new Date(), kind: "note" });
-  }
 
   // Next follow-up: an explicit date, a "+N days" offset, or "clear".
   // `undefined` means the staff member didn't touch it — leave it alone.
@@ -115,7 +113,11 @@ export async function logContact(formData: FormData) {
 
   if (!text && !("followUpDate" in update)) return; // nothing to do
 
-  await getDb().collection("leads").doc(id).update(update);
+  const db = getDb();
+  const batch = db.batch();
+  batch.update(db.collection("leads").doc(id), update);
+  if (text) queueNote(db, batch, id, { text, author: admin.email, kind: "note" });
+  await batch.commit();
   console.log(`contact logged id=${id} note=${text ? "y" : "n"} by=${admin.email}`);
   revalidatePath(`/admin/leads/${id}`);
 }

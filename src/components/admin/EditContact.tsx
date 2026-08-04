@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Icon } from "@/components/ui/Icon";
+import { ActionForm } from "@/components/admin/ActionForm";
 import { PROGRAM_INTERESTS } from "@/lib/leads";
 import { editContact } from "@/app/admin/(dash)/leads/[id]/actions";
 
@@ -36,7 +37,7 @@ export function EditContact({ lead }: { lead: Lead }) {
   }
 
   return (
-    <form action={editContact} onSubmit={() => setEditing(false)} className="space-y-3 rounded-xl border border-emerald/15 bg-cream/30 p-4">
+    <ActionForm action={editContact} className="space-y-3 rounded-xl border border-emerald/15 bg-cream/30 p-4">
       <input type="hidden" name="id" value={lead.id} />
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="block">
@@ -73,6 +74,6 @@ export function EditContact({ lead }: { lead: Lead }) {
         <button type="submit" className="rounded-lg bg-emerald px-4 py-2 text-xs font-semibold text-cream transition hover:bg-emerald-deep">Save</button>
         <button type="button" onClick={() => setEditing(false)} className="text-xs font-semibold text-ink/55 hover:text-ink">Cancel</button>
       </div>
-    </form>
+    </ActionForm>
   );
 }

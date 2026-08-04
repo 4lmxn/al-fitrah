@@ -8,6 +8,7 @@ import { Icon } from "@/components/ui/Icon";
 import { LeadAvatar } from "@/components/admin/LeadAvatar";
 import { StagePill } from "@/components/admin/StagePill";
 import { CopyButton } from "@/components/admin/CopyButton";
+import { ActionForm } from "@/components/admin/ActionForm";
 import { EditContact } from "@/components/admin/EditContact";
 import { sourceLabel } from "@/lib/leads";
 import { referralCode, referralLink, referralShareLink } from "@/lib/referral";
@@ -205,7 +206,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
             </h2>
             {/* Log what happened and schedule the next follow-up together — the
                 core "what happened + what's next" loop, in one submit. */}
-            <form action={logContact} className="mt-4 space-y-3 rounded-xl border border-emerald/15 bg-cream/30 p-4">
+            <ActionForm action={logContact} className="mt-4 space-y-3 rounded-xl border border-emerald/15 bg-cream/30 p-4">
               <input type="hidden" name="id" value={lead.id} />
               <textarea name="text" rows={2} placeholder="Log a call, visit, or decision…" className="w-full resize-none rounded-lg border border-emerald/15 bg-white/70 px-3 py-2 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20" />
               <div className="flex flex-wrap items-center gap-2">
@@ -215,7 +216,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
                 <input type="date" name="followUpDate" defaultValue={toDateInput(lead.followUpMs)} className="rounded-lg border border-emerald/15 bg-white/70 px-2.5 py-1.5 text-sm text-ink outline-none focus:border-emerald focus:ring-2 focus:ring-emerald/20" />
                 <button type="submit" className="ml-auto rounded-lg bg-emerald px-4 py-2 text-sm font-semibold text-cream transition hover:bg-emerald-deep">Log</button>
               </div>
-            </form>
+            </ActionForm>
 
             {notes.length === 0 ? (
               <p className="mt-5 text-sm text-ink/45">No activity yet. Log calls, visits, and decisions here.</p>
@@ -257,7 +258,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
                 return (
                   <li key={s} className="relative">
                     {!last && <span className={`absolute left-[15px] top-7 h-[calc(100%-12px)] w-px ${idx < currentIdx ? "bg-emerald/40" : "bg-emerald/10"}`} />}
-                    <form action={updateStage}>
+                    <ActionForm action={updateStage}>
                       <input type="hidden" name="id" value={lead.id} />
                       <input type="hidden" name="stage" value={s} />
                       <button
@@ -276,7 +277,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
                         <span className={`font-semibold ${current ? "text-emerald-deep" : done ? "text-ink/70" : "text-ink/55"}`}>{m.label}</span>
                         {current && <span className="ml-auto text-[11px] font-semibold uppercase tracking-wide text-gold">Current</span>}
                       </button>
-                    </form>
+                    </ActionForm>
                   </li>
                 );
               })}
@@ -301,7 +302,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
               </p>
             )}
 
-            <form action={setFollowUp} className="mt-4 flex flex-wrap items-center gap-2">
+            <ActionForm action={setFollowUp} className="mt-4 flex flex-wrap items-center gap-2">
               <input type="hidden" name="id" value={lead.id} />
               <input
                 type="date"
@@ -310,7 +311,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
                 className="rounded-xl border border-emerald/15 bg-cream/40 px-3 py-2 text-sm text-ink outline-none focus:border-emerald focus:ring-2 focus:ring-emerald/20"
               />
               <button type="submit" className="rounded-xl bg-emerald px-4 py-2 text-sm font-semibold text-cream transition hover:bg-emerald-deep">Set</button>
-            </form>
+            </ActionForm>
 
             <div className="mt-3 flex flex-wrap gap-2">
               {[
@@ -318,13 +319,13 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
                 { label: "+1 week", days: 7 },
                 { label: "+2 weeks", days: 14 },
               ].map((s) => (
-                <form key={s.days} action={snoozeFollowUp}>
+                <ActionForm key={s.days} action={snoozeFollowUp}>
                   <input type="hidden" name="id" value={lead.id} />
                   <input type="hidden" name="days" value={s.days} />
                   <button type="submit" className="rounded-full border border-emerald/20 px-3 py-1.5 text-xs font-semibold text-emerald transition hover:bg-emerald/5">
                     {s.label}
                   </button>
-                </form>
+                </ActionForm>
               ))}
             </div>
           </section>

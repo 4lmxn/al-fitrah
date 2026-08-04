@@ -4,6 +4,7 @@ import { getOpening } from "@/lib/jobOpenings";
 import { requireAdmin } from "@/lib/adminAuth";
 import { Icon } from "@/components/ui/Icon";
 import { OpeningForm } from "@/components/admin/OpeningForm";
+import { ActionForm } from "@/components/admin/ActionForm";
 import { updateOpening, deleteOpening } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -34,12 +35,12 @@ export default async function EditOpeningPage({ params }: { params: Promise<{ id
             <p className="text-sm font-semibold text-red-800">Delete this opening</p>
             <p className="text-xs text-red-700/70">Permanently removes it. This cannot be undone.</p>
           </div>
-          <form action={deleteOpening}>
+          <ActionForm action={deleteOpening}>
             <input type="hidden" name="id" value={opening.id} />
             <button type="submit" className="rounded-full border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100">
               Delete
             </button>
-          </form>
+          </ActionForm>
         </div>
       )}
     </div>

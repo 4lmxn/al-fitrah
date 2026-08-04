@@ -1,4 +1,6 @@
 import Link from "next/link";
+import type { ActionResult } from "@/lib/actionResult";
+import { ActionForm } from "@/components/admin/ActionForm";
 import { EMPLOYMENT_TYPES, type JobOpening } from "@/lib/jobOpenings";
 
 const field =
@@ -6,7 +8,7 @@ const field =
 const labelCls = "block text-sm font-semibold text-emerald-deep";
 
 type Props = {
-  action: (formData: FormData) => void | Promise<void>;
+  action: (formData: FormData) => Promise<ActionResult>;
   opening?: JobOpening;
   submitLabel: string;
 };
@@ -15,7 +17,7 @@ type Props = {
 // a string[]. Used by both the "new" and "edit" admin pages.
 export function OpeningForm({ action, opening, submitLabel }: Props) {
   return (
-    <form action={action} className="space-y-6">
+    <ActionForm action={action} className="space-y-6">
       {opening && <input type="hidden" name="id" value={opening.id} />}
 
       <div className="space-y-2">
@@ -67,6 +69,6 @@ export function OpeningForm({ action, opening, submitLabel }: Props) {
           Cancel
         </Link>
       </div>
-    </form>
+    </ActionForm>
   );
 }

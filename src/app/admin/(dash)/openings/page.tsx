@@ -2,6 +2,7 @@ import Link from "next/link";
 import { listAllOpenings } from "@/lib/jobOpenings";
 import { relativeTime } from "@/lib/relativeTime";
 import { Icon } from "@/components/ui/Icon";
+import { ActionForm } from "@/components/admin/ActionForm";
 import { toggleOpening } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -66,7 +67,7 @@ export default async function OpeningsAdmin() {
               </div>
 
               <div className="flex shrink-0 items-center gap-2">
-                <form action={toggleOpening}>
+                <ActionForm action={toggleOpening}>
                   <input type="hidden" name="id" value={o.id} />
                   <input type="hidden" name="active" value={String(!o.active)} />
                   <button
@@ -75,7 +76,7 @@ export default async function OpeningsAdmin() {
                   >
                     {o.active ? "Hide" : "Make active"}
                   </button>
-                </form>
+                </ActionForm>
                 <Link
                   href={`/admin/openings/${o.id}`}
                   className="inline-flex items-center gap-1 rounded-full bg-emerald/8 px-3 py-1.5 text-xs font-semibold text-emerald-deep transition hover:bg-emerald/15"

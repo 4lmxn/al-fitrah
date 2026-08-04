@@ -8,8 +8,10 @@ import { Icon } from "@/components/ui/Icon";
 import { LeadAvatar } from "@/components/admin/LeadAvatar";
 import { StagePill } from "@/components/admin/StagePill";
 import { CopyButton } from "@/components/admin/CopyButton";
+import { EditContact } from "@/components/admin/EditContact";
+import { sourceLabel } from "@/lib/leads";
 import { referralCode, referralLink, referralShareLink } from "@/lib/referral";
-import { updateStage, addNote, setFollowUp, snoozeFollowUp } from "./actions";
+import { updateStage, logContact, setFollowUp, snoozeFollowUp } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -132,14 +134,32 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
           </div>
         </dl>
 
-        {/* Attribution — only when a campaign or referral produced this lead */}
-        {(lead.utm?.source || lead.referredBy) && (
-          <div className="flex flex-wrap items-center gap-2 border-t border-emerald/10 bg-cream/40 px-6 py-3 text-[11px] text-ink/55">
+        {/* Attribution — how this lead reached us */}
+        {(lead.type === "admission_inquiry" || lead.utm?.source || lead.referredBy) && (
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-emerald/10 bg-cream/40 px-6 py-3 text-[11px] text-ink/55">
             <Icon name="campaign" className="text-[15px] text-gold" />
-            {lead.utm?.source && <span>Source: <b className="font-semibold text-ink/70">{lead.utm.source}</b></span>}
-            {lead.utm?.medium && <span>· {lead.utm.medium}</span>}
-            {lead.utm?.campaign && <span>· {lead.utm.campaign}</span>}
+            <span>Source: <b className="font-semibold text-ink/70">{sourceLabel(lead.source)}</b></span>
+            {lead.utm?.source && <span>· utm: <b className="font-semibold text-ink/70">{lead.utm.source}</b></span>}
+            {lead.utm?.medium && <span>/ {lead.utm.medium}</span>}
+            {lead.utm?.campaign && <span>/ {lead.utm.campaign}</span>}
             {lead.referredBy && <span>· Referred by <b className="font-semibold text-ink/70">{lead.referredBy}</b></span>}
+          </div>
+        )}
+
+        {/* Inline contact edit (admission leads) */}
+        {lead.type === "admission_inquiry" && (
+          <div className="border-t border-emerald/10 bg-white/90 px-6 py-4">
+            <EditContact
+              lead={{
+                id: lead.id,
+                name: lead.name,
+                childName: lead.childName,
+                phone: lead.phone,
+                whatsapp: lead.whatsapp,
+                email: lead.email,
+                programInterest: lead.programInterest,
+              }}
+            />
           </div>
         )}
       </div>
@@ -183,10 +203,18 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
             <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
               <Icon name="history" className="text-[18px] text-gold" /> Activity
             </h2>
-            <form action={addNote} className="mt-4 flex gap-2">
+            {/* Log what happened and schedule the next follow-up together — the
+                core "what happened + what's next" loop, in one submit. */}
+            <form action={logContact} className="mt-4 space-y-3 rounded-xl border border-emerald/15 bg-cream/30 p-4">
               <input type="hidden" name="id" value={lead.id} />
-              <input name="text" placeholder="Log a call, visit, or decision…" className="w-full rounded-xl border border-emerald/15 bg-cream/40 px-4 py-2.5 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20" />
-              <button type="submit" className="shrink-0 rounded-xl bg-emerald px-4 py-2.5 text-sm font-semibold text-cream transition hover:bg-emerald-deep">Add</button>
+              <textarea name="text" rows={2} placeholder="Log a call, visit, or decision…" className="w-full resize-none rounded-lg border border-emerald/15 bg-white/70 px-3 py-2 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20" />
+              <div className="flex flex-wrap items-center gap-2">
+                <label className="flex items-center gap-1.5 text-xs font-semibold text-ink/55">
+                  <Icon name="event" className="text-[16px] text-emerald" /> Next follow-up
+                </label>
+                <input type="date" name="followUpDate" defaultValue={toDateInput(lead.followUpMs)} className="rounded-lg border border-emerald/15 bg-white/70 px-2.5 py-1.5 text-sm text-ink outline-none focus:border-emerald focus:ring-2 focus:ring-emerald/20" />
+                <button type="submit" className="ml-auto rounded-lg bg-emerald px-4 py-2 text-sm font-semibold text-cream transition hover:bg-emerald-deep">Log</button>
+              </div>
             </form>
 
             {notes.length === 0 ? (

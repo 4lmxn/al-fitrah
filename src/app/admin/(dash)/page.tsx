@@ -39,19 +39,28 @@ export default async function AdminInbox({
           <h1 className="mt-1 font-display text-3xl text-emerald-deep">Leads</h1>
           <p className="mt-1 text-sm text-ink/55">Track and move every inquiry and application through the pipeline.</p>
         </div>
-        <div className="inline-flex rounded-full bg-white p-1 shadow-soft ring-1 ring-emerald/10">
-          {TYPES.map((t) => (
-            <Link
-              key={t}
-              href={`/admin?type=${t}`}
-              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
-                t === type ? "bg-emerald text-cream shadow-sm" : "text-emerald-deep hover:bg-emerald/5"
-              }`}
-            >
-              <Icon name={TYPE_ICON[t]} className="text-[18px]" />
-              {LEAD_TYPE_LABEL[t]}
-            </Link>
-          ))}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="inline-flex rounded-full bg-white p-1 shadow-soft ring-1 ring-emerald/10">
+            {TYPES.map((t) => (
+              <Link
+                key={t}
+                href={`/admin?type=${t}`}
+                className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
+                  t === type ? "bg-emerald text-cream shadow-sm" : "text-emerald-deep hover:bg-emerald/5"
+                }`}
+              >
+                <Icon name={TYPE_ICON[t]} className="text-[18px]" />
+                {LEAD_TYPE_LABEL[t]}
+              </Link>
+            ))}
+          </div>
+          {/* Walk-ins and phone enquiries are logged here, not on the website. */}
+          <Link
+            href="/admin/leads/new"
+            className="inline-flex items-center gap-2 rounded-full bg-emerald px-4 py-2.5 text-sm font-semibold text-cream shadow-soft transition hover:bg-emerald-deep"
+          >
+            <Icon name="add" className="text-[18px]" /> New lead
+          </Link>
         </div>
       </div>
 

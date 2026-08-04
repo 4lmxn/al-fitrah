@@ -3,6 +3,31 @@
 Derived from the architecture review of `main` @ `e426f4c` (Aug 2026).
 Target: production CRM + public site, thousands of users, **Firebase spend under ₹1,000/month**.
 
+## Status
+
+| Phase | State | Shipped in |
+|---|---|---|
+| 0 — Guardrails | ✅ done | #14 |
+| 1a — Digest query bounds, careers caching | ✅ done | #15 |
+| 1b — Notes subcollection | ✅ code merged, **backfill not yet run** | #16 |
+| 1c/1d — Pagination + count() aggregations | ✅ done | #17 |
+| 2a/2b — Roles, CV streaming | ✅ done | #18 |
+| 2c/2d — Rate-limit coupling, CSP | ✅ done | #20 |
+| 3a — DPDP compliance | ✅ done, **needs a named grievance officer** | #19 |
+| 3b — Typed server-action errors | ⬜ not started | |
+| 3c — Small cleanups | ⬜ not started | |
+| 4 — Students collection | ⬜ not started | |
+
+**Design change made during Phase 1:** the planned `stats/leads` aggregate
+document was dropped in favour of Firestore `count()` aggregation queries, billed
+one read per 1000 index entries. Same flat cost profile, minus the backfill,
+minus counter write-amplification, minus a document that can silently drift from
+the data it summarises.
+
+Two open items needing the school, not code: the **notes backfill**
+(`node scripts/migrate-notes.mjs --commit`) and a **named grievance officer** in
+`src/content/site.ts`.
+
 ---
 
 ## 1. The cost target, restated

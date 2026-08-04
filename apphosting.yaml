@@ -1,6 +1,10 @@
 # Firebase App Hosting config for the Al Fitrah Next.js app.
 # Server-side Firestore writes use Application Default Credentials automatically.
 runConfig:
+  # ⚠️ Do not raise without reading src/lib/rateLimit.ts first.
+  # Rate limiting is per-instance and in-memory: at N instances every limit
+  # becomes N times looser, silently. Move the counters to Firestore before
+  # scaling out.
   maxInstances: 1
 
 env:

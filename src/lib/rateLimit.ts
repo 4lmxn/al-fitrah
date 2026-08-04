@@ -1,5 +1,16 @@
-// Lightweight in-memory rate limit (per instance). Good enough for a
-// low-traffic marketing site; swap for Firestore/Redis if traffic grows.
+// Lightweight in-memory rate limit.
+//
+// ⚠️ COUPLED TO `runConfig.maxInstances: 1` IN apphosting.yaml.
+//
+// The counter lives in this process's memory, so the limit is per instance, not
+// per deployment. At one instance those are the same thing. Raise maxInstances
+// to N and every limit silently becomes N times looser — no error, no log, just
+// a form that takes more abuse than it looks like it does.
+//
+// Before raising instances, move this to Firestore: a `rateLimits/{key}`
+// document with a TTL policy, incremented with FieldValue.increment. That costs
+// a write per request on the limited routes, which is why it isn't the default
+// while one instance is enough.
 const HITS = new Map<string, { count: number; ts: number }>();
 const MAX_ENTRIES = 10_000;
 

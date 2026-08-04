@@ -5,6 +5,7 @@ import { normalizeStage } from "@/lib/leads";
 import { stageMeta } from "@/lib/stageMeta";
 import { sendFollowUpDigest, type FollowUpDigestLead } from "@/lib/email";
 import { SITE_URL } from "@/lib/seo";
+import { waLink } from "@/lib/phone";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,12 +25,6 @@ function secretMatches(provided: string | null, expected: string): boolean {
   const a = createHash("sha256").update(provided).digest();
   const b = createHash("sha256").update(expected).digest();
   return timingSafeEqual(a, b);
-}
-
-function waLink(phone: string): string | null {
-  const digits = phone.replace(/\D/g, "");
-  if (!digits) return null;
-  return `https://wa.me/${digits.length === 10 ? `91${digits}` : digits}`;
 }
 
 // Daily follow-up digest. Triggered by Cloud Scheduler (see apphosting notes),

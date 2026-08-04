@@ -10,6 +10,7 @@ import { StagePill } from "@/components/admin/StagePill";
 import { CopyButton } from "@/components/admin/CopyButton";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { PROGRAMS, studentForLead } from "@/lib/students";
+import { waLink } from "@/lib/phone";
 import { createStudentFromLead } from "../../students/actions";
 import { EditContact } from "@/components/admin/EditContact";
 import { sourceLabel } from "@/lib/leads";
@@ -21,14 +22,6 @@ export const dynamic = "force-dynamic";
 function fmt(ms: number | null): string {
   if (!ms) return "—";
   return new Date(ms).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
-}
-
-// Build a wa.me link from an Indian phone number (default +91 if 10 digits).
-function waLink(phone: string): string | null {
-  const digits = phone.replace(/\D/g, "");
-  if (!digits) return null;
-  const full = digits.length === 10 ? `91${digits}` : digits;
-  return `https://wa.me/${full}`;
 }
 
 function authorInitials(email: string): string {

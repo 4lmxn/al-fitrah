@@ -3,7 +3,8 @@ import { revalidatePath } from "next/cache";
 import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
-import { isValidStage, normalizeStage, stageLabel, PROGRAM_INTERESTS, type LeadType } from "@/lib/leads";
+import { isValidStage, normalizeStage, PROGRAM_INTERESTS, type LeadType } from "@/lib/leads";
+import { stageMeta } from "@/lib/stageMeta";
 import { resolveFollowUp } from "@/lib/followup";
 import { queueNote } from "@/lib/notes";
 import { TERMINAL_STAGES } from "@/lib/attention";
@@ -39,7 +40,7 @@ export async function updateStage(formData: FormData): Promise<ActionResult> {
     ...(TERMINAL_STAGES.has(stage) ? { followUpDate: FieldValue.delete() } : {}),
   });
   queueNote(db, batch, id, {
-    text: `Moved to ${stageLabel(stage)}`,
+    text: `Moved to ${stageMeta(stage).label}`,
     author: admin.email,
     kind: "stage",
   });

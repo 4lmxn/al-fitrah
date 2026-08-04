@@ -10,6 +10,11 @@ service cloud.firestore {
     match /leads/{doc=**} {
       allow read, write: if false;
     }
+    // Students hold children's names, dates of birth and medical notes — the
+    // most sensitive data in the system. Server-only, same as leads.
+    match /students/{doc=**} {
+      allow read, write: if false;
+    }
     // CMS content collections (added in Plan 3) will allow public read here.
     // Default: deny everything not explicitly allowed.
     match /{document=**} {

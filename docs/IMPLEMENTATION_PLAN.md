@@ -14,9 +14,10 @@ Target: production CRM + public site, thousands of users, **Firebase spend under
 | 2a/2b — Roles, CV streaming | ✅ done | #18 |
 | 2c/2d — Rate-limit coupling, CSP | ✅ done | #20 |
 | 3a — DPDP compliance | ✅ done, **needs a named grievance officer** | #19 |
-| 3b — Typed server-action errors | ⬜ not started | |
+| 3b — Typed server-action errors | ✅ done | #21 |
+| 4 — Students collection | ✅ foundation done | #22 |
 | 3c — Small cleanups | ⬜ not started | |
-| 4 — Students collection | ⬜ not started | |
+| 4b — Attendance, fees | ⬜ not started, see below | |
 
 **Design change made during Phase 1:** the planned `stats/leads` aggregate
 document was dropped in favour of Firestore `count()` aggregation queries, billed
@@ -242,7 +243,32 @@ Design it against the same cost invariants: attendance is the highest-write surf
 any school CRM and must be modelled as per-day-per-class documents, never per-student
 -per-day, or it alone will blow the write budget.
 
-> Not started until Phases 0–3 are merged.
+### 4a — Students foundation (done, #22)
+
+`students` is its own collection, not a third `type` in `leads`. A lead does not
+*become* a student — it *produces* one, and the lead survives as the record of
+how the family arrived, which the funnel and referral reporting still count.
+`leadId` keeps that link.
+
+Admission numbers are allocated in a transaction. They are derived from the
+highest already issued, so two staff enrolling at the same moment would
+otherwise mint the same number — the exact identifier the school uses to tell
+two children apart, and the field the roll paginates on.
+
+### 4b — Attendance and fees (not started)
+
+Both are higher-write than anything built so far, and attendance is the one that
+can break the cost target on its own.
+
+**Model attendance per class-day, not per student-day.** One document per class
+per day holding a map of student → status is ~200 writes a month for a
+six-class school. A document per student per day is ~6,000 for the same school,
+and the daily register would read one document per child instead of one per
+class. The naive shape is 30× the cost for a worse query.
+
+**Fees** need an immutable ledger (`payments`) plus a derived balance, never a
+mutable "amount paid" field — money that can be overwritten by a concurrent
+write is the one place where losing a race is unrecoverable.
 
 ---
 

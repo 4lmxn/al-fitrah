@@ -59,7 +59,6 @@ export async function POST(req: Request) {
       source,
       ...(Object.keys(utm).length ? { utm } : {}),
       ...(referredBy ? { referredBy } : {}),
-      followUpDate: null,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });

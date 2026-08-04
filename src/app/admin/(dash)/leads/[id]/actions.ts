@@ -48,7 +48,10 @@ export async function setFollowUp(formData: FormData) {
   const raw = String(formData.get("followUpDate") ?? "").trim();
   if (!id) throw new Error("Missing lead id");
 
-  let followUpDate: Date | null = null;
+  // Clearing DELETES the field rather than writing null. A null still occupies
+  // the followUpDate index and would be swept into the digest's range query;
+  // an absent field is not indexed at all. See the cron route for the full note.
+  let followUpDate: Date | FieldValue = FieldValue.delete();
   if (raw) {
     const d = new Date(`${raw}T00:00:00`);
     if (Number.isNaN(d.getTime())) throw new Error("Invalid follow-up date");
@@ -106,7 +109,9 @@ export async function logContact(formData: FormData) {
     String(formData.get("followUpDate") ?? ""),
     formData.get("followUpDays"),
   );
-  if (nextFollowUp !== undefined) update.followUpDate = nextFollowUp;
+  // null means an explicit "clear" — delete the field rather than writing null,
+  // which would keep the lead in the digest's range query. See the cron route.
+  if (nextFollowUp !== undefined) update.followUpDate = nextFollowUp ?? FieldValue.delete();
 
   if (!text && !("followUpDate" in update)) return; // nothing to do
 

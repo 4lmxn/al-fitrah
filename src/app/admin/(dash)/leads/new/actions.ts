@@ -53,7 +53,6 @@ export async function createLead(formData: FormData) {
     source,
     ...(referredBy ? { referredBy } : {}),
     notes,
-    followUpDate: null,
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
   });

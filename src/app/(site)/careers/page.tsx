@@ -12,9 +12,13 @@ export const metadata = pageMeta("/careers", {
   description: "Nurturing, qualified educators wanted at Al Fitrah Pre School, Sarjapura, Bengaluru — blend early-years teaching with Islamic values. Apply today.",
 });
 
-// Openings change through the year and are managed from the admin console, so
-// this page must reflect Firestore on every request.
-export const dynamic = "force-dynamic";
+// Openings are managed from the admin console and change a handful of times a
+// year, but this is a public page — force-dynamic meant one Firestore read per
+// visitor, so a shared campaign link could burn the daily read budget on a page
+// whose content hadn't changed. Cached and revalidated hourly instead; the
+// admin actions already call revalidatePath("/careers"), so an edit is live
+// immediately and the hourly window is only a backstop.
+export const revalidate = 3600;
 
 const values = [
   { icon: "favorite", title: "Purposeful work", body: "Shape the earliest years of a child's life, nurturing both Deen and Dunya in a calm, respectful environment." },

@@ -11,7 +11,22 @@ export const metadata = pageMeta("/privacy", {
   description: "How Al Fitrah Pre School collects, uses, and protects the personal information shared by families through our website and admissions inquiry form.",
 });
 
-const lastUpdated = "19 June 2026";
+const lastUpdated = "4 August 2026";
+
+// Retention periods stated here must match what actually happens, or the policy
+// is worse than none. The 12-month CV figure matches the Cloud Storage lifecycle
+// rule in docs/ops.md §4 — change one and change the other.
+const retention = [
+  { what: "Admissions enquiries", how: "Kept while your child could still join us, and for up to 24 months after your last contact with us. Removed sooner on request." },
+  { what: "Job applications and CVs", how: "Automatically deleted 12 months after they are submitted." },
+  { what: "Website analytics", how: "Only collected if you agree. Retained by Google for 14 months, and never used to advertise to children." },
+];
+
+// DPDP requires people to know who else touches their data, by name.
+const processors = [
+  { name: "Google (Firebase)", role: "Hosts this website and stores enquiry records securely." },
+  { name: "Resend", role: "Delivers the notification emails our admissions team receives." },
+];
 
 const collect = [
   { icon: "person", title: "Information you give us", body: "When you submit an admissions inquiry, we collect your name, phone number, email address, your child's age band, and any message you choose to share." },
@@ -85,6 +100,55 @@ export default function PrivacyPage() {
           </Reveal>
 
           <Reveal className="mt-12">
+            <h2 className="text-2xl text-emerald-deep">Your child&apos;s information</h2>
+            <div className="mt-4 space-y-4 leading-relaxed text-ink/75">
+              <p>
+                An admissions enquiry asks for your child&apos;s name, age band and, optionally, date of
+                birth. Under India&apos;s Digital Personal Data Protection Act 2023, a child&apos;s
+                information carries additional protection, and we treat it that way.
+              </p>
+              <p>
+                We only accept enquiries submitted by a parent or legal guardian, and by submitting
+                one you confirm you are that person. We do not track children&apos;s behaviour across
+                websites, and we never use your child&apos;s information for advertising or share it
+                for anyone else&apos;s marketing.
+              </p>
+            </div>
+          </Reveal>
+
+          <Reveal className="mt-12">
+            <h2 className="text-2xl text-emerald-deep">How long we keep it</h2>
+            <ul className="mt-5 space-y-3">
+              {retention.map((r) => (
+                <li key={r.what} className="flex gap-3 text-ink/75">
+                  <Icon name="schedule" className="mt-0.5 shrink-0 text-[20px] text-gold" />
+                  <span>
+                    <b className="font-semibold text-emerald-deep">{r.what}</b> — {r.how}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+
+          <Reveal className="mt-12">
+            <h2 className="text-2xl text-emerald-deep">Who else handles it</h2>
+            <p className="mt-3 leading-relaxed text-ink/75">
+              We use a small number of service providers to run this website. They process your
+              information only on our instructions, and never for their own purposes.
+            </p>
+            <ul className="mt-5 space-y-3">
+              {processors.map((p) => (
+                <li key={p.name} className="flex gap-3 text-ink/75">
+                  <Icon name="cloud" className="mt-0.5 shrink-0 text-[20px] text-gold" />
+                  <span>
+                    <b className="font-semibold text-emerald-deep">{p.name}</b> — {p.role}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+
+          <Reveal className="mt-12">
             <h2 className="text-2xl text-emerald-deep">Your rights</h2>
             <ul className="mt-5 space-y-3">
               {rights.map((r) => (
@@ -98,13 +162,21 @@ export default function PrivacyPage() {
 
           <Reveal className="mt-12">
             <div className="rounded-xl3 bg-emerald-deep p-8 text-cream shadow-lift">
-              <h2 className="text-2xl text-cream">Contact us about privacy</h2>
-              <p className="mt-3 text-cream/80">For any question about this policy or your data, reach out to us:</p>
+              <h2 className="text-2xl text-cream">Grievance officer</h2>
+              <p className="mt-3 text-cream/80">
+                If you have a question or a complaint about how we handle your information — including
+                a request to see, correct or delete it — contact:
+              </p>
               <div className="mt-5 space-y-1 text-cream/90">
-                <p>{site.contact.address}</p>
+                <p className="font-semibold">{site.grievanceOfficer.name || site.name}</p>
+                <p>{site.grievanceOfficer.email}</p>
                 <p>{site.contact.phone}</p>
-                <p>{site.contact.email}</p>
+                <p className="pt-2 text-cream/70">{site.contact.address}</p>
               </div>
+              <p className="mt-5 text-sm text-cream/70">
+                We aim to respond within 30 days. If you are not satisfied with our response, you may
+                raise the matter with the Data Protection Board of India.
+              </p>
             </div>
           </Reveal>
 

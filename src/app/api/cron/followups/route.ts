@@ -12,6 +12,10 @@ export const dynamic = "force-dynamic";
 // Leads in these stages are done — never chase them.
 const TERMINAL = new Set(["admitted", "lost"]);
 
+// Lower bound for the follow-up range query. Any real timestamp sorts above it;
+// null and absent fields sort below or aren't indexed. See the query comment.
+const EPOCH = new Date(0);
+
 // Constant-time secret check. Hashing both sides to a fixed 32 bytes lets us
 // use timingSafeEqual (which throws on length mismatch) without leaking the
 // secret's length or short-circuiting on the first differing byte.
@@ -30,8 +34,15 @@ function waLink(phone: string): string | null {
 
 // Daily follow-up digest. Triggered by Cloud Scheduler (see apphosting notes),
 // authenticated with a shared secret header rather than an admin session.
-// A single narrow range query (followUpDate <= today) keeps the read count and
-// therefore the Firestore bill minimal — it never scans the whole collection.
+//
+// The query is bounded at BOTH ends on purpose. An upper bound alone
+// (followUpDate <= today) matches every lead in the collection: Firestore
+// orders null before timestamps, so a lead written with `followUpDate: null`
+// — which is how every lead was written until now — satisfies "<= today" and
+// comes back. The lower bound excludes them, because `null >= epoch` is false,
+// and it excludes documents missing the field entirely, because a field that
+// isn't present isn't in the index. Reads are now proportional to the number of
+// leads that actually have a follow-up scheduled, not to collection size.
 export async function GET(req: Request) {
   const secret = process.env.CRON_SECRET;
   if (!secret || !secretMatches(req.headers.get("x-cron-secret"), secret)) {
@@ -47,6 +58,7 @@ export async function GET(req: Request) {
   try {
     snap = await getDb()
       .collection("leads")
+      .where("followUpDate", ">=", EPOCH)
       .where("followUpDate", "<=", endOfToday)
       .get();
   } catch (err) {

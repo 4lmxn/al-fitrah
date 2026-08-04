@@ -20,15 +20,6 @@
       ]
     },
     {
-      "//": "Daily follow-up digest: due-or-overdue, non-terminal leads only. The stage filter keeps admitted/lost leads out of the scan rather than fetching and discarding them.",
-      "collectionGroup": "leads",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "stage", "order": "ASCENDING" },
-        { "fieldPath": "followUpDate", "order": "ASCENDING" }
-      ]
-    },
-    {
       "//": "Public careers page: active openings in display order.",
       "collectionGroup": "jobOpenings",
       "queryScope": "COLLECTION",

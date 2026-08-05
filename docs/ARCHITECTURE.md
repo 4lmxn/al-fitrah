@@ -98,13 +98,20 @@ from env. Putting a copy in settings would create two sources of truth that can
 disagree — exactly the bug fixed earlier by making the proxy, `robots.ts` and
 `sitemap.ts` share one flag. The settings UI therefore shows it read-only.
 
-### 3.3 Audit log (planned, not built)
+### 3.3 Audit log (built)
 
-The brief requires auditing every important action. Currently actions
-`console.log` who did what, which is not queryable. Target: an append-only
-`auditLog` collection written by the same batch as the mutation, keyed by
-`(actor, entity, action, at)` — the same immutable-ledger discipline already
-proven for fee payments.
+Append-only `auditLog`, written on the **same batch** as the action it records,
+so an audited action cannot succeed while its record silently fails. Where a
+caller was doing a bare `.update()`, it became a two-write batch — one round
+trip, not two.
+
+Three actions record after the fact instead, and only these: deleting a post or
+an opening (the document is gone, so there is nothing left to batch against) and
+the CSV import (its writes are already chunked across several batches). Each is
+commented at the call site.
+
+Retention is a Firestore TTL policy on `expiresAt`, not a cron job — a scheduled
+cleanup that silently stops is how audit logs quietly become unbounded.
 
 ## 4. Cost invariants these must respect
 

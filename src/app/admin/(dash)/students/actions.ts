@@ -7,6 +7,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { getClassSections, getPrograms, pickFrom } from "@/lib/taxonomy";
 import { queueNote } from "@/lib/notes";
+import { recordAudit } from "@/lib/audit";
 import {
   COLLECTION,
   STUDENT_STATUSES,
@@ -135,7 +136,13 @@ export async function createStudentFromLead(formData: FormData): Promise<ActionR
     });
     await batch.commit().catch((err) => console.error("enrolment note failed", err));
 
-    console.log(`student created id=${studentId} lead=${leadId} by=${admin.email}`);
+    await recordAudit({
+      actor: admin.email,
+      action: "student.enrolled",
+      entity: { type: "student", id: studentId },
+      summary: `Enrolled ${firstName} ${lastName}`.trim(),
+      meta: { leadId, program },
+    });
     revalidatePath(`/admin/leads/${leadId}`);
     revalidatePath("/admin/students");
     redirect(`/admin/students/${studentId}`);
@@ -183,7 +190,13 @@ export async function updateStudent(formData: FormData): Promise<ActionResult> {
       updatedAt: FieldValue.serverTimestamp(),
     });
 
-    console.log(`student updated id=${id} by=${admin.email}`);
+    await recordAudit({
+      actor: admin.email,
+      action: "student.updated",
+      entity: { type: "student", id },
+      summary: `Updated ${firstName}'s record`,
+      meta: { status, program },
+    });
     revalidatePath(`/admin/students/${id}`);
     revalidatePath("/admin/students");
   });

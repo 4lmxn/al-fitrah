@@ -24,6 +24,11 @@ service cloud.firestore {
     match /payments/{doc=**} {
       allow read, write: if false;
     }
+    // The audit log. Server-only, and append-only in application code — a
+    // client able to write here could forge or erase the record of a change.
+    match /auditLog/{doc=**} {
+      allow read, write: if false;
+    }
     // Website content. Reads happen server-side through ISR, so this could be
     // closed too — but posts are, by definition, published to the public, and
     // an accidental client read here leaks nothing. Writes stay server-only.

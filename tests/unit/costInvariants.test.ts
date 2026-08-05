@@ -94,6 +94,31 @@ describe("cost invariant: the follow-up digest query is bounded at both ends", (
   });
 });
 
+describe("money invariant: the fee ledger is append-only", () => {
+  // A mutable "amount paid" field loses money silently: two staff recording
+  // payments at once both read 5000, both write 7000, and one parent's ₹2,000
+  // vanishes with no error and no trace. It is the only bug class here that
+  // cannot be reconstructed afterwards, because the evidence is what got
+  // overwritten. Corrections are new negative rows, never edits.
+  const feeCode = files.filter((f) => /\bPAYMENTS\b/.test(f.text));
+
+  it("has fee code to check", () => {
+    expect(feeCode.length).toBeGreaterThan(0);
+  });
+
+  it("never updates or deletes a payment row", () => {
+    const offenders = feeCode
+      .filter((f) => /collection\(PAYMENTS\)[\s\S]{0,120}?\.(update|delete)\(/.test(f.text))
+      .map((f) => f.path);
+    expect(offenders).toEqual([]);
+  });
+
+  it("adjusts the cached paid total with increment, never a read-modify-write", () => {
+    const actions = files.find((f) => f.path.endsWith(join("students", "fees-actions.ts")))!;
+    expect(actions.text).toMatch(/fees\.paidPaise["']?\s*:\s*FieldValue\.increment/);
+  });
+});
+
 describe("consistency invariant: one implementation per rule", () => {
   // These were each written out two or three times. The failure mode is silent:
   // fix one copy and the others keep the bug, and a wrong country-code prefix

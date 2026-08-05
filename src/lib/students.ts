@@ -1,6 +1,7 @@
 import "server-only";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
+import { feesOf, type StudentFees } from "@/lib/fees";
 
 /**
  * Students.
@@ -81,6 +82,7 @@ export type Student = {
   medical: Medical | null;
   /** The enquiry this student came from, when there was one. */
   leadId: string | null;
+  fees: StudentFees;
   createdAtMs: number | null;
   updatedAtMs: number | null;
 };
@@ -111,6 +113,7 @@ export function toStudent(d: FirebaseFirestore.QueryDocumentSnapshot | FirebaseF
     emergencyContact: x.emergencyContact ?? null,
     medical: x.medical ?? null,
     leadId: x.leadId ?? null,
+    fees: feesOf(x),
     createdAtMs: x.createdAt?.toMillis?.() ?? null,
     updatedAtMs: x.updatedAt?.toMillis?.() ?? null,
   };

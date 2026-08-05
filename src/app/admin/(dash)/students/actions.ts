@@ -116,6 +116,10 @@ export async function createStudentFromLead(formData: FormData): Promise<ActionR
         ],
         emergencyContact: null,
         medical: null,
+        // Explicit zeros rather than an absent object: the dues list reads this
+        // on every student, and a missing field would make "owes nothing" and
+        // "not set up yet" indistinguishable.
+        fees: { totalPaise: 0, paidPaise: 0 },
         leadId,
         createdAt: FieldValue.serverTimestamp(),
         updatedAt: FieldValue.serverTimestamp(),

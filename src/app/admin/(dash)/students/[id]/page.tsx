@@ -4,6 +4,8 @@ import { getStudent, CLASS_SECTIONS, PROGRAMS, STUDENT_STATUSES, STUDENT_STATUS_
 import { updateStudent } from "../actions";
 import { Icon } from "@/components/ui/Icon";
 import { ActionForm } from "@/components/admin/ActionForm";
+import { FeesPanel } from "@/components/admin/FeesPanel";
+import { listPayments } from "@/lib/fees";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +24,7 @@ export default async function StudentDetail({ params }: { params: Promise<{ id: 
   const { id } = await params;
   const student = await getStudent(id);
   if (!student) notFound();
+  const payments = await listPayments(id);
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -79,6 +82,8 @@ export default async function StudentDetail({ params }: { params: Promise<{ id: 
           </ul>
         )}
       </section>
+
+      <FeesPanel studentId={student.id} fees={student.fees} payments={payments} />
 
       <ActionForm action={updateStudent} className="mt-6 space-y-6">
         <input type="hidden" name="id" value={student.id} />

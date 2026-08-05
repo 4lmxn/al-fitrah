@@ -64,6 +64,11 @@ export async function POST(req: Request) {
       programInterest: programInterest || null,
       message: message || null,
       stage: "new",
+      // Explicit zero, not an absent field. The inbox finds untouched leads with
+      // where("noteCount","==",0), and a document missing the field is not in
+      // that index at all — so every website enquiry would be invisible to the
+      // "needs attention" triage that exists to stop exactly these going cold.
+      noteCount: 0,
       source,
       ...(Object.keys(utm).length ? { utm } : {}),
       ...(referredBy ? { referredBy } : {}),

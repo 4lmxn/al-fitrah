@@ -37,12 +37,20 @@ export default async function StudentsPage({
 
   return (
     <div className="mx-auto max-w-6xl">
-      <div>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Roll</p>
         <h1 className="mt-1 font-display text-3xl text-emerald-deep">Students</h1>
         <p className="mt-1 text-sm text-ink/55">
           Enrolled children, their guardians, and the details staff need to hand.
         </p>
+        </div>
+        <Link
+          href="/admin/students/import"
+          className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-emerald-deep shadow-soft ring-1 ring-emerald/10 transition hover:bg-emerald/5"
+        >
+          <Icon name="upload_file" className="text-[18px]" /> Import from CSV
+        </Link>
       </div>
 
       {/* Status filter */}

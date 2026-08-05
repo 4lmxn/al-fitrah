@@ -1,9 +1,63 @@
 # Operations runbook
 
-Steps that need Firebase/GCP console or CLI access. Claude cannot run these —
-they need your credentials. Ordered by how much you'd regret skipping them.
+Steps that need Firebase/GCP console or CLI access. Most have now been applied —
+see the status table below for what is done and what is still open. Kept as
+runnable procedure so any of it can be re-applied, audited, or rebuilt.
 
-Project: `al-fitrah` · Region: `asia-south1` · Hosting: Firebase App Hosting
+Project: `al-fitrah` · Hosting: Firebase App Hosting
+
+**Actual deployed locations** (verified 5 Aug 2026 — not what this doc originally assumed):
+
+| Resource | Location |
+|---|---|
+| Firestore `(default)` | **`nam5`** — North America multi-region |
+| App Hosting backend | **`asia-east1`** — Taiwan |
+| Cloud Storage (app) | `al-fitrah.firebasestorage.app` |
+| Backups | `gs://al-fitrah-backups` — `us-central1` (must match Firestore's continent) |
+
+> ### ⚠️ Firestore is in the US, and its location cannot be changed
+>
+> A Firestore database's location is fixed at creation. Moving it means creating a
+> second database and migrating, which is only cheap **right now** — the site is
+> still behind the coming-soon gate and holds 3 leads. After launch it is a
+> migration with downtime.
+>
+> What it costs today:
+> - **Latency.** Every admin action goes Taiwan → North America and back.
+> - **Price.** `nam5` multi-region runs roughly 1.7× a regional location like
+>   `asia-south1` for reads, writes and storage. The budget in
+>   `IMPLEMENTATION_PLAN.md` §1 used US multi-region rates, so the numbers hold —
+>   but they are the real price, not the conservative ceiling they were labelled.
+> - **Disclosure.** Children's data leaving India is permitted under DPDP (the US
+>   is not on the restricted list), but it must be disclosed. The privacy policy
+>   now says so.
+>
+> Decide before launch. Staying is defensible; drifting into it unnoticed is not.
+
+---
+
+## Status — what is already done
+
+Applied and verified 5 Aug 2026. Nothing in this section needs re-running.
+
+| Item | State |
+|---|---|
+| Firestore PITR | ✅ enabled, 7-day retention |
+| Composite indexes | ✅ 12 deployed, all `READY` |
+| Firestore rules | ✅ deployed (leads, students, attendance, payments all denied) |
+| CV retention lifecycle | ✅ `applications/` deleted at 365 days — matches the privacy policy's promise |
+| Backup bucket | ✅ `gs://al-fitrah-backups`, 90-day lifecycle |
+| First Firestore export | ✅ `gs://al-fitrah-backups/2026-08-05/` |
+| Error alerting | ✅ log metric `app_errors` + policy "Al Fitrah — application errors" → owner email |
+| Notes backfill | ✅ **not needed** — verified no legacy `notes` arrays exist; `noteCount` already matches every subcollection |
+
+### Still open
+
+- **Weekly export schedule.** The bucket and a verified manual export exist; the recurring job does not. Add a second GitHub Actions cron beside `followup-cron.yml`.
+- **Budget alert.** Needs billing-account access, which the deploy credentials don't have. Console → Billing → Budgets → ₹500, alert at 50/90/100%.
+- **`ADMIN_OWNERS` secret.** Optional; until set, every admin is an owner (today's behaviour).
+- **Local service-account key.** `.env.local` still points `GOOGLE_APPLICATION_CREDENTIALS` at `serviceAccountKey.json`. See §5 — deleting it before switching to `gcloud auth application-default login` breaks local dev, so it is left for you to do in order.
+- **Firestore location.** See the warning above.
 
 ---
 
@@ -34,7 +88,9 @@ thousand leads costs a rounding error.
 
 ```bash
 # One-time: a bucket for backups, separate from the app's Storage bucket.
-gcloud storage buckets create gs://al-fitrah-backups --location=asia-south1 --project=al-fitrah
+# Must be on the same continent as the database: Firestore is nam5 (US), so an
+# asia-south1 bucket is rejected outright with an INVALID_ARGUMENT.
+gcloud storage buckets create gs://al-fitrah-backups --location=us-central1 --project=al-fitrah
 
 # Manual export — run once to confirm permissions before scheduling.
 gcloud firestore export gs://al-fitrah-backups/$(date +%Y-%m-%d) \

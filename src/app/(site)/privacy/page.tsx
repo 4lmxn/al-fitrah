@@ -24,7 +24,7 @@ const retention = [
 
 // DPDP requires people to know who else touches their data, by name.
 const processors = [
-  { name: "Google (Firebase)", role: "Hosts this website and stores enquiry records securely." },
+  { name: "Google (Firebase)", role: "Hosts this website and stores enquiry and student records securely, on servers in the United States." },
   { name: "Resend", role: "Delivers the notification emails our admissions team receives." },
 ];
 
@@ -135,6 +135,11 @@ export default function PrivacyPage() {
             <p className="mt-3 leading-relaxed text-ink/75">
               We use a small number of service providers to run this website. They process your
               information only on our instructions, and never for their own purposes.
+            </p>
+            <p className="mt-3 leading-relaxed text-ink/75">
+              Some of these providers store data outside India, including in the United States. The
+              protections described in this policy apply wherever your information is held, and it is
+              never transferred to a country the Government of India has restricted.
             </p>
             <ul className="mt-5 space-y-3">
               {processors.map((p) => (

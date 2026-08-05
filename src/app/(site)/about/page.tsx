@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import Image from "next/image";
 import { about } from "@/content/pages";
@@ -8,10 +9,14 @@ import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 
-export const metadata = pageMeta("/about", {
+// Async because the brand comes from configuration; a module-scope
+// constant cannot await, which is what kept school identity hardcoded.
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMeta("/about", {
   title: "About Us",
   description: "The story, mission, and values behind Al Fitrah Pre School, Sarjapura — an Islamic preschool in Bengaluru nurturing every child's Deen and Dunya.",
 });
+}
 
 export default function AboutPage() {
   const { hero, mission, vision, team, location } = about;

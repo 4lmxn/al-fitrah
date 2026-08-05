@@ -31,7 +31,15 @@ export async function saveSchool(formData: FormData): Promise<ActionResult> {
         tagline: clean(formData.get("tagline"), 200),
         phone: clean(formData.get("phone"), 30),
         email: clean(formData.get("email"), 120),
-        address: clean(formData.get("address"), 300),
+        // Structured so the LocalBusiness JSON-LD can emit a real PostalAddress.
+        address: {
+          street: clean(formData.get("street"), 160),
+          locality: clean(formData.get("locality"), 120),
+          city: clean(formData.get("city"), 80),
+          region: clean(formData.get("region"), 80),
+          postalCode: clean(formData.get("postalCode"), 20),
+          country: clean(formData.get("country"), 2).toUpperCase(),
+        },
         grievanceOfficerName: clean(formData.get("grievanceOfficerName"), 120),
         grievanceOfficerEmail: clean(formData.get("grievanceOfficerEmail"), 120),
       },

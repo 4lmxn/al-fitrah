@@ -1,16 +1,18 @@
 // src/components/layout/Footer.tsx
 import Link from "next/link";
-import { site } from "@/content/site";
 import { Container } from "@/components/ui/Container";
-import { PHONE_E164, WHATSAPP_URL, MAPS_DIRECTIONS_URL } from "@/lib/seo";
+import { getContact } from "@/lib/seo";
+import { getSettings } from "@/lib/settings";
 
-export function Footer() {
+export async function Footer() {
+  const [{ school }, contact] = await Promise.all([getSettings(), getContact()]);
+
   return (
     <footer className="mt-20 border-t border-emerald/10 bg-emerald text-cream">
       <Container className="grid gap-8 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <p className="font-display text-lg">{site.name} <span className="text-cream/80">· {site.branch}</span></p>
-          <p className="mt-2 text-sm text-cream/80">{site.tagline}</p>
+          <p className="font-display text-lg">{school.name} <span className="text-cream/80">· {school.branch}</span></p>
+          <p className="mt-2 text-sm text-cream/80">{school.tagline}</p>
         </div>
         <nav className="text-sm" aria-label="Footer">
           <p className="font-semibold text-cream">Learn</p>
@@ -31,17 +33,17 @@ export function Footer() {
         <div className="text-sm text-cream/80">
           <p className="font-semibold text-cream">Contact</p>
           <a
-            href={MAPS_DIRECTIONS_URL}
+            href={contact.mapsDirectionsUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-3 block py-1 hover:text-cream"
           >
-            {site.contact.address}
+            {contact.addressLine}
           </a>
-          <a href={`tel:${PHONE_E164}`} className="block py-1 hover:text-cream">{site.contact.phone}</a>
-          <a href={`mailto:${site.contact.email}`} className="block py-1 hover:text-cream">{site.contact.email}</a>
+          <a href={`tel:${contact.phoneE164}`} className="block py-1 hover:text-cream">{contact.phone}</a>
+          <a href={`mailto:${contact.email}`} className="block py-1 hover:text-cream">{contact.email}</a>
           <a
-            href={WHATSAPP_URL}
+            href={contact.whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-3 inline-flex items-center gap-2 rounded-full bg-cream/10 px-4 py-2 font-semibold text-cream ring-1 ring-cream/20 hover:bg-cream/15"
@@ -52,7 +54,7 @@ export function Footer() {
         </div>
       </Container>
       <Container className="border-t border-cream/10 py-5 text-xs text-cream/75">
-        © {new Date().getFullYear()} {site.name}, {site.branch}. All rights reserved.
+        © {new Date().getFullYear()} {school.name}, {school.branch}. All rights reserved.
       </Container>
     </footer>
   );

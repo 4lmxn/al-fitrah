@@ -85,11 +85,12 @@ adapter plus one config flag.
 
 ### 3.2b Two constants that deliberately stay in code
 
-**School identity** (`content/site.ts`) feeds `metadata` exports, JSON-LD and
-the sitemap. Those are evaluated at module scope on ~12 pages; moving them to
-async configuration means converting every one to `generateMetadata`. Worth
-doing, but as its own change with its own verification — not smuggled into a
-taxonomy migration.
+**School identity** now comes from configuration. Two consequences worth
+recording: the address had to become structured, because a single string cannot
+produce a JSON-LD `PostalAddress`; and `app/error.tsx` deliberately keeps a
+hardcoded phone number, because it is the root error boundary and may well be
+rendering *because* Firestore failed — a fallback that needs a working database
+read is not a fallback.
 
 **`COMING_SOON`** stays an environment variable. `proxy.ts` runs on every
 request in a runtime that cannot read Firestore, so the gate itself must come
@@ -135,8 +136,10 @@ Ordered by what unblocks the most downstream work:
        membership checks: an enum could only accept the values that shipped, so
        a school adding a program would have had its own form rejected by its own
        server.
-   1d. **School identity + COMING_SOON** — still constants. Both are harder than
-       they look and are called out below rather than half-done.
+   1d. ~~**School identity**~~ — done. Name, branch, tagline, contact and a
+       structured address come from configuration; every page's metadata moved
+       from a `metadata` constant to `generateMetadata`.
+   1e. **`COMING_SOON`** stays an env var, on purpose — see below.
 2. **Audit log + notification engine** — the two seams every later module needs.
 3. **CRM depth** — assignment, tasks, tags, duplicate detection, bulk actions, export.
 4. **Configurable admissions pipeline** — the brief's 9 stages, driven by settings.

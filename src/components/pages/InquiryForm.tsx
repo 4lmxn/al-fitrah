@@ -161,7 +161,7 @@ export function InquiryForm({ programs }: { programs: string[] }) {
       </div>
 
       {status === "error" && (
-        <SubmitErrorFallback message={error} context="admissions enquiry form" />
+        <SubmitErrorFallback message={error} />
       )}
 
       <button

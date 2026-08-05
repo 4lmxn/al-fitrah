@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
@@ -7,10 +8,14 @@ import { Reveal } from "@/components/ui/Reveal";
 import { CareersForm } from "@/components/pages/CareersForm";
 import { listActiveOpenings } from "@/lib/jobOpenings";
 
-export const metadata = pageMeta("/careers", {
+// Async because the brand comes from configuration; a module-scope
+// constant cannot await, which is what kept school identity hardcoded.
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMeta("/careers", {
   title: "Careers",
   description: "Nurturing, qualified educators wanted at Al Fitrah Pre School, Sarjapura, Bengaluru — blend early-years teaching with Islamic values. Apply today.",
 });
+}
 
 // Openings are managed from the admin console and change a handful of times a
 // year, but this is a public page — force-dynamic meant one Firestore read per

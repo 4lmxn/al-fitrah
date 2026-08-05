@@ -7,18 +7,17 @@ import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { InquiryForm } from "@/components/pages/InquiryForm";
 import { MapEmbed } from "@/components/pages/MapEmbed";
-import {
-  pageMeta,
-  PHONE_E164,
-  WHATSAPP_URL,
-  MAPS_DIRECTIONS_URL,
-  MAPS_EMBED_URL,
-} from "@/lib/seo";
+import { pageMeta, getContact } from "@/lib/seo";
+import type { Metadata } from "next";
 
-export const metadata = pageMeta("/contact", {
-  title: "Contact Us",
-  description: "Visit, call, or email Al Fitrah in Sarjapura, Bengaluru. Campus location and visiting details inside.",
-});
+// Async because the brand comes from configuration; a module-scope constant
+// cannot await, which is what kept school identity hardcoded.
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMeta("/contact", {
+    title: "Contact Us",
+    description: "Visit, call, or email Al Fitrah in Sarjapura, Bengaluru. Campus location and visiting details inside.",
+  });
+}
 
 // Reads configured programs, so this page is revalidated rather than fully
 // static. Still zero Firestore reads per visitor — one read per revalidation
@@ -28,7 +27,8 @@ export const metadata = pageMeta("/contact", {
 export const revalidate = 3600;
 
 export default async function ContactPage() {
-  const programs = await getPrograms();
+  // `contact` is page copy; `school` is the configured identity.
+  const [programs, school] = await Promise.all([getPrograms(), getContact()]);
   const { hero, details, hours } = contact;
   const rows = [
     { icon: "location_on", label: "Address", value: details.address },
@@ -61,7 +61,7 @@ export default async function ContactPage() {
               </ul>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a
-                  href={WHATSAPP_URL}
+                  href={school.whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-full bg-emerald px-5 py-3 text-sm font-semibold text-cream transition hover:bg-emerald-dark"
@@ -69,13 +69,13 @@ export default async function ContactPage() {
                   <Icon name="chat" className="text-[18px]" /> WhatsApp
                 </a>
                 <a
-                  href={`tel:${PHONE_E164}`}
+                  href={`tel:${school.phoneE164}`}
                   className="inline-flex items-center gap-2 rounded-full border border-emerald/30 px-5 py-3 text-sm font-semibold text-emerald transition hover:bg-emerald/5"
                 >
                   <Icon name="call" className="text-[18px]" /> Call
                 </a>
                 <a
-                  href={MAPS_DIRECTIONS_URL}
+                  href={school.mapsDirectionsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-full border border-emerald/30 px-5 py-3 text-sm font-semibold text-emerald transition hover:bg-emerald/5"
@@ -88,8 +88,8 @@ export default async function ContactPage() {
           <Reveal delay={0.1} className="lg:col-span-7">
             <div className="relative h-full min-h-[360px] overflow-hidden rounded-xl3 border border-emerald/10 shadow-soft">
               <MapEmbed
-                embedUrl={MAPS_EMBED_URL}
-                directionsUrl={MAPS_DIRECTIONS_URL}
+                embedUrl={school.mapsEmbedUrl}
+                directionsUrl={school.mapsDirectionsUrl}
                 title="Map to Al Fitrah Pre School, Sarjapura, Bengaluru"
               />
             </div>

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { listPublished, POST_TYPE_LABEL } from "@/lib/posts";
 import { pageMeta } from "@/lib/seo";
@@ -6,11 +7,15 @@ import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
 
-export const metadata = pageMeta("/news", {
+// Async because the brand comes from configuration; a module-scope
+// constant cannot await, which is what kept school identity hardcoded.
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMeta("/news", {
   title: "News & Events",
   description:
     "Announcements, notices and upcoming events from Al Fitrah Pre School, Sarjapura.",
 });
+}
 
 // ISR, not per-request. A visitor costs zero Firestore reads; only a
 // revalidation does. Publishing calls revalidatePath, so the page is current

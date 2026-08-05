@@ -1,15 +1,21 @@
+import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
-import { site } from "@/content/site";
+import { getSettings } from "@/lib/settings";
+import { getContact } from "@/lib/seo";
 
-export const metadata = pageMeta("/privacy", {
+// Async because the brand comes from configuration; a module-scope
+// constant cannot await, which is what kept school identity hardcoded.
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMeta("/privacy", {
   title: "Privacy Policy",
   description: "How Al Fitrah Pre School collects, uses, and protects the personal information shared by families through our website and admissions inquiry form.",
 });
+}
 
 const lastUpdated = "4 August 2026";
 
@@ -47,7 +53,8 @@ const rights = [
   "Withdraw your inquiry at any time by contacting us directly.",
 ];
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const [{ school }, contact] = await Promise.all([getSettings(), getContact()]);
   return (
     <>
       <PageHero
@@ -173,10 +180,10 @@ export default function PrivacyPage() {
                 a request to see, correct or delete it — contact:
               </p>
               <div className="mt-5 space-y-1 text-cream/90">
-                <p className="font-semibold">{site.grievanceOfficer.name || site.name}</p>
-                <p>{site.grievanceOfficer.email}</p>
-                <p>{site.contact.phone}</p>
-                <p className="pt-2 text-cream/70">{site.contact.address}</p>
+                <p className="font-semibold">{school.grievanceOfficerName || school.name}</p>
+                <p>{school.grievanceOfficerEmail}</p>
+                <p>{contact.phone}</p>
+                <p className="pt-2 text-cream/70">{contact.addressLine}</p>
               </div>
               <p className="mt-5 text-sm text-cream/70">
                 We aim to respond within 30 days. If you are not satisfied with our response, you may

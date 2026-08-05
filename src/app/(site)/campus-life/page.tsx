@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import Image from "next/image";
 import { campus } from "@/content/pages";
@@ -7,10 +8,14 @@ import { PageHero } from "@/components/ui/PageHero";
 import { FeatureCard } from "@/components/ui/FeatureCard";
 import { Reveal } from "@/components/ui/Reveal";
 
-export const metadata = pageMeta("/campus-life", {
+// Async because the brand comes from configuration; a module-scope
+// constant cannot await, which is what kept school identity hardcoded.
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMeta("/campus-life", {
   title: "Campus Life",
   description: "Inside a day at Al Fitrah Pre School, Sarjapura — a calm rhythm of Oxford Early Learning, Qur'an with Noor-ul-Bayan, and joyful play in Bengaluru.",
 });
+}
 
 // 6 tiles → 6 cells: big feature + five supporting (4-col / 3-row desktop).
 const spans = [

@@ -6,7 +6,7 @@ import { site } from "@/content/site";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 
-export function Header() {
+export function Header({ name, branch }: { name: string; branch: string }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-emerald/10 bg-cream/80 backdrop-blur">
       <Container className="flex h-16 items-center justify-between">
         <Link href="/" className="font-display text-lg font-semibold text-emerald">
-          {site.name} <span className="font-normal text-emerald/60">· {site.branch}</span>
+          {name} <span className="font-normal text-emerald/60">· {branch}</span>
         </Link>
         <nav className="hidden items-center gap-7 md:flex" aria-label="Primary">
           {site.nav.map((n) => (

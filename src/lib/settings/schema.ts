@@ -42,7 +42,16 @@ export const settingsSchema = z.object({
     tagline: z.string().max(200),
     phone: z.string().max(30),
     email: z.string().max(120),
-    address: z.string().max(300),
+    // Structured, not one string: JSON-LD needs a PostalAddress, and a single
+    // line cannot produce one. The display line is derived from these parts.
+    address: z.object({
+      street: z.string().max(160),
+      locality: z.string().max(120),
+      city: z.string().max(80),
+      region: z.string().max(80),
+      postalCode: z.string().max(20),
+      country: z.string().max(2),
+    }),
     // DPDP requires a named contact. Empty means "not yet supplied"; the boot
     // check warns until it is filled in.
     grievanceOfficerName: z.string().max(120),
@@ -105,8 +114,14 @@ export const DEFAULT_SETTINGS: Settings = {
     tagline: "Where young hearts and minds grow with faith.",
     phone: "+91 99865 00718",
     email: "alfitrah.sompura@gmail.com",
-    address:
-      "3rd Floor, Vivian Complex, Opp HP Petrol Bunk, Sompura Gate, Sarjapura, Bengaluru, Karnataka 562125",
+    address: {
+      street: "3rd Floor, Vivian Complex, Opp HP Petrol Bunk",
+      locality: "Sompura Gate, Sarjapura",
+      city: "Bengaluru",
+      region: "Karnataka",
+      postalCode: "562125",
+      country: "IN",
+    },
     grievanceOfficerName: "",
     grievanceOfficerEmail: "alfitrah.sompura@gmail.com",
   },
@@ -160,3 +175,13 @@ export const DEFAULT_SETTINGS: Settings = {
     smsNotifications: false,
   },
 };
+
+/** One-line address for display, derived from the structured parts. */
+export function addressLine(a: Settings["school"]["address"]): string {
+  return [a.street, a.locality, a.city, `${a.region} ${a.postalCode}`.trim()].filter(Boolean).join(", ");
+}
+
+/** Brand as used in titles and structured data: "Name, Branch". */
+export function brandName(school: Settings["school"]): string {
+  return school.branch ? `${school.name}, ${school.branch}` : school.name;
+}

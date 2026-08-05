@@ -10,6 +10,8 @@ const row = (over: Partial<LeadRow> = {}): LeadRow => ({
   email: null,
   stage: "new",
   noteCount: 0,
+  assignedTo: null,
+  possibleDuplicateOf: null,
   createdAtMs: 1_754_300_000_000,
   followUpMs: null,
   ...over,

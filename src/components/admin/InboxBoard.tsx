@@ -293,9 +293,16 @@ export function InboxBoard({
                     <td className="px-5 py-3.5">
                       <Link href={`/admin/leads/${l.id}`} className="flex items-center gap-3">
                         <LeadAvatar name={l.name} />
+                      {l.possibleDuplicateOf && (
+                        <span title="Possible duplicate of an earlier enquiry" className="shrink-0 text-gold">
+                          <Icon name="content_copy" className="text-[14px]" />
+                        </span>
+                      )}
                         <span className="min-w-0">
                           <span className="block truncate font-semibold text-emerald-deep">{l.name}</span>
-                          <span className="block truncate text-xs text-ink/45">{l.email ?? "No email"}</span>
+                          <span className="block truncate text-xs text-ink/45">
+                          {l.assignedTo ? `Owner: ${l.assignedTo.split("@")[0]}` : (l.email ?? "No email")}
+                        </span>
                         </span>
                       </Link>
                     </td>

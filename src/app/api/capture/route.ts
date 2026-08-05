@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { captureSchema } from "@/lib/leadSchema";
 import { notify } from "@/lib/notify";
+import { findDuplicate, leadDefaults } from "@/lib/leadOps";
 import { SITE_URL } from "@/lib/seo";
 import { rateLimited } from "@/lib/rateLimit";
 import { getClientIp } from "@/lib/clientIp";
@@ -44,6 +44,8 @@ export async function POST(req: Request) {
     Object.entries({ source: utmSource, medium: utmMedium, campaign: utmCampaign }).filter(([, v]) => v),
   );
 
+  const verdict = await findDuplicate(phone);
+
   try {
     const db = getDb();
     const ref = await db.collection("leads").add({
@@ -57,16 +59,10 @@ export async function POST(req: Request) {
       programInterest: null,
       message: null,
       stage: "new",
-      // Explicit zero, not an absent field. The inbox finds untouched leads with
-      // where("noteCount","==",0), and a document missing the field is not in
-      // that index at all — so every website enquiry would be invisible to the
-      // "needs attention" triage that exists to stop exactly these going cold.
-      noteCount: 0,
       source,
       ...(Object.keys(utm).length ? { utm } : {}),
       ...(referredBy ? { referredBy } : {}),
-      createdAt: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
+      ...leadDefaults(phone, verdict),
     });
     await notify("lead.created", {
       parentName, childName: "—", phone, email: email || "—",

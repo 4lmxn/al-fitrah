@@ -1,11 +1,11 @@
 "use server";
 import { redirect } from "next/navigation";
-import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
 import { getManualLeadSources, getPrograms, pickFrom } from "@/lib/taxonomy";
 import { AGE_BANDS } from "@/lib/leadSchema";
 import { queueNote } from "@/lib/notes";
+import { findDuplicate, leadDefaults } from "@/lib/leadOps";
 
 const clean = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
 
@@ -53,9 +53,7 @@ export async function createLead(formData: FormData) {
     stage: "new",
     source,
     ...(referredBy ? { referredBy } : {}),
-    noteCount: 0,
-    createdAt: FieldValue.serverTimestamp(),
-    updatedAt: FieldValue.serverTimestamp(),
+    ...leadDefaults(phone, await findDuplicate(phone)),
   });
 
   // The note staff typed while logging the walk-in becomes the first timeline

@@ -11,6 +11,7 @@ export const NOTIFY_EVENTS = [
   "lead.created",
   "application.received",
   "followup.due",
+  "lead.assigned",
 ] as const;
 export type NotifyEvent = (typeof NOTIFY_EVENTS)[number];
 

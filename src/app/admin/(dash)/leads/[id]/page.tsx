@@ -17,7 +17,8 @@ import { createStudentFromLead } from "../../students/actions";
 import { EditContact } from "@/components/admin/EditContact";
 import { sourceLabel } from "@/lib/leads";
 import { referralCode, referralLink, referralShareLink } from "@/lib/referral";
-import { updateStage, logContact, setFollowUp, snoozeFollowUp } from "./actions";
+import { updateStage, logContact, setFollowUp, snoozeFollowUp, assignLead } from "./actions";
+import { getAllowlist } from "@/lib/roles";
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +60,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
   if (!lead) notFound();
 
   const [pipeline, programs] = await Promise.all([getPipeline(lead.type), getPrograms()]);
+  const admins = getAllowlist();
   const currentIdx = pipeline.findIndex((s) => s.id === lead.stage);
   const wa = waLink(lead.phone);
   const notes = [...lead.notes].sort((a, b) => (b.atMs ?? 0) - (a.atMs ?? 0));
@@ -173,6 +175,44 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
           </div>
         )}
       </div>
+
+      {lead.possibleDuplicateOf && (
+        <div className="mt-6 flex flex-wrap items-center gap-3 rounded-2xl border border-gold/30 bg-gold-soft/40 px-5 py-4 text-sm text-[#7a611a]">
+          <Icon name="content_copy" className="text-[20px]" />
+          <span>
+            <b>This may be a duplicate.</b> An earlier enquiry used the same phone number — it could
+            be the same family, or a second child.
+          </span>
+          <Link
+            href={`/admin/leads/${lead.possibleDuplicateOf}`}
+            className="ml-auto rounded-full bg-white px-4 py-2 text-xs font-semibold text-[#7a611a] ring-1 ring-gold/40 transition hover:bg-gold-soft"
+          >
+            Open the earlier one
+          </Link>
+        </div>
+      )}
+
+      <section className="mt-6 rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft">
+        <ActionForm action={assignLead} className="flex flex-wrap items-center gap-3">
+          <input type="hidden" name="id" value={lead.id} />
+          <span className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+            <Icon name="person_add" className="text-[18px] text-gold" /> Owner
+          </span>
+          <select
+            name="assignedTo"
+            defaultValue={lead.assignedTo ?? ""}
+            className="rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm outline-none focus:border-emerald focus:ring-2 focus:ring-emerald/20"
+          >
+            <option value="">Unassigned</option>
+            {admins.map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
+          <button type="submit" className="rounded-full bg-emerald px-4 py-2 text-sm font-semibold text-cream transition hover:bg-emerald-deep">
+            Save owner
+          </button>
+        </ActionForm>
+      </section>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         {/* Left column */}

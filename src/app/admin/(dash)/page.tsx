@@ -15,7 +15,7 @@ const TYPE_ICON: Record<LeadType, string> = {
 export default async function AdminInbox({
   searchParams,
 }: {
-  searchParams: Promise<{ type?: string; stage?: string; q?: string; view?: string; after?: string }>;
+  searchParams: Promise<{ type?: string; stage?: string; q?: string; view?: string; after?: string; assignee?: string }>;
 }) {
   const sp = await searchParams;
   const type: LeadType = TYPES.includes(sp.type as LeadType) ? (sp.type as LeadType) : "admission_inquiry";
@@ -29,6 +29,7 @@ export default async function AdminInbox({
     q,
     attention,
     cursor: sp.after,
+    assignee: sp.assignee,
   });
   const wonLabel = type === "staff_application" ? "Hired" : "Admitted";
 

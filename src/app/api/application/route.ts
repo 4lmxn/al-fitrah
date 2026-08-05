@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { rateLimited } from "@/lib/rateLimit";
 import { applicationSchema, validateCvFile, hasValidCvSignature } from "@/lib/applicationSchema";
 import { uploadCv, deleteObject } from "@/lib/storage";
 import { notify } from "@/lib/notify";
+import { findDuplicate, leadDefaults } from "@/lib/leadOps";
 import { SITE_URL } from "@/lib/seo";
 import { getClientIp } from "@/lib/clientIp";
 
@@ -78,12 +78,8 @@ export async function POST(req: Request) {
       message: message || null,
       cv: { path: uploaded.path, filename: cv.name, contentType: cv.type, size: cv.size },
       stage: "new",
-      // See the inquiry route: an absent noteCount hides the lead from the
-      // untouched-leads query entirely.
-      noteCount: 0,
       source: "website",
-      createdAt: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
+      ...leadDefaults(phone, await findDuplicate(phone)),
     });
 
     await notify("application.received", {

@@ -9,6 +9,9 @@ import { isValidStage, stageLabelFor, terminalStages } from "@/lib/pipelines";
 import { resolveFollowUp } from "@/lib/followup";
 import { queueNote } from "@/lib/notes";
 import { queueAudit } from "@/lib/audit";
+import { notify } from "@/lib/notify";
+import { getAllowlist } from "@/lib/roles";
+import { SITE_URL } from "@/lib/seo";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 
 export async function updateStage(formData: FormData): Promise<ActionResult> {
@@ -184,5 +187,62 @@ export async function editContact(formData: FormData): Promise<ActionResult> {
   });
   await batch2.commit();
   revalidatePath(`/admin/leads/${id}`);
+  });
+}
+
+/**
+ * Assign a lead to a member of staff, or clear the assignment.
+ *
+ * Restricted to the admin allowlist: assigning work to an address that cannot
+ * sign in produces a lead nobody owns while looking like one somebody does.
+ */
+export async function assignLead(formData: FormData): Promise<ActionResult> {
+  return attempt("assignLead", async () => {
+    const admin = await requireAdmin();
+    const id = String(formData.get("id") ?? "");
+    if (!id) return fail("Missing lead id");
+
+    const raw = String(formData.get("assignedTo") ?? "").trim().toLowerCase();
+    const assignedTo = raw || null;
+    if (assignedTo && !getAllowlist().includes(assignedTo)) {
+      return fail("That address cannot sign in, so it cannot own a lead.");
+    }
+
+    const db = getDb();
+    const ref = db.collection("leads").doc(id);
+    const doc = await ref.get();
+    if (!doc.exists) return fail("That lead no longer exists.");
+    const data = doc.data()!;
+    if ((data.assignedTo ?? null) === assignedTo) return { ok: true as const };
+
+    const name = data.parentName ?? data.name ?? "this lead";
+    const batch = db.batch();
+    batch.update(ref, { assignedTo, updatedAt: FieldValue.serverTimestamp() });
+    queueNote(db, batch, id, {
+      text: assignedTo ? `Assigned to ${assignedTo}` : "Assignment cleared",
+      author: admin.email,
+      kind: "stage",
+    });
+    queueAudit(db, batch, {
+      actor: admin.email,
+      action: "lead.assigned",
+      entity: { type: "lead", id },
+      summary: assignedTo ? `Assigned ${name} to ${assignedTo}` : `Cleared the assignment on ${name}`,
+      meta: { from: data.assignedTo ?? null, to: assignedTo },
+    });
+    await batch.commit();
+
+    if (assignedTo) {
+      await notify("lead.assigned", {
+        parentName: name,
+        assignee: assignedTo,
+        assignedBy: admin.email,
+        entityType: "lead",
+        entityId: id,
+        link: `${SITE_URL}/admin/leads/${id}`,
+      });
+    }
+
+    revalidatePath(`/admin/leads/${id}`);
   });
 }

@@ -1,8 +1,21 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // All Storage access is server-only via the Admin SDK (which bypasses
-    // these rules). No client may read or write objects directly.
+    // Images attached to news and events. Public read on purpose — they are
+    // rendered on the marketing site by unauthenticated visitors.
+    //
+    // Read-only, and scoped to this prefix alone. Writes still go exclusively
+    // through the Admin SDK behind an admin session, so a visitor can view a
+    // published photo but cannot add, replace or delete one.
+    match /content/{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Everything else — notably applications/, which holds CVs — stays closed
+    // in both directions. This rule must remain BELOW the content/ match and
+    // must never be widened: a public read here would expose every applicant's
+    // personal data.
     match /{allPaths=**} {
       allow read, write: if false;
     }

@@ -17,7 +17,8 @@ Target: production CRM + public site, thousands of users, **Firebase spend under
 | 3b — Typed server-action errors | ✅ done | #21 |
 | 4 — Students collection | ✅ foundation done | #22 |
 | 3c — Small cleanups | ⬜ not started | |
-| 4b — Attendance, fees | ⬜ not started, see below | |
+| 4b — Attendance, fees | ✅ done | #25, #26 |
+| 5 — Website CMS (news & events) | ✅ done | #29 |
 
 **Design change made during Phase 1:** the planned `stats/leads` aggregate
 document was dropped in favour of Firestore `count()` aggregation queries, billed
@@ -275,6 +276,12 @@ write is the one place where losing a race is unrecoverable.
 ## Deliberately out of scope
 
 - Full-text lead search (needs Algolia/Typesense — a paid service, against the cost target)
+- A rich-text editor for posts. The body is a plain textarea rendered as
+  paragraphs, never as HTML — treating editor input as markup would make the CMS
+  a stored-XSS surface. A sanitising editor is a real project, not a component swap.
+- CMS for gallery, faculty and per-page SEO copy. Those change once or twice a
+  year; news and events change weekly, which is where the developer dependency
+  actually hurt. Same `posts` machinery extends to them when asked.
 - Real-time listeners in the admin console (each open tab bills reads continuously)
 - Charts in Insights (numbers are enough; a charting bundle is weight for no decision value)
 - `npm audit fix --force` — downgrades `firebase-admin`. The 12 transitive advisories

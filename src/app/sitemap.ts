@@ -11,6 +11,7 @@ const routes: { path: string; priority: number; changeFrequency: MetadataRoute.S
   { path: "/syllabus", priority: 0.7, changeFrequency: "monthly" },
   { path: "/admissions", priority: 0.9, changeFrequency: "weekly" },
   { path: "/campus-life", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/news", priority: 0.7, changeFrequency: "weekly" },
   { path: "/parent-resources", priority: 0.6, changeFrequency: "monthly" },
   { path: "/faq", priority: 0.6, changeFrequency: "monthly" },
   { path: "/careers", priority: 0.5, changeFrequency: "monthly" },

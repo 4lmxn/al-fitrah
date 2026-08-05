@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { pageMeta, jsonLdHtml } from "@/lib/seo";
 import { faq } from "@/content/pages";
 import { Container } from "@/components/ui/Container";
@@ -8,10 +9,14 @@ import { CTABand } from "@/components/ui/CTABand";
 import { Reveal } from "@/components/ui/Reveal";
 import { Accordion } from "@/components/pages/Accordion";
 
-export const metadata = pageMeta("/faq", {
+// Async because the brand comes from configuration; a module-scope
+// constant cannot await, which is what kept school identity hardcoded.
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMeta("/faq", {
   title: "FAQ",
   description: "Answers about admissions, the Noor-ul-Bayan curriculum, fees, and daily schedule at Al Fitrah Pre School, Sarjapura, Bengaluru.",
 });
+}
 
 const faqJsonLd = {
   "@context": "https://schema.org",

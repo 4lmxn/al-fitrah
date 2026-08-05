@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { parent } from "@/content/pages";
@@ -8,10 +9,14 @@ import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { ProspectusMagnet } from "@/components/pages/ProspectusMagnet";
 
-export const metadata = pageMeta("/parent-resources", {
+// Async because the brand comes from configuration; a module-scope
+// constant cannot await, which is what kept school identity hardcoded.
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMeta("/parent-resources", {
   title: "Parent Resources",
   description: "Parent resources for Al Fitrah Pre School, Sarjapura — the 2026–27 academic calendar, uniform and handbook guidance, and ways to get involved.",
 });
+}
 
 export default function ParentResourcesPage() {
   const { hero, resources, academicCalendar } = parent;

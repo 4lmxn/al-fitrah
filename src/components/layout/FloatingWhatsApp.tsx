@@ -1,17 +1,21 @@
 "use client";
 import { usePathname } from "next/navigation";
-import { waEnquiryLink } from "@/lib/seo";
 import { Icon } from "@/components/ui/Icon";
 
 // Persistent WhatsApp enquiry button on every marketing page. Most parents here
 // prefer WhatsApp to a form, so the channel is always one tap away — and the
 // message encodes the current path, so replies land tagged with where they were.
-export function FloatingWhatsApp() {
+/**
+ * `waBase` is built on the server, because the phone number is configuration
+ * and this component needs `usePathname` — so it cannot read settings itself.
+ */
+export function FloatingWhatsApp({ waBase }: { waBase: string }) {
   const pathname = usePathname();
   // Hidden on the enquiry surfaces, which already lead with their own CTAs.
   if (pathname?.startsWith("/admin") || pathname === "/contact" || pathname === "/admissions") return null;
 
-  const href = waEnquiryLink(pathname === "/" ? "home" : pathname?.replace(/^\//, ""));
+  const where = pathname === "/" ? "home" : pathname?.replace(/^\//, "");
+  const href = `${waBase}${encodeURIComponent(where ? ` (from ${where})` : "")}`;
   return (
     <a
       href={href}

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getPrograms } from "@/lib/taxonomy";
 import { pageMeta } from "@/lib/seo";
 import { admissions } from "@/content/pages";
@@ -8,10 +9,14 @@ import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { InquiryForm } from "@/components/pages/InquiryForm";
 
-export const metadata = pageMeta("/admissions", {
+// Async because the brand comes from configuration; a module-scope
+// constant cannot await, which is what kept school identity hardcoded.
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMeta("/admissions", {
   title: "Admissions",
   description: "Pre-KG admissions for 2026–27 at Al Fitrah Pre School, Sarjapura, Bengaluru — a clear, welcoming process for children aged 2y10m–3y10m. Enquire today.",
 });
+}
 
 // Reads configured programs, so this page is revalidated rather than fully
 // static. Still zero Firestore reads per visitor — one read per revalidation

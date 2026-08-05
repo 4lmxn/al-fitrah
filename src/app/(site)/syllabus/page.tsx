@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
@@ -6,10 +7,14 @@ import { Icon } from "@/components/ui/Icon";
 import { CTABand } from "@/components/ui/CTABand";
 import { Reveal } from "@/components/ui/Reveal";
 
-export const metadata = pageMeta("/syllabus", {
+// Async because the brand comes from configuration; a module-scope
+// constant cannot await, which is what kept school identity hardcoded.
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMeta("/syllabus", {
   title: "Syllabus",
   description: "3-year integrated preschool syllabus: Noor-ul-Bayan Qur'an & Arabic, Aqeedah & Hadith, plus Oxford Early Learning English, Maths & EVS, year by year.",
 });
+}
 
 const strands = [
   { icon: "menu_book", title: "Qur'an & Tajweed", body: "Qur'an reading and fluency with the rules of recitation, building toward memorization of up to 2 Juz of selected Surahs by the end of the program." },

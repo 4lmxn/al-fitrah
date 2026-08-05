@@ -3,8 +3,13 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Icon } from "@/components/ui/Icon";
-import { site } from "@/content/site";
-import { PHONE_E164 } from "@/lib/seo";
+
+// Deliberately NOT read from configuration. This is the root error boundary —
+// it renders when something below has already failed, quite possibly the
+// database that configuration lives in. A fallback number that needs a working
+// Firestore read is not a fallback. Kept in sync with settings by hand; if it
+// drifts, the worst case is an out-of-date number on a page nobody should see.
+const FALLBACK_PHONE = "+919986500718";
 
 // Catches render/data errors anywhere below the root layout. Admissions is a
 // phone-driven funnel, so the fallback always surfaces a working phone number
@@ -45,8 +50,8 @@ export default function Error({
             Try again
           </button>
           <Link href="/" className="text-sm font-semibold text-emerald-deep">Back to home</Link>
-          <a href={`tel:${PHONE_E164}`} className="text-sm font-semibold text-emerald-deep">
-            Call {site.contact.phone}
+          <a href={`tel:${FALLBACK_PHONE}`} className="text-sm font-semibold text-emerald-deep">
+            Call {FALLBACK_PHONE}
           </a>
         </div>
       </Container>

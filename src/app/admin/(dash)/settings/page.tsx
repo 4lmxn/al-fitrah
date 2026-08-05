@@ -78,7 +78,12 @@ export default async function SettingsPage() {
             <label className="block sm:col-span-2"><span className={label}>Tagline</span><input name="tagline" defaultValue={settings.school.tagline} className={field} /></label>
             <label className="block"><span className={label}>Phone</span><input name="phone" defaultValue={settings.school.phone} className={field} /></label>
             <label className="block"><span className={label}>Email</span><input name="email" defaultValue={settings.school.email} className={field} /></label>
-            <label className="block sm:col-span-2"><span className={label}>Address</span><input name="address" defaultValue={settings.school.address} className={field} /></label>
+            <label className="block sm:col-span-2"><span className={label}>Street</span><input name="street" defaultValue={settings.school.address.street} className={field} /></label>
+            <label className="block"><span className={label}>Locality</span><input name="locality" defaultValue={settings.school.address.locality} className={field} /></label>
+            <label className="block"><span className={label}>City</span><input name="city" defaultValue={settings.school.address.city} className={field} /></label>
+            <label className="block"><span className={label}>State</span><input name="region" defaultValue={settings.school.address.region} className={field} /></label>
+            <label className="block"><span className={label}>PIN code</span><input name="postalCode" defaultValue={settings.school.address.postalCode} className={field} /></label>
+            <label className="block"><span className={label}>Country code</span><input name="country" defaultValue={settings.school.address.country} maxLength={2} placeholder="IN" className={field} /></label>
             <label className="block"><span className={label}>Grievance officer</span><input name="grievanceOfficerName" defaultValue={settings.school.grievanceOfficerName} placeholder="Full name" className={field} /></label>
             <label className="block"><span className={label}>Grievance email</span><input name="grievanceOfficerEmail" defaultValue={settings.school.grievanceOfficerEmail} className={field} /></label>
           </div>

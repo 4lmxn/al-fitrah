@@ -117,7 +117,7 @@ export function CaptureForm({
         This number is on WhatsApp
       </label>
       {status === "error" && (
-        <SubmitErrorFallback message={error} context={source === "prospectus" ? "prospectus form" : "waitlist form"} dark={dark} />
+        <SubmitErrorFallback message={error} dark={dark} />
       )}
       <button
         type="submit"

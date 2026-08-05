@@ -1,6 +1,6 @@
 "use client";
 import { Icon } from "@/components/ui/Icon";
-import { waEnquiryLink, PHONE_E164 } from "@/lib/seo";
+import { useSchoolContact } from "@/components/SchoolContact";
 
 // Shown when a lead-capture submit fails (network, 429, 5xx). A failed POST is
 // the moment we're most likely to lose a real admission enquiry, so we don't
@@ -8,14 +8,12 @@ import { waEnquiryLink, PHONE_E164 } from "@/lib/seo";
 // reaches a human. `context` tags the WhatsApp text with where they were.
 export function SubmitErrorFallback({
   message,
-  context,
   dark = false,
 }: {
   message: string;
-  context?: string;
   dark?: boolean;
 }) {
-  const wa = waEnquiryLink(context);
+  const { waHref, phone } = useSchoolContact();
   return (
     <div
       role="alert"
@@ -28,7 +26,7 @@ export function SubmitErrorFallback({
       </p>
       <div className="flex flex-wrap gap-2">
         <a
-          href={wa}
+          href={waHref}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 rounded-full bg-emerald px-4 py-2 text-xs font-semibold text-cream transition hover:bg-emerald-deep"
@@ -36,14 +34,14 @@ export function SubmitErrorFallback({
           <Icon name="chat" className="text-[16px]" /> WhatsApp us
         </a>
         <a
-          href={`tel:${PHONE_E164}`}
+          href={`tel:${phone}`}
           className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold ring-1 ring-inset transition ${
             dark
               ? "text-cream ring-cream/25 hover:bg-cream/10"
               : "text-emerald-deep ring-emerald/20 hover:bg-emerald/5"
           }`}
         >
-          <Icon name="call" className="text-[16px]" /> Call {PHONE_E164}
+          <Icon name="call" className="text-[16px]" /> Call {phone}
         </a>
       </div>
     </div>

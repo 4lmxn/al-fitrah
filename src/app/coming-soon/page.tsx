@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { site } from "@/content/site";
 import { Icon } from "@/components/ui/Icon";
-import { pageMeta, PHONE_E164, WHATSAPP_URL, MAPS_DIRECTIONS_URL } from "@/lib/seo";
+import { pageMeta, getContact } from "@/lib/seo";
+import { getSettings } from "@/lib/settings";
 
 // Indexable on purpose: while the full site is gated, this is the one page we
 // want Google to start associating with the brand + location.
@@ -20,7 +20,8 @@ const facts = [
   { icon: "location_on", label: "Sarjapura, Bengaluru" },
 ];
 
-export default function ComingSoonPage() {
+export default async function ComingSoonPage() {
+  const [contact, { school }] = await Promise.all([getContact(), getSettings()]);
   return (
     <main className="relative flex min-h-screen flex-col overflow-hidden bg-emerald-deep text-cream">
       {/* Ambient depth + geometric texture */}
@@ -36,7 +37,7 @@ export default function ComingSoonPage() {
 
       <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center px-6 py-16 text-center">
         <p className="font-display text-lg tracking-wide text-cream">
-          {site.name} <span className="text-gold-light">· {site.branch}</span>
+          {school.name} <span className="text-gold-light">· {school.branch}</span>
         </p>
 
         <span className="mt-8 inline-flex items-center gap-2 rounded-full bg-cream/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-gold-light ring-1 ring-gold/20">
@@ -49,7 +50,7 @@ export default function ComingSoonPage() {
         </h1>
 
         <p className="mt-6 max-w-xl text-lg leading-relaxed text-cream/80">
-          {site.tagline}{" "}Our new home online is almost ready. Until then,
+          {school.tagline}{" "}Our new home online is almost ready. Until then,
           we&apos;d love to hear from you — reach out to enquire about a place for
           your child.
         </p>
@@ -68,7 +69,7 @@ export default function ComingSoonPage() {
 
         <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
           <a
-            href={WHATSAPP_URL}
+            href={contact.whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-semibold text-ink transition hover:bg-gold-light"
@@ -76,13 +77,13 @@ export default function ComingSoonPage() {
             <Icon name="chat" className="text-[18px]" /> WhatsApp us
           </a>
           <a
-            href={`tel:${PHONE_E164}`}
+            href={`tel:${contact.phoneE164}`}
             className="inline-flex items-center gap-2 rounded-full border border-cream/25 px-6 py-3 text-sm font-semibold text-cream transition hover:bg-cream/10"
           >
-            <Icon name="call" className="text-[18px]" /> {site.contact.phone}
+            <Icon name="call" className="text-[18px]" /> {contact.phone}
           </a>
           <a
-            href={`mailto:${site.contact.email}`}
+            href={`mailto:${contact.email}`}
             className="inline-flex items-center gap-2 rounded-full border border-cream/25 px-6 py-3 text-sm font-semibold text-cream transition hover:bg-cream/10"
           >
             <Icon name="mail" className="text-[18px]" /> Email
@@ -92,15 +93,15 @@ export default function ComingSoonPage() {
 
       <footer className="relative z-10 border-t border-cream/10 px-6 py-6 text-center text-sm text-cream/60">
         <a
-          href={MAPS_DIRECTIONS_URL}
+          href={contact.mapsDirectionsUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="hover:text-cream"
         >
-          {site.contact.address}
+          {contact.addressLine}
         </a>
         <p className="mt-2 text-cream/45">
-          © {new Date().getFullYear()} {site.name}, {site.branch}. All rights reserved.
+          © {new Date().getFullYear()} {school.name}, {school.branch}. All rights reserved.
         </p>
       </footer>
     </main>

@@ -37,16 +37,11 @@ export default async function StudentsPage({
 
   return (
     <div className="mx-auto max-w-6xl">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Roll</p>
-          <h1 className="mt-1 font-display text-3xl text-emerald-deep">Students</h1>
-          <p className="mt-1 text-sm text-ink/55">
-            Enrolled children, their guardians, and the details staff need to hand.
-          </p>
-        </div>
-        <p className="text-sm text-ink/50">
-          Students are created from an admitted enquiry, so the pipeline stays the single way in.
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Roll</p>
+        <h1 className="mt-1 font-display text-3xl text-emerald-deep">Students</h1>
+        <p className="mt-1 text-sm text-ink/55">
+          Enrolled children, their guardians, and the details staff need to hand.
         </p>
       </div>
 

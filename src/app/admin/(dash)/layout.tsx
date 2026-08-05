@@ -3,6 +3,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/adminAuth";
 import { Icon } from "@/components/ui/Icon";
 import { LogoutButton } from "@/components/admin/LogoutButton";
+import { NavLink } from "@/components/admin/NavLink";
 
 export const dynamic = "force-dynamic";
 
@@ -33,42 +34,12 @@ export default async function AdminDashLayout({ children }: { children: React.Re
 
         <nav className="mt-9 space-y-1">
           <span className="px-3 text-[11px] font-semibold uppercase tracking-wider text-cream/40">Workspace</span>
-          <Link
-            href="/admin"
-            className="mt-1 flex items-center gap-3 rounded-xl border-l-2 border-gold bg-cream/10 px-3 py-2.5 text-sm font-semibold ring-1 ring-cream/10"
-          >
-            <Icon name="inbox" className="text-[20px] text-gold-light" /> Leads
-          </Link>
-          <Link
-            href="/admin/students"
-            className="mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-cream/80 transition hover:bg-cream/10"
-          >
-            <Icon name="school" className="text-[20px] text-gold-light" /> Students
-          </Link>
-          <Link
-            href="/admin/attendance"
-            className="mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-cream/80 transition hover:bg-cream/10"
-          >
-            <Icon name="fact_check" className="text-[20px] text-gold-light" /> Attendance
-          </Link>
-          <Link
-            href="/admin/fees"
-            className="mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-cream/80 transition hover:bg-cream/10"
-          >
-            <Icon name="payments" className="text-[20px] text-gold-light" /> Fees
-          </Link>
-          <Link
-            href="/admin/insights"
-            className="mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-cream/80 transition hover:bg-cream/10"
-          >
-            <Icon name="insights" className="text-[20px] text-gold-light" /> Insights
-          </Link>
-          <Link
-            href="/admin/openings"
-            className="mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-cream/80 transition hover:bg-cream/10"
-          >
-            <Icon name="work" className="text-[20px] text-gold-light" /> Careers
-          </Link>
+          <NavLink href="/admin" icon="inbox" label="Leads" />
+          <NavLink href="/admin/students" icon="school" label="Students" />
+          <NavLink href="/admin/attendance" icon="fact_check" label="Attendance" />
+          <NavLink href="/admin/fees" icon="payments" label="Fees" />
+          <NavLink href="/admin/insights" icon="insights" label="Insights" />
+          <NavLink href="/admin/openings" icon="work" label="Careers" />
         </nav>
 
         <div className="mt-auto rounded-2xl bg-cream/5 p-4 ring-1 ring-cream/10">
@@ -91,24 +62,12 @@ export default async function AdminDashLayout({ children }: { children: React.Re
           <LogoutButton />
         </div>
         <nav aria-label="Admin" className="flex gap-2 border-t border-cream/10 px-5 py-2 text-sm font-semibold">
-          <Link href="/admin" className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition hover:bg-cream/10">
-            <Icon name="inbox" className="text-[18px] text-gold-light" /> Dashboard
-          </Link>
-          <Link href="/admin/students" className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition hover:bg-cream/10">
-            <Icon name="school" className="text-[18px] text-gold-light" /> Students
-          </Link>
-          <Link href="/admin/attendance" className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition hover:bg-cream/10">
-            <Icon name="fact_check" className="text-[18px] text-gold-light" /> Attendance
-          </Link>
-          <Link href="/admin/fees" className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition hover:bg-cream/10">
-            <Icon name="payments" className="text-[18px] text-gold-light" /> Fees
-          </Link>
-          <Link href="/admin/insights" className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition hover:bg-cream/10">
-            <Icon name="insights" className="text-[18px] text-gold-light" /> Insights
-          </Link>
-          <Link href="/admin/openings" className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition hover:bg-cream/10">
-            <Icon name="work" className="text-[18px] text-gold-light" /> Openings
-          </Link>
+          <NavLink href="/admin" icon="inbox" label="Leads" variant="topbar" />
+          <NavLink href="/admin/students" icon="school" label="Students" variant="topbar" />
+          <NavLink href="/admin/attendance" icon="fact_check" label="Attendance" variant="topbar" />
+          <NavLink href="/admin/fees" icon="payments" label="Fees" variant="topbar" />
+          <NavLink href="/admin/insights" icon="insights" label="Insights" variant="topbar" />
+          <NavLink href="/admin/openings" icon="work" label="Careers" variant="topbar" />
         </nav>
       </header>
 

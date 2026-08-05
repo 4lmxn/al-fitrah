@@ -79,7 +79,7 @@ export default async function InsightsPage() {
           )}
           <p className="mt-4 border-t border-emerald/10 pt-3 text-[11px] text-ink/45">
             Tag links with <code className="rounded bg-emerald/8 px-1 py-0.5">?utm_source=…</code> to attribute a campaign.
-            Attribution covers the {INSIGHTS_SCAN_LIMIT} most recent enquiries; the funnel and monthly total above are exact.
+            Channel figures cover the {INSIGHTS_SCAN_LIMIT} most recent enquiries.
           </p>
         </section>
       </div>

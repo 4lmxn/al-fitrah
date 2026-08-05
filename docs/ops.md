@@ -49,14 +49,16 @@ Applied and verified 5 Aug 2026. Nothing in this section needs re-running.
 | Backup bucket | ✅ `gs://al-fitrah-backups`, 90-day lifecycle |
 | First Firestore export | ✅ `gs://al-fitrah-backups/2026-08-05/` |
 | Error alerting | ✅ log metric `app_errors` + policy "Al Fitrah — application errors" → owner email |
+| Budget alert | ✅ ₹500/month, alerts at 50 / 90 / 100% |
+| Weekly backup job | ✅ `.github/workflows/firestore-backup.yml` — **needs the `GCP_SA_KEY` repo secret** |
+| Local service-account key | ✅ deleted; local dev now runs on `gcloud` user credentials |
 | Notes backfill | ✅ **not needed** — verified no legacy `notes` arrays exist; `noteCount` already matches every subcollection |
 
 ### Still open
 
-- **Weekly export schedule.** The bucket and a verified manual export exist; the recurring job does not. Add a second GitHub Actions cron beside `followup-cron.yml`.
-- **Budget alert.** Needs billing-account access, which the deploy credentials don't have. Console → Billing → Budgets → ₹500, alert at 50/90/100%.
+- **`GCP_SA_KEY` repo secret.** The weekly backup workflow is committed but fails until this exists — deliberately, because a backup you believe in but don't have is worse than none. The header of `.github/workflows/firestore-backup.yml` has the exact commands.
+- **Grievance officer name.** `src/content/site.ts` → `grievanceOfficer.name`. Only the school can supply this; the server now logs a COMPLIANCE warning at every boot until it is filled in. Draft message to send them is in §9.
 - **`ADMIN_OWNERS` secret.** Optional; until set, every admin is an owner (today's behaviour).
-- **Local service-account key.** `.env.local` still points `GOOGLE_APPLICATION_CREDENTIALS` at `serviceAccountKey.json`. See §5 — deleting it before switching to `gcloud auth application-default login` breaks local dev, so it is left for you to do in order.
 - **Firestore location.** See the warning above.
 
 ---
@@ -162,6 +164,12 @@ gcloud storage buckets describe gs://al-fitrah.firebasestorage.app \
 
 ## 5. Local dev credentials — drop the service-account key file
 
+> **Done.** `scripts/drop-service-account-key.sh` performed this on 5 Aug 2026:
+> it verified user credentials could read Firestore *before* removing anything,
+> stripped the env line (keeping `.env.local.bak`), and deleted the key. Re-run
+> it on any other machine that still has one. The rest of this section explains
+> what it does.
+
 `.env.local` currently sets `GOOGLE_APPLICATION_CREDENTIALS` to
 `serviceAccountKey.json` in the repo root. It is correctly gitignored and is
 **not** in git history (verified), but it is a long-lived, full-project-admin
@@ -241,3 +249,34 @@ query started scanning before paying the bill.
 
 Usage lives at **Firebase Console → Firestore → Usage**, which breaks down
 reads by day. Check it after Phase 1 ships to confirm the numbers.
+
+## 9. Grievance officer — the one thing only the school can answer
+
+`src/content/site.ts` → `grievanceOfficer.name` is empty. The privacy page falls
+back to naming the school, which is weaker than the DPDP Act asks for: it wants a
+**named person** a parent can contact about their data. The server logs a
+COMPLIANCE warning at every boot until it is filled in.
+
+Nobody here can invent this. Message to send the school:
+
+> As part of the new website's privacy policy, Indian data protection law
+> (the DPDP Act, 2023) requires us to name one person parents can contact about
+> their personal information — to see it, correct it, delete it, or complain.
+>
+> Could you confirm:
+> 1. The name of the person who should handle these (usually the principal or
+>    an administrator).
+> 2. The email address parents should use — the school inbox is fine.
+>
+> It appears on the privacy page and we should respond within 30 days.
+
+Once they reply, fill in the one line:
+
+```ts
+grievanceOfficer: {
+  name: "Their Name",
+  email: "their@email",
+},
+```
+
+The boot warning disappears and the privacy page names them instead of the school.

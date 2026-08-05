@@ -113,8 +113,7 @@ export default async function FeesPage({
       </div>
 
       <p className="mt-3 text-xs text-ink/45">
-        Totals cover the {rows.length} enrolled {rows.length === 1 ? "child" : "children"} on this page, not the
-        whole school — the balance is derived, so it can&apos;t be summed by a query.
+        Totals cover the {rows.length} enrolled {rows.length === 1 ? "child" : "children"} shown on this page.
       </p>
 
       {(nextCursor || sp.after) && (

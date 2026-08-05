@@ -1,0 +1,74 @@
+name: Weekly Firestore backup
+
+# Exports the whole database to gs://al-fitrah-backups/<date>/.
+#
+# PITR covers the last 7 days and protects against a bad write. This covers
+# everything older, and survives a mistake at the project level that PITR
+# cannot — a deleted database takes its recovery window with it.
+#
+# The bucket has a 90-day lifecycle rule, so old exports expire on their own.
+#
+# Setup (repo → Settings → Secrets and variables → Actions):
+#   Secret  GCP_SA_KEY  — JSON key for a service account with roles
+#                         datastore.importExportAdmin and storage.objectCreator.
+#                         Create it with:
+#     gcloud iam service-accounts create firestore-backup --project=al-fitrah
+#     gcloud projects add-iam-policy-binding al-fitrah \
+#       --member=serviceAccount:firestore-backup@al-fitrah.iam.gserviceaccount.com \
+#       --role=roles/datastore.importExportAdmin
+#     gcloud storage buckets add-iam-policy-binding gs://al-fitrah-backups \
+#       --member=serviceAccount:firestore-backup@al-fitrah.iam.gserviceaccount.com \
+#       --role=roles/storage.objectAdmin
+#     gcloud iam service-accounts keys create key.json \
+#       --iam-account=firestore-backup@al-fitrah.iam.gserviceaccount.com
+#
+# Until GCP_SA_KEY exists the job fails loudly rather than reporting a green
+# backup that never ran — a backup you believe in but don't have is worse than
+# none.
+
+on:
+  schedule:
+    # 20:00 UTC Sunday = 01:30 IST Monday. Off-hours for an Indian school.
+    - cron: "0 20 * * 0"
+  workflow_dispatch: {}
+
+concurrency:
+  group: firestore-backup
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check credentials are configured
+        env:
+          KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "::error::GCP_SA_KEY is not set. See the header of this workflow for how to create it."
+            exit 1
+          fi
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Export Firestore
+        run: |
+          set -euo pipefail
+          DEST="gs://al-fitrah-backups/$(date -u +%Y-%m-%d)"
+          echo "Exporting to $DEST"
+          # Synchronous: the step should fail if the export fails, not report
+          # success for a job that was merely accepted.
+          gcloud firestore export "$DEST" \
+            --database="(default)" --project=al-fitrah
+
+      - name: Confirm the export landed
+        run: |
+          set -euo pipefail
+          DEST="gs://al-fitrah-backups/$(date -u +%Y-%m-%d)"
+          gcloud storage ls "$DEST/**" | head -5
+          echo "Backup present at $DEST"

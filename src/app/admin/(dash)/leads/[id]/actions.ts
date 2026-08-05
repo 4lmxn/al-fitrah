@@ -3,11 +3,10 @@ import { revalidatePath } from "next/cache";
 import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
-import { isValidStage, normalizeStage, PROGRAM_INTERESTS, type LeadType } from "@/lib/leads";
-import { stageMeta } from "@/lib/stageMeta";
+import { normalizeStage, PROGRAM_INTERESTS, type LeadType } from "@/lib/leads";
+import { isValidStage, stageLabelFor, terminalStages } from "@/lib/pipelines";
 import { resolveFollowUp } from "@/lib/followup";
 import { queueNote } from "@/lib/notes";
-import { TERMINAL_STAGES } from "@/lib/attention";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 
 export async function updateStage(formData: FormData): Promise<ActionResult> {
@@ -22,7 +21,7 @@ export async function updateStage(formData: FormData): Promise<ActionResult> {
   if (!doc.exists) return fail("Lead not found");
   const data = doc.data()!;
   const type = data.type as LeadType;
-  if (!isValidStage(type, stage)) return fail("Invalid stage for this lead type");
+  if (!(await isValidStage(type, stage))) return fail("Invalid stage for this lead type");
 
   // No-op if unchanged, so the timeline doesn't fill with duplicate entries.
   if (normalizeStage(data.stage ?? "new") === stage) return;
@@ -37,10 +36,10 @@ export async function updateStage(formData: FormData): Promise<ActionResult> {
   // query needs no stage filter, which is what keeps it a cheap aggregation.
   batch.update(ref, {
     stage,
-    ...(TERMINAL_STAGES.has(stage) ? { followUpDate: FieldValue.delete() } : {}),
+    ...((await terminalStages(type)).has(stage) ? { followUpDate: FieldValue.delete() } : {}),
   });
   queueNote(db, batch, id, {
-    text: `Moved to ${stageMeta(stage).label}`,
+    text: `Moved to ${await stageLabelFor(type, stage)}`,
     author: admin.email,
     kind: "stage",
   });

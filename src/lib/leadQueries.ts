@@ -1,8 +1,9 @@
 import "server-only";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
-import { PIPELINES, normalizeStage, type LeadType } from "@/lib/leads";
-import { stageMeta, type StageGroup } from "@/lib/stageMeta";
+import { normalizeStage, type LeadType } from "@/lib/leads";
+import { findStage, type StageGroup, type StageView } from "@/lib/stageMeta";
+import { getPipeline } from "@/lib/pipelines";
 import { needsAttention } from "@/lib/attention";
 import { noteCountOf, readNotesRaw, resolveNotes } from "@/lib/notes";
 
@@ -101,13 +102,14 @@ export type Inbox = {
   nextCursor: string | null;
   /** Set when a search hit its scan window, so the UI can say so honestly. */
   searchTruncated: boolean;
+  /** Configured stages, resolved once server-side for the client board. */
+  pipeline: StageView[];
 };
 
 // Per-stage counts via aggregation queries. count() bills one read per 1000
 // index entries matched, so counting a 10,000-lead pipeline costs single-digit
 // reads instead of 10,000 — the difference between a flat bill and a linear one.
-async function stageCounts(type: LeadType): Promise<Record<string, number>> {
-  const stages = PIPELINES[type];
+async function stageCounts(type: LeadType, stages: string[]): Promise<Record<string, number>> {
   const results = await Promise.all(
     stages.map((s) =>
       getDb()
@@ -206,6 +208,9 @@ export async function getInbox(
 
   const now = Date.now();
   const q = opts.q?.trim().toLowerCase();
+  // Resolved once: the counts, the KPI grouping and the client board all need
+  // the same configured stage list, and it is one cached settings read.
+  const pipeline = await getPipeline(type);
 
   // The rows and the header counts are independent queries, so they go out
   // together. Awaiting the counts first and the rows after doubled the wall
@@ -252,7 +257,7 @@ export async function getInbox(
           })();
 
   const [counts, attentionCount, page] = await Promise.all([
-    stageCounts(type),
+    stageCounts(type, pipeline.map((s) => s.id)),
     attentionCountOf(type, now),
     rowsPromise,
   ]);
@@ -260,10 +265,10 @@ export async function getInbox(
   const kpis: InboxKpis = { total: 0, new: 0, active: 0, won: 0, lost: 0 };
   for (const [stage, n] of Object.entries(counts)) {
     kpis.total += n;
-    kpis[stageMeta(stage).group] += n;
+    kpis[findStage(pipeline, stage).group] += n;
   }
 
-  return { ...page, counts, kpis, attentionCount };
+  return { ...page, counts, kpis, attentionCount, pipeline };
 }
 
 // ── Marketing insights ──────────────────────────────────────────────────────
@@ -299,10 +304,15 @@ export async function getInsights(): Promise<Insights> {
   monthStart.setHours(0, 0, 0, 0);
   const monthStartMs = monthStart.getTime();
 
-  const funnelStages = ["new", "contacted", "visited", "applied", "admitted"];
+  // The funnel follows the configured pipeline rather than a fixed list, so a
+  // school that adds a stage sees it here without a deploy. "Lost" is excluded:
+  // a funnel measures progress toward admission, and a lost lead did not
+  // progress through the earlier stages on the way out.
+  const admissionPipeline = await getPipeline("admission_inquiry");
+  const funnelStages = admissionPipeline.filter((s) => s.group !== "lost").map((s) => s.id);
 
   const [counts, monthSnap, recentSnap] = await Promise.all([
-    stageCounts("admission_inquiry"),
+    stageCounts("admission_inquiry", admissionPipeline.map((s) => s.id)),
     getDb()
       .collection("leads")
       .where("type", "==", "admission_inquiry")
@@ -347,7 +357,7 @@ export async function getInsights(): Promise<Insights> {
     .map(([source, v]) => ({ source, ...v }))
     .sort((a, b) => b.total - a.total);
 
-  const funnel = funnelStages.map((stage) => ({ stage, label: stageMeta(stage).label, count: funnelCounts[stage] }));
+  const funnel = funnelStages.map((stage) => ({ stage, label: findStage(admissionPipeline, stage).label, count: funnelCounts[stage] }));
 
   const referrers = [...referrerMap.entries()]
     .map(([code, v]) => ({ code, ...v }))

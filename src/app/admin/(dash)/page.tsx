@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { getInbox, SEARCH_SCAN_LIMIT } from "@/lib/leadQueries";
-import { PIPELINES, LEAD_TYPE_LABEL, type LeadType } from "@/lib/leads";
-import { stageMeta } from "@/lib/stageMeta";
+import { LEAD_TYPE_LABEL, type LeadType } from "@/lib/leads";
 import { Icon } from "@/components/ui/Icon";
 import { InboxBoard } from "@/components/admin/InboxBoard";
 
@@ -21,16 +20,22 @@ export default async function AdminInbox({
   const sp = await searchParams;
   const type: LeadType = TYPES.includes(sp.type as LeadType) ? (sp.type as LeadType) : "admission_inquiry";
   const attention = sp.view === "attention";
-  const stage = !attention && sp.stage && PIPELINES[type].includes(sp.stage) ? sp.stage : undefined;
+  // Validated against the configured pipeline below, once it is resolved.
+  const requestedStage = !attention ? sp.stage : undefined;
   const q = sp.q?.trim() || "";
 
-  const { rows, counts, kpis, attentionCount, nextCursor, searchTruncated } = await getInbox(type, {
-    stage,
+  const { rows, counts, kpis, attentionCount, nextCursor, searchTruncated, pipeline } = await getInbox(type, {
+    stage: requestedStage,
     q,
     attention,
     cursor: sp.after,
   });
   const wonLabel = type === "staff_application" ? "Hired" : "Admitted";
+
+  // Ignore a stage in the URL that the configured pipeline no longer contains,
+  // so a bookmarked filter for a deleted stage falls back to "all" instead of
+  // an empty table with no explanation.
+  const stage = pipeline.some((s) => s.id === requestedStage) ? requestedStage : undefined;
 
   // "Next page" preserves the active filter; anything else resets to page one,
   // since a cursor from one filter is meaningless under another.
@@ -39,8 +44,6 @@ export default async function AdminInbox({
     : null;
   const isPaged = Boolean(sp.after);
 
-  // Options for the inline stage changer, labelled from the pipeline.
-  const stageOptions = PIPELINES[type].map((s) => ({ value: s, label: stageMeta(s).label }));
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -86,7 +89,7 @@ export default async function AdminInbox({
         attention={attention}
         q={q}
         wonLabel={wonLabel}
-        stageOptions={stageOptions}
+        stages={pipeline}
         initial={{ rows, counts, kpis, attentionCount }}
       />
 

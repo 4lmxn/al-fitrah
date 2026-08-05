@@ -3,8 +3,8 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import type { LeadRow, InboxKpis } from "@/lib/leadQueries";
 import type { ActionResult } from "@/lib/actionResult";
-import { PIPELINES, type LeadType } from "@/lib/leads";
-import { stageMeta } from "@/lib/stageMeta";
+import { type LeadType } from "@/lib/leads";
+import { findStage, type StageView } from "@/lib/stageMeta";
 import { needsAttention } from "@/lib/attention";
 import { relativeTime } from "@/lib/relativeTime";
 import { followUpWaLink } from "@/lib/followup";
@@ -26,7 +26,7 @@ export function InboxBoard({
   attention,
   q,
   wonLabel,
-  stageOptions,
+  stages,
   initial,
 }: {
   type: LeadType;
@@ -34,7 +34,8 @@ export function InboxBoard({
   attention: boolean;
   q: string;
   wonLabel: string;
-  stageOptions: { value: string; label: string }[];
+  /** Configured pipeline, resolved server-side — settings are not readable here. */
+  stages: StageView[];
   initial: State;
 }) {
   // Client owns the truth after the first paint. Seeded from the server on
@@ -77,8 +78,8 @@ export function InboxBoard({
     if (before.stage !== after.stage) {
       if (before.stage in counts) counts[before.stage] -= 1;
       if (after.stage in counts) counts[after.stage] += 1;
-      const g0 = stageMeta(before.stage).group;
-      const g1 = stageMeta(after.stage).group;
+      const g0 = findStage(stages, before.stage).group;
+      const g1 = findStage(stages, after.stage).group;
       if (g0 !== g1) {
         kpis[g0] -= 1;
         kpis[g1] += 1;
@@ -221,8 +222,8 @@ export function InboxBoard({
           >
             All <span className="ml-1 tabular-nums opacity-70">{kpis.total}</span>
           </Link>
-          {PIPELINES[type].map((s) => {
-            const m = stageMeta(s);
+          {stages.map((m) => {
+            const s = m.id;
             const active = activeStage === s;
             return (
               <Link
@@ -308,8 +309,8 @@ export function InboxBoard({
                         onChange={(e) => onStage(l, e.target.value)}
                         className="cursor-pointer rounded-full border border-emerald/15 bg-white py-1.5 pl-3 pr-7 text-xs font-semibold text-emerald-deep outline-none transition hover:bg-emerald/5 focus:border-emerald focus:ring-2 focus:ring-emerald/20 disabled:cursor-wait"
                       >
-                        {stageOptions.map((o) => (
-                          <option key={o.value} value={o.value}>{o.label}</option>
+                        {stages.map((o) => (
+                          <option key={o.id} value={o.id}>{o.label}</option>
                         ))}
                       </select>
                     </td>
@@ -368,7 +369,7 @@ export function InboxBoard({
       </div>
 
       {rows.length > 0 && (
-        <p className="mt-3 text-xs text-ink/45">Showing {rows.length} {rows.length === 1 ? "lead" : "leads"}{attention ? " needing attention" : activeStage ? ` in ${stageMeta(activeStage).label}` : ""}{q ? ` matching “${q}”` : ""}.</p>
+        <p className="mt-3 text-xs text-ink/45">Showing {rows.length} {rows.length === 1 ? "lead" : "leads"}{attention ? " needing attention" : activeStage ? ` in ${findStage(stages, activeStage).label}` : ""}{q ? ` matching “${q}”` : ""}.</p>
       )}
     </>
   );

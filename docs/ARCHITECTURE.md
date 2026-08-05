@@ -107,7 +107,15 @@ Non-negotiable, enforced by `tests/unit/costInvariants.test.ts`:
 
 Ordered by what unblocks the most downstream work:
 
-1. **Configuration as data** — unblocks configurable pipelines, taxonomy, roles, branding.
+1. ~~**Configuration as data**~~ — done (#32).
+   1a. ~~**Pipelines read from configuration**~~ — done. `PIPELINES` and
+       `STAGE_META` deleted; stages, labels, groups and terminal flags come from
+       settings, and stage colour derives from group + position so a newly
+       configured stage is styled automatically.
+   1b. **Admin UI for settings** — next. Configuration is data but not yet
+       editable without a script, which is half of what the brief asks.
+   1c. **Remaining consumers** — taxonomy (programs, class sections, sources,
+       payment methods), attendance statuses, school identity, feature flags.
 2. **Audit log + notification engine** — the two seams every later module needs.
 3. **CRM depth** — assignment, tasks, tags, duplicate detection, bulk actions, export.
 4. **Configurable admissions pipeline** — the brief's 9 stages, driven by settings.

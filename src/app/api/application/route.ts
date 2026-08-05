@@ -77,8 +77,10 @@ export async function POST(req: Request) {
       message: message || null,
       cv: { path: uploaded.path, filename: cv.name, contentType: cv.type, size: cv.size },
       stage: "new",
+      // See the inquiry route: an absent noteCount hides the lead from the
+      // untouched-leads query entirely.
+      noteCount: 0,
       source: "website",
-      notes: [],
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });

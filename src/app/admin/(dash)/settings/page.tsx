@@ -1,7 +1,8 @@
 import { requireAdmin } from "@/lib/adminAuth";
 import { getSettings } from "@/lib/settings";
 import { getPipeline } from "@/lib/pipelines";
-import { saveSchool, saveTaxonomy, saveOperations } from "./actions";
+import { saveSchool, saveTaxonomy, saveOperations, saveNotifications } from "./actions";
+import { NOTIFY_CHANNELS, NOTIFY_EVENTS, tokensIn } from "@/lib/notify";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { PipelineEditor } from "@/components/admin/PipelineEditor";
 import { Icon } from "@/components/ui/Icon";
@@ -124,6 +125,41 @@ export default async function SettingsPage() {
             <List name="paymentMethods" title="Payment methods" hint="Offered when recording a fee payment." values={settings.taxonomy.paymentMethods} />
           </div>
           <button type="submit" className="rounded-full bg-emerald px-5 py-2 text-sm font-semibold text-cream transition hover:bg-emerald-deep">Save lists</button>
+        </ActionForm>
+      </section>
+
+      <section className={card}>
+        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+          <Icon name="notifications" className="text-[18px] text-gold" /> Notifications
+        </h2>
+        <p className="mt-1 text-xs text-ink/50">
+          Who gets told what, and in what words. Switching a channel off stops that event using it.
+        </p>
+        <ActionForm action={saveNotifications} className="mt-4 space-y-5">
+          {NOTIFY_EVENTS.map((event) => {
+            const t = settings.notifications.templates[event];
+            const on = settings.notifications.events[event];
+            return (
+              <div key={event} className="rounded-xl border border-emerald/15 bg-cream/20 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-emerald-deep">{event}</p>
+                <div className="mt-2 flex flex-wrap gap-3">
+                  {NOTIFY_CHANNELS.map((c) => (
+                    <label key={c} className="flex items-center gap-1.5 text-xs text-ink/70">
+                      <input type="checkbox" name={`ch-${event}-${c}`} defaultChecked={on.includes(c)} className="h-3.5 w-3.5 rounded accent-emerald" />
+                      {c}
+                      {(c === "whatsapp" || c === "sms") && <span className="text-[10px] text-ink/35">(not wired yet)</span>}
+                    </label>
+                  ))}
+                </div>
+                <input name={`subject-${event}`} defaultValue={t.subject} className={`${field} mt-3`} />
+                <textarea name={`body-${event}`} rows={6} defaultValue={t.body} className={`${field} mt-2 resize-y font-mono text-xs`} />
+                <p className="mt-1 text-[11px] text-ink/45">
+                  Available: {tokensIn(t.body).concat(tokensIn(t.subject)).filter((v, i, a) => a.indexOf(v) === i).map((x) => `{{${x}}}`).join(" ") || "none"}
+                </p>
+              </div>
+            );
+          })}
+          <button type="submit" className="rounded-full bg-emerald px-5 py-2 text-sm font-semibold text-cream transition hover:bg-emerald-deep">Save notifications</button>
         </ActionForm>
       </section>
 

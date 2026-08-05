@@ -4,7 +4,8 @@ import { getDb } from "@/lib/firebaseAdmin";
 import { rateLimited } from "@/lib/rateLimit";
 import { applicationSchema, validateCvFile, hasValidCvSignature } from "@/lib/applicationSchema";
 import { uploadCv, deleteObject } from "@/lib/storage";
-import { sendApplicationEmails } from "@/lib/email";
+import { notify } from "@/lib/notify";
+import { SITE_URL } from "@/lib/seo";
 import { getClientIp } from "@/lib/clientIp";
 
 export const runtime = "nodejs";
@@ -85,10 +86,10 @@ export async function POST(req: Request) {
       updatedAt: FieldValue.serverTimestamp(),
     });
 
-    // Email is best-effort: a delivery failure must not lose the stored lead.
-    await sendApplicationEmails({ id: ref.id, name, phone, email, role }).catch((err) =>
-      console.error("application email failed", err),
-    );
+    await notify("application.received", {
+      name, phone, email: email || "—", role,
+      entityType: "lead", entityId: ref.id, link: `${SITE_URL}/admin/leads/${ref.id}`,
+    });
 
     return NextResponse.json({ ok: true, id: ref.id });
   } catch (err) {

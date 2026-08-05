@@ -3,7 +3,8 @@ import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { leadSchema } from "@/lib/leadSchema";
 import { getPrograms, pickFrom } from "@/lib/taxonomy";
-import { sendInquiryEmails } from "@/lib/email";
+import { notify } from "@/lib/notify";
+import { SITE_URL } from "@/lib/seo";
 import { rateLimited } from "@/lib/rateLimit";
 import { getClientIp } from "@/lib/clientIp";
 
@@ -76,10 +77,13 @@ export async function POST(req: Request) {
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });
-    // Email is best-effort: a delivery failure must not lose the stored lead.
-    await sendInquiryEmails({ id: ref.id, parentName, childName, phone, email, childAge, programInterest, message }).catch((err) =>
-      console.error("inquiry email failed", err),
-    );
+    // The lead is already stored. notify() never throws, so a dead channel
+    // cannot lose the enquiry it was meant to announce.
+    await notify("lead.created", {
+      parentName, childName: childName || "—", phone, email: email || "—",
+      childAge, programInterest: programInterest || "—", message: message || "—",
+      entityType: "lead", entityId: ref.id, link: `${SITE_URL}/admin/leads/${ref.id}`,
+    });
     return NextResponse.json({ ok: true, id: ref.id });
   } catch (err) {
     console.error("inquiry write failed", err);

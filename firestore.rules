@@ -29,6 +29,11 @@ service cloud.firestore {
     match /auditLog/{doc=**} {
       allow read, write: if false;
     }
+    // In-app notifications. Server-only: a client able to write here could
+    // forge a notice, and one able to read could see other staff's alerts.
+    match /notifications/{doc=**} {
+      allow read, write: if false;
+    }
     // Website content. Reads happen server-side through ISR, so this could be
     // closed too — but posts are, by definition, published to the public, and
     // an accidental client read here leaks nothing. Writes stay server-only.

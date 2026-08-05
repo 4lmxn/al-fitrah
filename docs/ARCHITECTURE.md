@@ -72,16 +72,22 @@ Transport and the rest attach later without refactoring. Three seams carry that:
 New modules declare their own section with a schema and defaults. No change to
 existing settings code, no migration.
 
-### 3.2 Notification engine (planned, not built)
+### 3.2 Notification engine (built)
 
-Today `lib/email.ts` calls Resend directly from routes. That is the wrong shape
-for the brief's "future channels should require no architectural changes".
+`notify(event, payload)` with channel adapters selected by configuration.
+Callers emit domain events and never name a channel; `lib/email.ts` is deleted.
 
-Target: a `notify(event, payload)` dispatcher with channel adapters
-(`email`, `dashboard`, `whatsapp`, `sms`) selected by configuration and by
-templates stored in settings. Callers emit domain events — `lead.created`,
-`interview.scheduled` — and never name a channel. Adding WhatsApp becomes one
-adapter plus one config flag.
+**`notify()` never throws.** A parent's enquiry must be saved even if every
+channel is down — losing the lead in order to announce the lead is the worst
+possible trade. Channels dispatch in parallel and are isolated from each other,
+so a broken email provider cannot stop the in-app notice being written. Verified
+by submitting a real enquiry with an invalid Resend key: the lead saved and the
+dashboard channel still delivered.
+
+`whatsapp` and `sms` are declared but report themselves unconfigured, so they
+are skipped and their toggles are honest about doing nothing yet. Wiring a
+provider means replacing one `send` — no route, action or template changes.
+That is the extension point working.
 
 ### 3.2b Two constants that deliberately stay in code
 

@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { captureSchema } from "@/lib/leadSchema";
-import { sendInquiryEmails } from "@/lib/email";
+import { notify } from "@/lib/notify";
+import { SITE_URL } from "@/lib/seo";
 import { rateLimited } from "@/lib/rateLimit";
 import { getClientIp } from "@/lib/clientIp";
 
@@ -67,10 +68,11 @@ export async function POST(req: Request) {
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });
-    // Best-effort admin notification; a delivery failure must not lose the lead.
-    await sendInquiryEmails({ id: ref.id, parentName, phone, email, childAge: childAge || "—" }).catch((err) =>
-      console.error(`${source} capture email failed`, err),
-    );
+    await notify("lead.created", {
+      parentName, childName: "—", phone, email: email || "—",
+      childAge: childAge || "—", programInterest: "—", message: `Captured via ${source}`,
+      entityType: "lead", entityId: ref.id, link: `${SITE_URL}/admin/leads/${ref.id}`,
+    });
     return NextResponse.json({ ok: true, id: ref.id });
   } catch (err) {
     console.error("capture write failed", err);

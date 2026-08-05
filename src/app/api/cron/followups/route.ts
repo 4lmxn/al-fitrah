@@ -4,7 +4,7 @@ import { getDb } from "@/lib/firebaseAdmin";
 import { normalizeStage } from "@/lib/leads";
 import { findStage } from "@/lib/stageMeta";
 import { getPipeline, allTerminalStages } from "@/lib/pipelines";
-import { sendFollowUpDigest, type FollowUpDigestLead } from "@/lib/email";
+import { notify } from "@/lib/notify";
 import { SITE_URL } from "@/lib/seo";
 import { waLink } from "@/lib/phone";
 
@@ -69,7 +69,10 @@ export async function GET(req: Request) {
     allTerminalStages(),
   ]);
 
-  const leads: FollowUpDigestLead[] = snap.docs
+  // Shaped here rather than imported from the mail module: the digest is now an
+  // event payload, not an email-specific type.
+  type DueLead = { id: string; name: string; phone: string; stage: string; overdue: boolean; waLink: string | null };
+  const leads: DueLead[] = snap.docs
     .map((d) => {
       const x = d.data();
       const stage = normalizeStage(x.stage ?? "new");
@@ -94,11 +97,20 @@ export async function GET(req: Request) {
       waLink: waLink(l.phone),
     }));
 
+  // Nothing due is not a failure — sending "0 leads need follow-up" every
+  // morning trains people to ignore the digest.
   let sent = false;
-  try {
-    sent = await sendFollowUpDigest(leads, SITE_URL);
-  } catch (err) {
-    console.error("cron followups digest send failed", err);
+  if (leads.length > 0) {
+    const list = leads
+      .map((l) => `${l.overdue ? "[OVERDUE]" : "[due today]"} ${l.name} — ${l.phone} — ${l.stage}${l.waLink ? `\n   ${l.waLink}` : ""}\n   ${SITE_URL}/admin/leads/${l.id}`)
+      .join("\n");
+    const result = await notify("followup.due", {
+      count: leads.length,
+      overdue: leads.filter((l) => l.overdue).length,
+      list,
+      link: `${SITE_URL}/admin`,
+    });
+    sent = result.delivered.length > 0;
   }
 
   console.log(`cron followups: ${leads.length} due, digest sent=${sent}`);

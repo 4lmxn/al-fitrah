@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { saveSettings, type StageConfig } from "@/lib/settings";
 import { recordAudit } from "@/lib/audit";
+import { NOTIFY_CHANNELS, NOTIFY_EVENTS, type NotifyChannel } from "@/lib/notify/types";
 
 const clean = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
 
@@ -160,5 +161,36 @@ export async function savePipeline(formData: FormData): Promise<ActionResult> {
     const label = clean(formData.get("label"), 60) || (type === "admission_inquiry" ? "Admission inquiry" : "Staff application");
     const res = await saveSettings({ pipelines: { [type]: { label, stages } } });
     return res.ok ? { ok: true as const } : fail(res.error);
+  });
+}
+
+/** Which channels fire for each event, and what they say. */
+export async function saveNotifications(formData: FormData): Promise<ActionResult> {
+  return attempt("saveNotifications", async () => {
+    const admin = await requireOwnerForSettings();
+    if (!admin) return fail("Changing settings needs an owner account.");
+
+    const events: Record<string, NotifyChannel[]> = {};
+    const templates: Record<string, { subject: string; body: string }> = {};
+
+    for (const event of NOTIFY_EVENTS) {
+      events[event] = NOTIFY_CHANNELS.filter((c) => formData.get(`ch-${event}-${c}`) === "on");
+      const subject = clean(formData.get(`subject-${event}`), 200);
+      const body = clean(formData.get(`body-${event}`), 4000);
+      // A blank template would send an empty email rather than nothing at all,
+      // which is worse than the event being switched off.
+      if (!subject || !body) return fail(`The "${event}" template needs a subject and a body.`);
+      templates[event] = { subject, body };
+    }
+
+    const res = await saveSettings({ notifications: { events, templates } });
+    if (!res.ok) return fail(res.error);
+    await recordAudit({
+      actor: admin.email,
+      action: "settings.updated",
+      entity: { type: "settings", id: "platform" },
+      summary: "Updated notification channels and templates",
+    });
+    return { ok: true as const };
   });
 }

@@ -93,6 +93,21 @@ export const settingsSchema = z.object({
     lowAttendancePercent: z.number().int().min(0).max(100),
   }),
 
+  notifications: z.object({
+    /** Which channels fire for each event. Empty means the event is silent. */
+    events: z.object({
+      "lead.created": z.array(z.enum(["email", "dashboard", "whatsapp", "sms"])).max(4),
+      "application.received": z.array(z.enum(["email", "dashboard", "whatsapp", "sms"])).max(4),
+      "followup.due": z.array(z.enum(["email", "dashboard", "whatsapp", "sms"])).max(4),
+    }),
+    /** Editable copy. `{{token}}` placeholders are filled from the event payload. */
+    templates: z.object({
+      "lead.created": z.object({ subject: z.string().max(200), body: z.string().max(4000) }),
+      "application.received": z.object({ subject: z.string().max(200), body: z.string().max(4000) }),
+      "followup.due": z.object({ subject: z.string().max(200), body: z.string().max(4000) }),
+    }),
+  }),
+
   features: z.object({
     comingSoon: z.boolean(),
     onlinePayments: z.boolean(),
@@ -168,6 +183,49 @@ export const DEFAULT_SETTINGS: Settings = {
     nonSchoolDays: [0],
     lowAttendancePercent: 75,
   },
+  notifications: {
+    events: {
+      "lead.created": ["email", "dashboard"],
+      "application.received": ["email", "dashboard"],
+      "followup.due": ["email"],
+    },
+    templates: {
+      "lead.created": {
+        subject: "New admission enquiry — {{parentName}}",
+        body: [
+          "New enquiry from the website.",
+          "",
+          "Parent:  {{parentName}}",
+          "Child:   {{childName}}",
+          "Phone:   {{phone}}",
+          "Email:   {{email}}",
+          "Age:     {{childAge}}",
+          "Program: {{programInterest}}",
+          "Message: {{message}}",
+          "",
+          "Open it: {{link}}",
+        ].join("\n"),
+      },
+      "application.received": {
+        subject: "New staff application — {{name}} ({{role}})",
+        body: [
+          "New staff application from the website.",
+          "",
+          "Name:  {{name}}",
+          "Phone: {{phone}}",
+          "Email: {{email}}",
+          "Role:  {{role}}",
+          "",
+          "CV and details: {{link}}",
+        ].join("\n"),
+      },
+      "followup.due": {
+        subject: "{{count}} lead(s) need follow-up today",
+        body: ["Follow-up reminder.", "", "{{list}}", "", "Open the console: {{link}}"].join("\n"),
+      },
+    },
+  },
+
   features: {
     comingSoon: true,
     onlinePayments: false,

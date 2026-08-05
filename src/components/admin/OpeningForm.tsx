@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ActionResult } from "@/lib/actionResult";
 import { ActionForm } from "@/components/admin/ActionForm";
-import { EMPLOYMENT_TYPES, type JobOpening } from "@/lib/jobOpenings";
+import { type JobOpening } from "@/lib/jobOpenings";
 
 const field =
   "w-full rounded-xl border border-emerald/15 bg-white px-4 py-2.5 text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20 placeholder:text-ink/35";
@@ -11,11 +11,13 @@ type Props = {
   action: (formData: FormData) => Promise<ActionResult>;
   opening?: JobOpening;
   submitLabel: string;
+  /** Configured types — settings are not readable from a client component. */
+  employmentTypes: string[];
 };
 
 // Shared create/edit form. Requirements are entered one-per-line and stored as
 // a string[]. Used by both the "new" and "edit" admin pages.
-export function OpeningForm({ action, opening, submitLabel }: Props) {
+export function OpeningForm({ action, opening, submitLabel, employmentTypes }: Props) {
   return (
     <ActionForm action={action} className="space-y-6">
       {opening && <input type="hidden" name="id" value={opening.id} />}
@@ -29,7 +31,7 @@ export function OpeningForm({ action, opening, submitLabel }: Props) {
         <div className="space-y-2">
           <label className={labelCls} htmlFor="employmentType">Employment type</label>
           <select id="employmentType" name="employmentType" defaultValue={opening?.employmentType ?? "Full-time"} className={`${field} cursor-pointer`}>
-            {EMPLOYMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+            {employmentTypes.map((t: string) => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
         <div className="space-y-2">

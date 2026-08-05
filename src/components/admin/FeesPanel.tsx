@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { formatPaise } from "@/lib/money";
-import { PAYMENT_METHODS, type Payment, type StudentFees } from "@/lib/fees";
+import { type Payment, type StudentFees } from "@/lib/fees";
 import { setFeeTotal, recordPayment } from "@/app/admin/(dash)/students/fees-actions";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { Icon } from "@/components/ui/Icon";
@@ -23,10 +23,13 @@ export function FeesPanel({
   studentId,
   fees,
   payments,
+  methods,
 }: {
   studentId: string;
   fees: StudentFees;
   payments: Payment[];
+  /** Configured payment methods — settings are not readable from a client component. */
+  methods: string[];
 }) {
   const settled = fees.balancePaise <= 0 && fees.totalPaise > 0;
 
@@ -100,7 +103,7 @@ export function FeesPanel({
           <label className="block">
             <span className={label}>Method</span>
             <select name="method" className={field}>
-              {PAYMENT_METHODS.map((m) => (
+              {methods.map((m: string) => (
                 <option key={m} value={m}>{m}</option>
               ))}
             </select>

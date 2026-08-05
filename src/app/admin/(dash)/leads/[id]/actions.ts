@@ -3,7 +3,8 @@ import { revalidatePath } from "next/cache";
 import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
-import { normalizeStage, PROGRAM_INTERESTS, type LeadType } from "@/lib/leads";
+import { normalizeStage, type LeadType } from "@/lib/leads";
+import { getPrograms, pickFrom } from "@/lib/taxonomy";
 import { isValidStage, stageLabelFor, terminalStages } from "@/lib/pipelines";
 import { resolveFollowUp } from "@/lib/followup";
 import { queueNote } from "@/lib/notes";
@@ -154,8 +155,7 @@ export async function editContact(formData: FormData): Promise<ActionResult> {
 
   const childName = String(formData.get("childName") ?? "").trim().slice(0, 80);
   const email = String(formData.get("email") ?? "").trim().slice(0, 120);
-  const programRaw = String(formData.get("programInterest") ?? "").trim();
-  const programInterest = (PROGRAM_INTERESTS as readonly string[]).includes(programRaw) ? programRaw : null;
+  const programInterest = pickFrom(await getPrograms(), String(formData.get("programInterest") ?? "").trim());
 
   await getDb().collection("leads").doc(id).update({
     parentName,

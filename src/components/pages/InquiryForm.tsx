@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
 import { SubmitErrorFallback } from "@/components/pages/SubmitErrorFallback";
 import { AGE_BANDS } from "@/lib/leadSchema";
-import { PROGRAM_INTERESTS } from "@/lib/leads";
 
 const field =
   "w-full rounded-xl border border-emerald/15 bg-cream/40 px-4 py-3 text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20 placeholder:text-ink/35";
@@ -24,7 +23,7 @@ function FieldError({ id, errors }: { id: string; errors?: string[] }) {
   return <p id={id} className="text-sm text-red-700">{errors[0]}</p>;
 }
 
-export function InquiryForm() {
+export function InquiryForm({ programs }: { programs: string[] }) {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string>("");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -148,7 +147,7 @@ export function InquiryForm() {
           <label className={labelCls} htmlFor="programInterest">Program of interest</label>
           <select id="programInterest" name="programInterest" defaultValue="" className={`${field} cursor-pointer`} {...invalidProps("programInterest")}>
             <option value="">No preference yet</option>
-            {PROGRAM_INTERESTS.map((p) => (
+            {programs.map((p: string) => (
               <option key={p} value={p}>{p}</option>
             ))}
           </select>

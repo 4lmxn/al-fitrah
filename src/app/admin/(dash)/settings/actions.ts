@@ -75,7 +75,10 @@ export async function saveOperations(formData: FormData): Promise<ActionResult> 
         nonSchoolDays: [0, 1, 2, 3, 4, 5, 6].filter((d) => formData.get(`nonSchoolDay-${d}`) === "on"),
       },
       features: {
-        comingSoon: formData.get("comingSoon") === "on",
+        // comingSoon is NOT editable here. proxy.ts runs on every request in a
+        // runtime that cannot read Firestore, so the gate must stay an env var;
+        // a second copy here could disagree with the one actually in force.
+        comingSoon: (await import("@/lib/flags")).COMING_SOON,
         onlinePayments: formData.get("onlinePayments") === "on",
         whatsappNotifications: formData.get("whatsappNotifications") === "on",
         smsNotifications: formData.get("smsNotifications") === "on",

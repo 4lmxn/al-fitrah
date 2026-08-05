@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
-import { EMPLOYMENT_TYPES } from "@/lib/jobOpenings";
+import { getEmploymentTypes, pickFrom } from "@/lib/taxonomy";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 
 const COLLECTION = "jobOpenings";
@@ -25,14 +25,14 @@ type ParsedOpening = {
 // wrong", which tells an admin nothing about the empty title field.
 type Parsed = { ok: true; data: ParsedOpening } | { ok: false; error: string };
 
-function parse(formData: FormData): Parsed {
+async function parse(formData: FormData): Promise<Parsed> {
   const title = String(formData.get("title") ?? "").trim().slice(0, 120);
   if (!title) return { ok: false, error: "Title is required" };
 
-  const employmentTypeRaw = String(formData.get("employmentType") ?? "Full-time");
-  const employmentType = (EMPLOYMENT_TYPES as readonly string[]).includes(employmentTypeRaw)
-    ? employmentTypeRaw
-    : "Full-time";
+  const types = await getEmploymentTypes();
+  // Fall back to the first configured type rather than a hardcoded "Full-time",
+  // which a school may have renamed or removed.
+  const employmentType = pickFrom(types, String(formData.get("employmentType") ?? "")) ?? types[0] ?? "Full-time";
 
   const requirements = String(formData.get("requirements") ?? "")
     .split("\n")
@@ -65,7 +65,7 @@ function revalidateAll(id?: string) {
 export async function createOpening(formData: FormData): Promise<ActionResult> {
   return attempt("createOpening", async () => {
   const admin = await requireAdmin();
-  const parsed = parse(formData);
+  const parsed = await parse(formData);
   if (!parsed.ok) return fail(parsed.error);
   const data = parsed.data;
   const ref = await getDb().collection(COLLECTION).add({
@@ -84,7 +84,7 @@ export async function updateOpening(formData: FormData): Promise<ActionResult> {
   const admin = await requireAdmin();
   const id = String(formData.get("id") ?? "");
   if (!id) return fail("Missing opening id");
-  const parsed = parse(formData);
+  const parsed = await parse(formData);
   if (!parsed.ok) return fail(parsed.error);
   const data = parsed.data;
   await getDb().collection(COLLECTION).doc(id).update({

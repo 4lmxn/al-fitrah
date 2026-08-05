@@ -30,8 +30,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 export const PAYMENTS = "payments";
 export const STUDENTS = "students";
 
-export const PAYMENT_METHODS = ["cash", "upi", "bank transfer", "cheque", "card"] as const;
-export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
+export type PaymentMethod = string;
 
 export type Payment = {
   id: string;

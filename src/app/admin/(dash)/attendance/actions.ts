@@ -4,9 +4,9 @@ import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
-import { CLASS_SECTIONS, academicYearFor } from "@/lib/students";
+import { academicYearFor } from "@/lib/students";
+import { getAttendanceStatuses, getClassSections } from "@/lib/taxonomy";
 import {
-  ATTENDANCE_STATUSES,
   COLLECTION,
   isFuture,
   registerId,
@@ -30,7 +30,7 @@ export async function saveRegister(formData: FormData): Promise<ActionResult> {
     const admin = await requireAdmin();
 
     const classSection = String(formData.get("classSection") ?? "");
-    if (!(CLASS_SECTIONS as readonly string[]).includes(classSection)) {
+    if (!(await getClassSections()).includes(classSection)) {
       return fail("Pick a class before saving.");
     }
 
@@ -40,12 +40,15 @@ export async function saveRegister(formData: FormData): Promise<ActionResult> {
     // would quietly become an absence record nobody looks at until reporting.
     if (isFuture(key)) return fail("You can't mark attendance for a future date.");
 
+    // Valid statuses are configuration, so a school can add "Half day".
+    const validStatuses = new Set((await getAttendanceStatuses()).map((x) => x.id));
+
     // The form sends one field per student: `s:<studentId>` = status.
     const entries: Record<string, AttendanceStatus> = {};
     for (const [name, value] of formData.entries()) {
       if (!name.startsWith("s:")) continue;
       const status = String(value);
-      if (!(ATTENDANCE_STATUSES as readonly string[]).includes(status)) continue;
+      if (!validStatuses.has(status)) continue;
       entries[name.slice(2)] = status as AttendanceStatus;
     }
     if (Object.keys(entries).length === 0) return fail("No children to mark in this class.");

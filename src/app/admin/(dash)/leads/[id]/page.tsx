@@ -4,13 +4,14 @@ import { getLead } from "@/lib/leadQueries";
 import { LEAD_TYPE_LABEL } from "@/lib/leads";
 import { findStage } from "@/lib/stageMeta";
 import { getPipeline } from "@/lib/pipelines";
+import { getPrograms } from "@/lib/taxonomy";
 import { relativeTime } from "@/lib/relativeTime";
 import { Icon } from "@/components/ui/Icon";
 import { LeadAvatar } from "@/components/admin/LeadAvatar";
 import { StagePill } from "@/components/admin/StagePill";
 import { CopyButton } from "@/components/admin/CopyButton";
 import { ActionForm } from "@/components/admin/ActionForm";
-import { PROGRAMS, studentForLead } from "@/lib/students";
+import { studentForLead } from "@/lib/students";
 import { waLink } from "@/lib/phone";
 import { createStudentFromLead } from "../../students/actions";
 import { EditContact } from "@/components/admin/EditContact";
@@ -57,7 +58,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
   const [lead, enrolledEarly] = await Promise.all([getLead(id), studentForLead(id)]);
   if (!lead) notFound();
 
-  const pipeline = await getPipeline(lead.type);
+  const [pipeline, programs] = await Promise.all([getPipeline(lead.type), getPrograms()]);
   const currentIdx = pipeline.findIndex((s) => s.id === lead.stage);
   const wa = waLink(lead.phone);
   const notes = [...lead.notes].sort((a, b) => (b.atMs ?? 0) - (a.atMs ?? 0));
@@ -158,6 +159,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
         {lead.type === "admission_inquiry" && (
           <div className="border-t border-emerald/10 bg-white/90 px-6 py-4">
             <EditContact
+              programs={programs}
               lead={{
                 id: lead.id,
                 name: lead.name,
@@ -384,7 +386,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
                         defaultValue={lead.programInterest ?? "Pre-KG"}
                         className="w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm outline-none focus:border-emerald focus:ring-2 focus:ring-emerald/20"
                       >
-                        {PROGRAMS.map((p) => (
+                        {programs.map((p: string) => (
                           <option key={p} value={p}>{p}</option>
                         ))}
                       </select>

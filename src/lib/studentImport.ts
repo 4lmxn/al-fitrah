@@ -1,4 +1,7 @@
-import { CLASS_SECTIONS, PROGRAMS, STUDENT_STATUSES, type Program, type StudentStatus } from "@/lib/students";
+import { STUDENT_STATUSES, type Program, type StudentStatus } from "@/lib/students";
+
+/** Lists the file is validated against. Passed in, because they are configuration. */
+export type ImportLists = { programs: string[]; classSections: string[] };
 
 /**
  * CSV import for existing students.
@@ -123,7 +126,8 @@ export function parseDob(raw: string): string | null | undefined {
   return `${y}-${p(m)}-${p(d)}`;
 }
 
-export function parseStudentCsv(text: string): ParseResult {
+export function parseStudentCsv(text: string, lists: ImportLists): ParseResult {
+  const { programs: PROGRAMS, classSections: CLASS_SECTIONS } = lists;
   const lines = text.split(/\r?\n/).filter((l) => l.trim());
   if (lines.length === 0) return { rows: [], errors: [{ rowNumber: 0, message: "The file is empty." }], unknownColumns: [] };
 

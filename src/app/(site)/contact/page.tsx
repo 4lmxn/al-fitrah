@@ -1,3 +1,4 @@
+import { getPrograms } from "@/lib/taxonomy";
 import { contact } from "@/content/pages";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
@@ -19,7 +20,15 @@ export const metadata = pageMeta("/contact", {
   description: "Visit, call, or email Al Fitrah in Sarjapura, Bengaluru. Campus location and visiting details inside.",
 });
 
-export default function ContactPage() {
+// Reads configured programs, so this page is revalidated rather than fully
+// static. Still zero Firestore reads per visitor — one read per revalidation
+// window, and editing settings invalidates the tag so a new program appears
+// without waiting it out. Cost invariant 3 holds: public pages never read
+// per request.
+export const revalidate = 3600;
+
+export default async function ContactPage() {
+  const programs = await getPrograms();
   const { hero, details, hours } = contact;
   const rows = [
     { icon: "location_on", label: "Address", value: details.address },
@@ -100,7 +109,7 @@ export default function ContactPage() {
                 WhatsApp us on {details.phones[0]}.
               </p>
               <div className="mt-8">
-                <InquiryForm />
+                <InquiryForm programs={programs} />
               </div>
             </div>
           </Reveal>

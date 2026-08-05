@@ -83,6 +83,20 @@ templates stored in settings. Callers emit domain events — `lead.created`,
 `interview.scheduled` — and never name a channel. Adding WhatsApp becomes one
 adapter plus one config flag.
 
+### 3.2b Two constants that deliberately stay in code
+
+**School identity** (`content/site.ts`) feeds `metadata` exports, JSON-LD and
+the sitemap. Those are evaluated at module scope on ~12 pages; moving them to
+async configuration means converting every one to `generateMetadata`. Worth
+doing, but as its own change with its own verification — not smuggled into a
+taxonomy migration.
+
+**`COMING_SOON`** stays an environment variable. `proxy.ts` runs on every
+request in a runtime that cannot read Firestore, so the gate itself must come
+from env. Putting a copy in settings would create two sources of truth that can
+disagree — exactly the bug fixed earlier by making the proxy, `robots.ts` and
+`sitemap.ts` share one flag. The settings UI therefore shows it read-only.
+
 ### 3.3 Audit log (planned, not built)
 
 The brief requires auditing every important action. Currently actions
@@ -115,8 +129,14 @@ Ordered by what unblocks the most downstream work:
    1b. ~~**Admin UI for settings**~~ — done. `/admin/settings`, owner-only,
        covering school identity, both pipelines, lists, academic year,
        attendance rules and feature flags.
-   1c. **Remaining consumers** — taxonomy (programs, class sections, sources,
-       payment methods), attendance statuses, school identity, feature flags.
+   1c. ~~**Taxonomy + attendance consumers**~~ — done. Programs, class sections,
+       lead sources, employment types, payment methods and attendance statuses
+       all read configuration. Compile-time `z.enum` checks became runtime
+       membership checks: an enum could only accept the values that shipped, so
+       a school adding a program would have had its own form rejected by its own
+       server.
+   1d. **School identity + COMING_SOON** — still constants. Both are harder than
+       they look and are called out below rather than half-done.
 2. **Audit log + notification engine** — the two seams every later module needs.
 3. **CRM depth** — assignment, tasks, tags, duplicate detection, bulk actions, export.
 4. **Configurable admissions pipeline** — the brief's 9 stages, driven by settings.

@@ -48,6 +48,12 @@ describe("registerId", () => {
 });
 
 describe("isWeekend / isFuture", () => {
+  it("respects the configured non-school days", () => {
+    // Saturday is a school day by default but configurable per school.
+    expect(isWeekend("2026-08-08", [0, 6])).toBe(true);
+    expect(isWeekend("2026-08-08", [0])).toBe(false);
+  });
+
   it("treats Sunday as a non-school day", () => {
     expect(isWeekend("2026-08-02")).toBe(true); // Sunday
     expect(isWeekend("2026-08-03")).toBe(false); // Monday
@@ -63,52 +69,60 @@ describe("isWeekend / isFuture", () => {
   });
 });
 
+// Statuses are configuration now, so the tests supply them the way the app does.
+const STATUSES = [
+  { id: "present", label: "Present", present: true, counted: true },
+  { id: "absent", label: "Absent", present: false, counted: true },
+  { id: "late", label: "Late", present: true, counted: true },
+  { id: "excused", label: "Excused", present: false, counted: false },
+];
+
 describe("defaultStatusFor", () => {
   it("defaults a school day to present, so teachers mark only exceptions", () => {
-    expect(defaultStatusFor("2026-08-03")).toBe("present");
+    expect(defaultStatusFor("2026-08-03", STATUSES)).toBe("present");
   });
 
   it("defaults nothing on a Sunday or a future date", () => {
     // Defaulting these to present would manufacture attendance for days that
     // never happened.
-    expect(defaultStatusFor("2026-08-02")).toBeNull();
-    expect(defaultStatusFor("2099-01-01")).toBeNull();
+    expect(defaultStatusFor("2026-08-02", STATUSES)).toBeNull();
+    expect(defaultStatusFor("2099-01-01", STATUSES)).toBeNull();
   });
 });
 
 describe("summarise", () => {
   it("counts late as attendance", () => {
-    const s = summarise([reg({ a: "present" }), reg({ a: "late" })], "a");
+    const s = summarise([reg({ a: "present" }), reg({ a: "late" })], "a", STATUSES);
     expect(s).toMatchObject({ present: 2, absent: 0, counted: 2, percent: 100 });
   });
 
   it("excludes excused absences from the denominator", () => {
     // An authorised absence should neither credit attendance nor count against
     // the child — including it would push a well-behaved family under 75%.
-    const s = summarise([reg({ a: "present" }), reg({ a: "excused" })], "a");
+    const s = summarise([reg({ a: "present" }), reg({ a: "excused" })], "a", STATUSES);
     expect(s).toMatchObject({ present: 1, counted: 1, percent: 100 });
   });
 
   it("counts unexcused absence against the percentage", () => {
-    const s = summarise([reg({ a: "present" }), reg({ a: "absent" })], "a");
+    const s = summarise([reg({ a: "present" }), reg({ a: "absent" })], "a", STATUSES);
     expect(s).toMatchObject({ present: 1, absent: 1, counted: 2, percent: 50 });
   });
 
   it("ignores days a child has no entry for", () => {
     // A child who joined mid-month must not be marked absent for the days
     // before they existed on the register.
-    const s = summarise([reg({ other: "absent" }), reg({ a: "present" })], "a");
+    const s = summarise([reg({ other: "absent" }), reg({ a: "present" })], "a", STATUSES);
     expect(s).toMatchObject({ counted: 1, percent: 100 });
   });
 
   it("returns null rather than 0% when nothing is counted", () => {
     // 0/0 shown as "0%" would read as a truancy problem for a child enrolled today.
-    expect(summarise([], "a").percent).toBeNull();
-    expect(summarise([reg({ a: "excused" })], "a").percent).toBeNull();
+    expect(summarise([], "a", STATUSES).percent).toBeNull();
+    expect(summarise([reg({ a: "excused" })], "a", STATUSES).percent).toBeNull();
   });
 
   it("rounds to a whole percent", () => {
-    const s = summarise([reg({ a: "present" }), reg({ a: "present" }), reg({ a: "absent" })], "a");
+    const s = summarise([reg({ a: "present" }), reg({ a: "present" }), reg({ a: "absent" })], "a", STATUSES);
     expect(s.percent).toBe(67);
   });
 });

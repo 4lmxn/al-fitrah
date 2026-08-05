@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getLead } from "@/lib/leadQueries";
-import { PIPELINES, LEAD_TYPE_LABEL } from "@/lib/leads";
-import { stageMeta } from "@/lib/stageMeta";
+import { LEAD_TYPE_LABEL } from "@/lib/leads";
+import { findStage } from "@/lib/stageMeta";
+import { getPipeline } from "@/lib/pipelines";
 import { relativeTime } from "@/lib/relativeTime";
 import { Icon } from "@/components/ui/Icon";
 import { LeadAvatar } from "@/components/admin/LeadAvatar";
@@ -56,8 +57,8 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
   const [lead, enrolledEarly] = await Promise.all([getLead(id), studentForLead(id)]);
   if (!lead) notFound();
 
-  const pipeline = PIPELINES[lead.type];
-  const currentIdx = pipeline.indexOf(lead.stage);
+  const pipeline = await getPipeline(lead.type);
+  const currentIdx = pipeline.findIndex((s) => s.id === lead.stage);
   const wa = waLink(lead.phone);
   const notes = [...lead.notes].sort((a, b) => (b.atMs ?? 0) - (a.atMs ?? 0));
 
@@ -86,7 +87,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
                   <Icon name={lead.type === "staff_application" ? "work" : "family_restroom"} className="text-[14px]" />
                   {LEAD_TYPE_LABEL[lead.type]}
                 </span>
-                <StagePill stage={lead.stage} />
+                <StagePill stage={lead.stage} stages={pipeline} />
               </div>
               <h1 className="mt-1.5 font-display text-2xl text-emerald-deep">{lead.name}</h1>
               {lead.childName && (
@@ -257,16 +258,16 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
             </h2>
             <ol className="mt-5 space-y-1">
               {pipeline.map((s, idx) => {
-                const m = stageMeta(s);
+                const m = findStage(pipeline, s.id);
                 const done = idx < currentIdx;
                 const current = idx === currentIdx;
                 const last = idx === pipeline.length - 1;
                 return (
-                  <li key={s} className="relative">
+                  <li key={s.id} className="relative">
                     {!last && <span className={`absolute left-[15px] top-7 h-[calc(100%-12px)] w-px ${idx < currentIdx ? "bg-emerald/40" : "bg-emerald/10"}`} />}
                     <ActionForm action={updateStage}>
                       <input type="hidden" name="id" value={lead.id} />
-                      <input type="hidden" name="stage" value={s} />
+                      <input type="hidden" name="stage" value={s.id} />
                       <button
                         type="submit"
                         className={`group flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left text-sm transition ${

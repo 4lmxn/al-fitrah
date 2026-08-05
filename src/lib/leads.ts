@@ -1,9 +1,8 @@
 export type LeadType = "admission_inquiry" | "staff_application";
 
-export const PIPELINES: Record<LeadType, readonly string[]> = {
-  admission_inquiry: ["new", "contacted", "visited", "applied", "admitted", "lost"],
-  staff_application: ["new", "reviewing", "interview", "hired", "rejected"],
-};
+// Pipelines and stage validation moved to configuration — see lib/pipelines.
+// What remains here is genuinely structural: the two lead TYPES are baked into
+// the data model and the routes, unlike the stages within them.
 
 // Legacy → current stage aliases. The admission pipeline was renamed
 // (toured→visited, enrolled→admitted, closed→lost); any lead saved before the
@@ -50,6 +49,3 @@ export const LEAD_TYPE_LABEL: Record<LeadType, string> = {
   staff_application: "Staff application",
 };
 
-export function isValidStage(type: LeadType, stage: string): boolean {
-  return PIPELINES[type]?.includes(stage) ?? false;
-}

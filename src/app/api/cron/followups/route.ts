@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { getDb } from "@/lib/firebaseAdmin";
 import { normalizeStage } from "@/lib/leads";
-import { stageMeta } from "@/lib/stageMeta";
+import { findStage } from "@/lib/stageMeta";
+import { getPipeline, allTerminalStages } from "@/lib/pipelines";
 import { sendFollowUpDigest, type FollowUpDigestLead } from "@/lib/email";
 import { SITE_URL } from "@/lib/seo";
 import { waLink } from "@/lib/phone";
@@ -11,7 +12,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // Leads in these stages are done — never chase them.
-const TERMINAL = new Set(["admitted", "lost"]);
+
 
 // Lower bound for the follow-up range query. Any real timestamp sorts above it;
 // null and absent fields sort below or aren't indexed. See the query comment.
@@ -61,6 +62,13 @@ export async function GET(req: Request) {
     return NextResponse.json({ ok: false, error: "Query failed" }, { status: 500 });
   }
 
+  // Terminal stages come from configuration now, so a school that renames
+  // "Lost" or adds a terminal stage stops chasing those leads without a deploy.
+  const [admissionStages, terminal] = await Promise.all([
+    getPipeline("admission_inquiry"),
+    allTerminalStages(),
+  ]);
+
   const leads: FollowUpDigestLead[] = snap.docs
     .map((d) => {
       const x = d.data();
@@ -71,11 +79,11 @@ export async function GET(req: Request) {
         name: x.name ?? x.parentName ?? "—",
         phone: x.phone ?? "",
         stage,
-        stageLabel: stageMeta(stage).label,
+        stageLabel: findStage(admissionStages, stage).label,
         followMs,
       };
     })
-    .filter((l) => !TERMINAL.has(l.stage) && l.followMs != null)
+    .filter((l) => !terminal.has(l.stage) && l.followMs != null)
     .sort((a, b) => (a.followMs ?? 0) - (b.followMs ?? 0))
     .map((l) => ({
       id: l.id,

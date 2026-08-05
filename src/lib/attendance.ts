@@ -27,21 +27,9 @@ import { requireAdmin } from "@/lib/adminAuth";
  * with no query and no index at all.
  */
 
-export const ATTENDANCE_STATUSES = ["present", "absent", "late", "excused"] as const;
-export type AttendanceStatus = (typeof ATTENDANCE_STATUSES)[number];
+export type AttendanceStatus = string;
 
-export const ATTENDANCE_LABEL: Record<AttendanceStatus, string> = {
-  present: "Present",
-  absent: "Absent",
-  late: "Late",
-  excused: "Excused",
-};
 
-// Statuses that count as "in school" for a percentage. Late is attendance;
-// excused is an authorised absence and counts as neither present nor a mark
-// against the child, so it is excluded from the denominator entirely.
-const PRESENT_STATUSES = new Set<AttendanceStatus>(["present", "late"]);
-const COUNTED_STATUSES = new Set<AttendanceStatus>(["present", "late", "absent"]);
 
 export const COLLECTION = "attendance";
 
@@ -66,9 +54,9 @@ export function registerId(academicYear: string, classSection: string, key: stri
 }
 
 /** True for a date that is not a school day. Sunday only — Saturdays vary. */
-export function isWeekend(key: string): boolean {
+export function isWeekend(key: string, nonSchoolDays: number[] = [0]): boolean {
   const [y, m, d] = key.split("-").map(Number);
-  return new Date(y, m - 1, d).getDay() === 0;
+  return nonSchoolDays.includes(new Date(y, m - 1, d).getDay());
 }
 
 export function isFuture(key: string, today = dateKey()): boolean {
@@ -83,8 +71,11 @@ export function isFuture(key: string, today = dateKey()): boolean {
  * is nothing to default — and defaulting those to "present" would manufacture
  * attendance for days that never happened.
  */
-export function defaultStatusFor(key: string): AttendanceStatus | null {
-  return isWeekend(key) || isFuture(key) ? null : "present";
+export function defaultStatusFor(key: string, statuses: { id: string; present: boolean }[], nonSchoolDays: number[] = [0]): AttendanceStatus | null {
+  if (isWeekend(key, nonSchoolDays) || isFuture(key)) return null;
+  // The first "present" status is the default, so a school that renames or
+  // reorders its statuses still gets a sensible one rather than a missing "present".
+  return statuses.find((s) => s.present)?.id ?? statuses[0]?.id ?? null;
 }
 
 export async function getRegister(
@@ -115,18 +106,29 @@ export type StudentAttendance = {
   percent: number | null;
 };
 
+/**
+ * Summarise one child's attendance across a set of registers.
+ *
+ * Which statuses count as present, and which count at all, are configuration —
+ * so they are passed in rather than baked in. An authorised absence should
+ * neither credit attendance nor count against the child, and a school may
+ * define more statuses than the four that ship.
+ */
 export function summarise(
   registers: Register[],
   studentId: string,
+  statuses: { id: string; present: boolean; counted: boolean }[],
 ): StudentAttendance {
+  const present_ = new Set(statuses.filter((s) => s.present).map((s) => s.id));
+  const counted_ = new Set(statuses.filter((s) => s.counted).map((s) => s.id));
   let present = 0;
   let absent = 0;
   let counted = 0;
   for (const r of registers) {
     const status = r.entries[studentId];
-    if (!status || !COUNTED_STATUSES.has(status)) continue;
+    if (!status || !counted_.has(status)) continue;
     counted += 1;
-    if (PRESENT_STATUSES.has(status)) present += 1;
+    if (present_.has(status)) present += 1;
     else absent += 1;
   }
   return {

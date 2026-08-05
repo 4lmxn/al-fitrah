@@ -5,11 +5,10 @@ import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
+import { getClassSections, getPrograms, pickFrom } from "@/lib/taxonomy";
 import { queueNote } from "@/lib/notes";
 import {
-  CLASS_SECTIONS,
   COLLECTION,
-  PROGRAMS,
   STUDENT_STATUSES,
   academicYearFor,
   nextAdmissionNumber,
@@ -41,10 +40,8 @@ export async function createStudentFromLead(formData: FormData): Promise<ActionR
     const lastName = clean(formData.get("lastName"), 60);
     if (firstName.length < 1) return fail("The child's first name is required.");
 
-    const programRaw = clean(formData.get("program"), 20);
-    const program: Program = (PROGRAMS as readonly string[]).includes(programRaw)
-      ? (programRaw as Program)
-      : "Pre-KG";
+    const programs = await getPrograms();
+    const program: Program = pickFrom(programs, clean(formData.get("program"), 60)) ?? programs[0] ?? "";
 
     const dobRaw = clean(formData.get("dob"), 20);
     let dob: Date | null = null;
@@ -160,21 +157,17 @@ export async function updateStudent(formData: FormData): Promise<ActionResult> {
       ? (statusRaw as StudentStatus)
       : "enrolled";
 
-    const programRaw = clean(formData.get("program"), 20);
-    const program: Program = (PROGRAMS as readonly string[]).includes(programRaw)
-      ? (programRaw as Program)
-      : "Pre-KG";
+    const programs = await getPrograms();
+    const program: Program = pickFrom(programs, clean(formData.get("program"), 60)) ?? programs[0] ?? "";
 
     await getDb().collection(COLLECTION).doc(id).update({
       firstName,
       lastName: clean(formData.get("lastName"), 60),
       program,
       status,
-      // Constrained, not free text — see CLASS_SECTIONS. An unrecognised value
-      // would create a class the register can never show.
-      classSection: (CLASS_SECTIONS as readonly string[]).includes(clean(formData.get("classSection"), 20))
-        ? clean(formData.get("classSection"), 20)
-        : null,
+      // Constrained to the configured sections: an unrecognised value would
+      // create a class the attendance register can never show.
+      classSection: pickFrom(await getClassSections(), clean(formData.get("classSection"), 60)),
       emergencyContact: {
         name: clean(formData.get("emergencyName"), 80),
         phone: clean(formData.get("emergencyPhone"), 20),

@@ -1,3 +1,4 @@
+import { getPrograms } from "@/lib/taxonomy";
 import { pageMeta } from "@/lib/seo";
 import { admissions } from "@/content/pages";
 import { Container } from "@/components/ui/Container";
@@ -12,7 +13,15 @@ export const metadata = pageMeta("/admissions", {
   description: "Pre-KG admissions for 2026–27 at Al Fitrah Pre School, Sarjapura, Bengaluru — a clear, welcoming process for children aged 2y10m–3y10m. Enquire today.",
 });
 
-export default function AdmissionsPage() {
+// Reads configured programs, so this page is revalidated rather than fully
+// static. Still zero Firestore reads per visitor — one read per revalidation
+// window, and editing settings invalidates the tag so a new program appears
+// without waiting it out. Cost invariant 3 holds: public pages never read
+// per request.
+export const revalidate = 3600;
+
+export default async function AdmissionsPage() {
+  const programs = await getPrograms();
   const { hero, process, assist, form } = admissions;
   return (
     <>
@@ -66,7 +75,7 @@ export default function AdmissionsPage() {
               <p className="mt-2 text-ink/70">{form.subtitle}</p>
               {/* Privacy consent line lives inside InquiryForm so admissions
                   and the contact page stay consistent. */}
-              <div className="mt-8"><InquiryForm /></div>
+              <div className="mt-8"><InquiryForm programs={programs} /></div>
             </div>
           </Reveal>
         </Container>

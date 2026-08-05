@@ -5,7 +5,8 @@ import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { parseRupees } from "@/lib/money";
-import { PAYMENTS, PAYMENT_METHODS, STUDENTS, nextReceiptNumber, type PaymentMethod } from "@/lib/fees";
+import { PAYMENTS, STUDENTS, nextReceiptNumber, type PaymentMethod } from "@/lib/fees";
+import { getPaymentMethods, pickFrom } from "@/lib/taxonomy";
 
 const clean = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
 
@@ -56,10 +57,8 @@ export async function recordPayment(formData: FormData): Promise<ActionResult> {
     if (amountPaise === null) return fail("Enter an amount like 5000 or 5000.50.");
     if (amountPaise === 0) return fail("A payment can't be zero.");
 
-    const methodRaw = clean(formData.get("method"), 20);
-    const method: PaymentMethod = (PAYMENT_METHODS as readonly string[]).includes(methodRaw)
-      ? (methodRaw as PaymentMethod)
-      : "cash";
+    const methods = await getPaymentMethods();
+    const method: PaymentMethod = pickFrom(methods, clean(formData.get("method"), 40)) ?? methods[0] ?? "cash";
 
     const receivedRaw = clean(formData.get("receivedAt"), 20);
     let receivedAt = new Date();

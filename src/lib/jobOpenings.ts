@@ -6,8 +6,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 // The public site reads them server-side via the Admin SDK, so no client ever
 // touches Firestore directly (rules stay fully locked).
 
-export const EMPLOYMENT_TYPES = ["Full-time", "Part-time", "Contract", "Volunteer"] as const;
-export type EmploymentType = (typeof EMPLOYMENT_TYPES)[number];
+export type EmploymentType = string;
 
 export type JobOpening = {
   id: string;

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getStudent, CLASS_SECTIONS, PROGRAMS, STUDENT_STATUSES, STUDENT_STATUS_LABEL } from "@/lib/students";
+import { getStudent, STUDENT_STATUSES, STUDENT_STATUS_LABEL } from "@/lib/students";
+import { getClassSections, getPrograms, getPaymentMethods } from "@/lib/taxonomy";
 import { updateStudent } from "../actions";
 import { Icon } from "@/components/ui/Icon";
 import { ActionForm } from "@/components/admin/ActionForm";
@@ -25,7 +26,9 @@ export default async function StudentDetail({ params }: { params: Promise<{ id: 
   // Independent reads — the payment ledger is keyed by student id, not by
   // anything on the student document, so waiting for one before the other only
   // added a round trip.
-  const [student, payments] = await Promise.all([getStudent(id), listPayments(id)]);
+  const [student, payments, programs, sections, methods] = await Promise.all([
+    getStudent(id), listPayments(id), getPrograms(), getClassSections(), getPaymentMethods(),
+  ]);
   if (!student) notFound();
 
   return (
@@ -85,7 +88,7 @@ export default async function StudentDetail({ params }: { params: Promise<{ id: 
         )}
       </section>
 
-      <FeesPanel studentId={student.id} fees={student.fees} payments={payments} />
+      <FeesPanel studentId={student.id} fees={student.fees} payments={payments} methods={methods} />
 
       <ActionForm action={updateStudent} className="mt-6 space-y-6">
         <input type="hidden" name="id" value={student.id} />
@@ -106,7 +109,7 @@ export default async function StudentDetail({ params }: { params: Promise<{ id: 
             <label className="block">
               <span className={label}>Program</span>
               <select name="program" defaultValue={student.program} className={field}>
-                {PROGRAMS.map((p) => (
+                {programs.map((p: string) => (
                   <option key={p} value={p}>{p}</option>
                 ))}
               </select>
@@ -117,7 +120,7 @@ export default async function StudentDetail({ params }: { params: Promise<{ id: 
                   and "Rose" vs "rose" would silently split the register. */}
               <select name="classSection" defaultValue={student.classSection ?? ""} className={field}>
                 <option value="">Not assigned</option>
-                {CLASS_SECTIONS.map((c) => (
+                {sections.map((c: string) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>

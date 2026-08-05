@@ -156,7 +156,6 @@ export default async function SettingsPage() {
             <span className={label}>Features</span>
             <div className="space-y-2">
               {([
-                ["comingSoon", "Holding page", "Public pages show the coming-soon page instead of the site."],
                 ["onlinePayments", "Online payments", "Reserved for the payment gateway."],
                 ["whatsappNotifications", "WhatsApp notifications", "Reserved for the notification engine."],
                 ["smsNotifications", "SMS notifications", "Reserved for the notification engine."],

@@ -4,6 +4,7 @@ import { getOpening } from "@/lib/jobOpenings";
 import { requireAdmin } from "@/lib/adminAuth";
 import { Icon } from "@/components/ui/Icon";
 import { OpeningForm } from "@/components/admin/OpeningForm";
+import { getEmploymentTypes } from "@/lib/taxonomy";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { updateOpening, deleteOpening } from "../actions";
 
@@ -11,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export default async function EditOpeningPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [{ role }, opening] = await Promise.all([requireAdmin(), getOpening(id)]);
+  const [{ role }, opening, employmentTypes] = await Promise.all([requireAdmin(), getOpening(id), getEmploymentTypes()]);
   if (!opening) notFound();
 
   return (
@@ -23,7 +24,7 @@ export default async function EditOpeningPage({ params }: { params: Promise<{ id
       <p className="mt-1 text-sm text-ink/55">Changes go live on the careers page immediately.</p>
 
       <div className="mt-7 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft sm:p-8">
-        <OpeningForm action={updateOpening} opening={opening} submitLabel="Save changes" />
+        <OpeningForm action={updateOpening} opening={opening} employmentTypes={employmentTypes} submitLabel="Save changes" />
       </div>
 
       {/* Owners only. Hiding this is a courtesy so staff aren't shown a control

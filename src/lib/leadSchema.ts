@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { PROGRAM_INTERESTS } from "@/lib/leads";
 
 // Entry is only at Pre-KG for children aged 2y10m–3y10m, so the inquiry
 // captures eligibility rather than a tier.
@@ -18,7 +17,10 @@ export const leadSchema = z.object({
   email: z.string().trim().email("Please enter a valid email").max(120).optional().or(z.literal("")),
   childAge: z.enum(AGE_BANDS, { message: "Please select an age band" }),
   childDob: optionalText(20),
-  programInterest: z.enum(PROGRAM_INTERESTS).optional().or(z.literal("")),
+  // Shape only. The list of programs is configuration, so membership is checked
+  // against settings in the route — a compile-time enum could only accept the
+  // programs that shipped, and would reject a school's own new program.
+  programInterest: optionalText(60),
   message: z.string().trim().max(1000).optional().or(z.literal("")),
   // Attribution — captured from the landing URL, never shown to the visitor.
   utmSource: optionalText(120),

@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { ActionForm } from "@/components/admin/ActionForm";
-import { PROGRAM_INTERESTS } from "@/lib/leads";
 import { editContact } from "@/app/admin/(dash)/leads/[id]/actions";
 
 type Lead = {
@@ -21,7 +20,7 @@ const field =
 // Toggles the contact block between a read-only view and an inline edit form,
 // so staff can fix a typo or fill in a walk-in's details without a separate
 // page. Saving posts the editContact server action.
-export function EditContact({ lead }: { lead: Lead }) {
+export function EditContact({ lead, programs }: { lead: Lead; programs: string[] }) {
   const [editing, setEditing] = useState(false);
 
   if (!editing) {
@@ -60,7 +59,7 @@ export function EditContact({ lead }: { lead: Lead }) {
           <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/45">Program</span>
           <select name="programInterest" defaultValue={lead.programInterest ?? ""} className={`${field} cursor-pointer`}>
             <option value="">—</option>
-            {PROGRAM_INTERESTS.map((p) => (
+            {programs.map((p: string) => (
               <option key={p} value={p}>{p}</option>
             ))}
           </select>

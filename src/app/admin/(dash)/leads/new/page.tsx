@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
-import { MANUAL_SOURCES, PROGRAM_INTERESTS, SOURCE_LABEL } from "@/lib/leads";
+import { SOURCE_LABEL } from "@/lib/leads";
+import { getManualLeadSources, getPrograms } from "@/lib/taxonomy";
 import { AGE_BANDS } from "@/lib/leadSchema";
 import { createLead } from "./actions";
 
@@ -16,7 +17,9 @@ const AGE_LABELS: Record<string, string> = {
   above: "Above 3y 10m",
 };
 
-export default function NewLeadPage() {
+export default async function NewLeadPage() {
+  const [manualSources, programs] = await Promise.all([getManualLeadSources(), getPrograms()]);
+
   return (
     <div className="mx-auto max-w-2xl">
       <Link href="/admin" className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald transition hover:text-emerald-deep">
@@ -56,7 +59,7 @@ export default function NewLeadPage() {
           <div className="space-y-1.5">
             <label className={labelCls} htmlFor="source">Source</label>
             <select id="source" name="source" defaultValue="walk-in" className={`${field} cursor-pointer`}>
-              {MANUAL_SOURCES.map((s) => (
+              {manualSources.map((s: string) => (
                 <option key={s} value={s}>{SOURCE_LABEL[s]}</option>
               ))}
             </select>
@@ -65,7 +68,7 @@ export default function NewLeadPage() {
             <label className={labelCls} htmlFor="programInterest">Program</label>
             <select id="programInterest" name="programInterest" defaultValue="" className={`${field} cursor-pointer`}>
               <option value="">—</option>
-              {PROGRAM_INTERESTS.map((p) => (
+              {programs.map((p: string) => (
                 <option key={p} value={p}>{p}</option>
               ))}
             </select>

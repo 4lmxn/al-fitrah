@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { leadSchema } from "@/lib/leadSchema";
+import { getPrograms, pickFrom } from "@/lib/taxonomy";
 import { sendInquiryEmails } from "@/lib/email";
 import { rateLimited } from "@/lib/rateLimit";
 import { getClientIp } from "@/lib/clientIp";
@@ -61,7 +62,7 @@ export async function POST(req: Request) {
       email: email || null,
       childAge,
       childDob: childDob || null,
-      programInterest: programInterest || null,
+      programInterest: pickFrom(await getPrograms(), programInterest) ?? null,
       message: message || null,
       stage: "new",
       // Explicit zero, not an absent field. The inbox finds untouched leads with

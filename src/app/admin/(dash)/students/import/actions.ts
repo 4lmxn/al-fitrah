@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { COLLECTION, academicYearFor, nextAdmissionNumber } from "@/lib/students";
 import { parseStudentCsv, type ImportRow } from "@/lib/studentImport";
+import { getClassSections, getPrograms } from "@/lib/taxonomy";
 
 // Firestore batches cap at 500 writes. Each student is one write, so this is
 // well inside it — but the cap is why the import commits in chunks rather than
@@ -50,7 +51,10 @@ export async function importStudents(formData: FormData): Promise<ImportOutcome>
   }
   if (!text) return { ...empty(), ok: false, error: "Paste some CSV or choose a file." };
 
-  const parsed = parseStudentCsv(text);
+  // Validated against the school's configured lists, so an import is rejected
+  // for a program this school does not offer rather than one it never shipped.
+  const [programs, classSections] = await Promise.all([getPrograms(), getClassSections()]);
+  const parsed = parseStudentCsv(text, { programs, classSections });
   const commit = formData.get("commit") === "true";
 
   // Refuse to write a file with any bad row. A partial import leaves the school

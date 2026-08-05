@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { CLASS_SECTIONS, academicYearFor, listClassRoster } from "@/lib/students";
+import { academicYearFor, listClassRoster } from "@/lib/students";
+import { getAttendanceStatuses, getClassSections } from "@/lib/taxonomy";
+import { getSettings } from "@/lib/settings";
 import {
-  ATTENDANCE_LABEL,
-  ATTENDANCE_STATUSES,
   dateKey,
   defaultStatusFor,
   getRegister,
@@ -32,13 +32,18 @@ export default async function AttendancePage({
 }) {
   const sp = await searchParams;
   const today = dateKey();
-  const classSection = (CLASS_SECTIONS as readonly string[]).includes(sp.class ?? "")
-    ? (sp.class as string)
-    : CLASS_SECTIONS[0];
+  const [sections, statuses, settings] = await Promise.all([
+    getClassSections(),
+    getAttendanceStatuses(),
+    getSettings(),
+  ]);
+  const nonSchoolDays = settings.attendance.nonSchoolDays;
+  const lowThreshold = settings.attendance.lowAttendancePercent;
+  const classSection = sections.includes(sp.class ?? "") ? (sp.class as string) : sections[0];
   const key = /^\d{4}-\d{2}-\d{2}$/.test(sp.date ?? "") ? (sp.date as string) : today;
   const academicYear = academicYearFor(new Date(`${key}T00:00:00`));
 
-  const blocked = isFuture(key) ? "future" : isWeekend(key) ? "weekend" : null;
+  const blocked = isFuture(key) ? "future" : isWeekend(key, nonSchoolDays) ? "weekend" : null;
 
   // Roster, today's register, and the month's registers for the summary column.
   // Three reads plus the roster — flat in the number of days, not children.
@@ -55,7 +60,7 @@ export default async function AttendancePage({
     `/admin/attendance?${new URLSearchParams({ class: classSection, date: key, ...extra }).toString()}`;
 
   const marked = register !== null;
-  const fallback = defaultStatusFor(key);
+  const fallback = defaultStatusFor(key, statuses, nonSchoolDays);
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -76,7 +81,7 @@ export default async function AttendancePage({
 
       {/* Class + date pickers */}
       <div className="mt-7 flex flex-wrap items-center gap-2">
-        {CLASS_SECTIONS.map((c) => (
+        {sections.map((c: string) => (
           <Link
             key={c}
             href={`/admin/attendance?${new URLSearchParams({ class: c, date: key })}`}
@@ -107,7 +112,7 @@ export default async function AttendancePage({
           <Icon name="event_busy" className="text-[20px]" />
           {blocked === "future"
             ? "That date hasn't happened yet. Attendance can only be marked for today or earlier."
-            : "That's a Sunday. Pick a school day."}
+            : "That's not a school day. Pick another date."}
           {key !== today && (
             <Link href={href({ date: today })} className="ml-auto font-semibold underline">
               Go to today
@@ -144,7 +149,7 @@ export default async function AttendancePage({
               <tbody className="divide-y divide-emerald/5">
                 {roster.map((s) => {
                   const current = register?.entries[s.id] ?? fallback ?? "present";
-                  const stats = summarise(month, s.id);
+                  const stats = summarise(month, s.id, statuses);
                   return (
                     <tr key={s.id}>
                       <td className="px-5 py-3">
@@ -155,7 +160,7 @@ export default async function AttendancePage({
                       </td>
                       <td className="px-5 py-3">
                         <div className="flex flex-wrap gap-1.5">
-                          {ATTENDANCE_STATUSES.map((status) => (
+                          {statuses.map(({ id: status, label: statusLabel }) => (
                             <label key={status} className="cursor-pointer">
                               <input
                                 type="radio"
@@ -167,7 +172,7 @@ export default async function AttendancePage({
                               <span
                                 className={`inline-block rounded-full px-3 py-1 text-xs font-semibold text-ink/60 ring-1 ring-inset ring-emerald/15 transition peer-focus-visible:ring-2 peer-focus-visible:ring-emerald ${STATUS_STYLE[status]}`}
                               >
-                                {ATTENDANCE_LABEL[status]}
+                                {statusLabel}
                               </span>
                             </label>
                           ))}
@@ -177,7 +182,7 @@ export default async function AttendancePage({
                         {stats.percent === null ? (
                           <span className="text-xs text-ink/35">—</span>
                         ) : (
-                          <span className={`text-sm font-semibold tabular-nums ${stats.percent < 75 ? "text-red-700" : "text-ink/60"}`}>
+                          <span className={`text-sm font-semibold tabular-nums ${stats.percent < lowThreshold ? "text-red-700" : "text-ink/60"}`}>
                             {stats.percent}%
                             <span className="ml-1 text-[11px] font-normal text-ink/40">
                               {stats.present}/{stats.counted}

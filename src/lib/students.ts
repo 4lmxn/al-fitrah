@@ -20,20 +20,12 @@ import { feesOf, type StudentFees } from "@/lib/fees";
  * record of how the family arrived. `leadId` keeps that provenance.
  */
 
-export const PROGRAMS = ["Pre-KG", "Junior KG", "Senior KG"] as const;
-export type Program = (typeof PROGRAMS)[number];
+export type Program = string;
 
-/**
- * Class sections.
- *
- * A fixed list rather than free text, because attendance groups by this value.
- * Typed freely, "Rose", "rose" and "Rose " are three different classes and the
- * register silently splits — with no error, and no way to notice except a roll
- * that looks short. Add a section here when the school opens one.
- */
-export const CLASS_SECTIONS = ["Rose", "Tulip", "Jasmine", "Lily", "Iris", "Orchid"] as const;
-export type ClassSection = (typeof CLASS_SECTIONS)[number];
 
+// Student status stays a fixed union: unlike programs or class sections these
+// are structural — enrolled/withdrawn/graduated drive queries and the roster,
+// and a school inventing a fourth would have no defined behaviour.
 export const STUDENT_STATUSES = ["enrolled", "withdrawn", "graduated"] as const;
 export type StudentStatus = (typeof STUDENT_STATUSES)[number];
 
@@ -105,7 +97,7 @@ export function toStudent(d: FirebaseFirestore.QueryDocumentSnapshot | FirebaseF
     lastName,
     fullName: [firstName, lastName].filter(Boolean).join(" ") || "—",
     dobMs: x.dob?.toMillis?.() ?? null,
-    program: PROGRAMS.includes(x.program) ? x.program : "Pre-KG",
+    program: typeof x.program === "string" ? x.program : "",
     classSection: x.classSection ?? null,
     academicYear: x.academicYear ?? "",
     status: STUDENT_STATUSES.includes(x.status) ? x.status : "enrolled",

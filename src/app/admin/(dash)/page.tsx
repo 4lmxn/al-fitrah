@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getInbox, SEARCH_SCAN_LIMIT } from "@/lib/leadQueries";
+import { getAllowlist } from "@/lib/roles";
+import { requireAdmin } from "@/lib/adminAuth";
 import { LEAD_TYPE_LABEL, type LeadType } from "@/lib/leads";
 import { Icon } from "@/components/ui/Icon";
 import { InboxBoard } from "@/components/admin/InboxBoard";
@@ -18,6 +20,7 @@ export default async function AdminInbox({
   searchParams: Promise<{ type?: string; stage?: string; q?: string; view?: string; after?: string; assignee?: string }>;
 }) {
   const sp = await searchParams;
+  const { role } = await requireAdmin();
   const type: LeadType = TYPES.includes(sp.type as LeadType) ? (sp.type as LeadType) : "admission_inquiry";
   const attention = sp.view === "attention";
   // Validated against the configured pipeline below, once it is resolved.
@@ -70,6 +73,14 @@ export default async function AdminInbox({
               </Link>
             ))}
           </div>
+          {role === "owner" && (
+            <a
+              href={`/admin/leads/export?${new URLSearchParams({ type, ...(stage ? { stage } : {}) })}`}
+              className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-emerald-deep shadow-soft ring-1 ring-emerald/10 transition hover:bg-emerald/5"
+            >
+              <Icon name="download" className="text-[18px]" /> Export CSV
+            </a>
+          )}
           {/* Walk-ins and phone enquiries are logged here, not on the website. */}
           <Link
             href="/admin/leads/new"
@@ -91,6 +102,7 @@ export default async function AdminInbox({
         q={q}
         wonLabel={wonLabel}
         stages={pipeline}
+        admins={getAllowlist()}
         initial={{ rows, counts, kpis, attentionCount }}
       />
 

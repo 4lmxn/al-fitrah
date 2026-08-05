@@ -9,9 +9,11 @@ import { needsAttention } from "@/lib/attention";
 import { relativeTime } from "@/lib/relativeTime";
 import { followUpWaLink } from "@/lib/followup";
 import { updateStage, snoozeFollowUp } from "@/app/admin/(dash)/leads/[id]/actions";
+import { bulkUpdateStage, bulkAssign } from "@/app/admin/(dash)/leads/bulk-actions";
 import { Icon } from "@/components/ui/Icon";
 import { StatCard } from "@/components/admin/StatCard";
 import { LeadAvatar } from "@/components/admin/LeadAvatar";
+import { ActionForm } from "@/components/admin/ActionForm";
 
 type State = {
   rows: LeadRow[];
@@ -27,6 +29,7 @@ export function InboxBoard({
   q,
   wonLabel,
   stages,
+  admins,
   initial,
 }: {
   type: LeadType;
@@ -36,6 +39,8 @@ export function InboxBoard({
   wonLabel: string;
   /** Configured pipeline, resolved server-side — settings are not readable here. */
   stages: StageView[];
+  /** Addresses that may own a lead; the allowlist is server-side config. */
+  admins: string[];
   initial: State;
 }) {
   // Client owns the truth after the first paint. Seeded from the server on
@@ -46,6 +51,9 @@ export function InboxBoard({
   const [state, setState] = useState<State>(initial);
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
+  // Selection lives here rather than in the URL: it is transient, and a
+  // bookmarked page of checkboxes is not a thing anyone wants.
+  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [, startTransition] = useTransition();
 
   const { rows, counts, kpis, attentionCount } = state;
@@ -60,6 +68,16 @@ export function InboxBoard({
     const params = new URLSearchParams({ type, ...(q ? { q } : {}), ...extra });
     return `/admin?${params.toString()}`;
   };
+
+  const toggle = (id: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  const allShownSelected = rows.length > 0 && rows.every((r) => selected.has(r.id));
 
   const markPending = (id: string, on: boolean) =>
     setPendingIds((prev) => {
@@ -175,6 +193,61 @@ export function InboxBoard({
         </div>
       )}
 
+      {selected.size > 0 && (
+        <div className="mt-6 flex flex-wrap items-center gap-3 rounded-2xl border border-emerald/20 bg-emerald/[0.04] px-5 py-3.5">
+          <span className="text-sm font-semibold text-emerald-deep">
+            {selected.size} selected
+          </span>
+
+          <ActionForm action={bulkUpdateStage} className="flex items-center gap-2">
+            {[...selected].map((id) => (
+              <input key={id} type="hidden" name="id" value={id} />
+            ))}
+            <input type="hidden" name="type" value={type} />
+            <select
+              name="stage"
+              defaultValue=""
+              className="rounded-lg border border-emerald/20 bg-white px-2.5 py-1.5 text-xs font-semibold text-emerald-deep outline-none focus:border-emerald"
+            >
+              <option value="" disabled>Move to…</option>
+              {stages.map((o) => (
+                <option key={o.id} value={o.id}>{o.label}</option>
+              ))}
+            </select>
+            <button type="submit" className="rounded-full bg-emerald px-3 py-1.5 text-xs font-semibold text-cream transition hover:bg-emerald-deep">
+              Move
+            </button>
+          </ActionForm>
+
+          <ActionForm action={bulkAssign} className="flex items-center gap-2">
+            {[...selected].map((id) => (
+              <input key={id} type="hidden" name="id" value={id} />
+            ))}
+            <select
+              name="assignedTo"
+              defaultValue=""
+              className="rounded-lg border border-emerald/20 bg-white px-2.5 py-1.5 text-xs font-semibold text-emerald-deep outline-none focus:border-emerald"
+            >
+              <option value="">Unassigned</option>
+              {admins.map((a) => (
+                <option key={a} value={a}>{a.split("@")[0]}</option>
+              ))}
+            </select>
+            <button type="submit" className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-emerald-deep ring-1 ring-inset ring-emerald/20 transition hover:bg-emerald/5">
+              Assign
+            </button>
+          </ActionForm>
+
+          <button
+            type="button"
+            onClick={() => setSelected(new Set())}
+            className="ml-auto text-xs font-semibold text-ink/50 hover:text-ink"
+          >
+            Clear
+          </button>
+        </div>
+      )}
+
       {/* KPIs */}
       <div className="mt-7 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard label="Total" value={kpis.total} icon="groups" tone="brand" />
@@ -277,6 +350,15 @@ export function InboxBoard({
           <table className="w-full text-left text-sm">
             <thead className="border-b border-emerald/10 bg-cream/40 text-[11px] uppercase tracking-wide text-ink/45">
               <tr>
+                <th className="px-5 py-3">
+                  <input
+                    type="checkbox"
+                    aria-label="Select every lead on this page"
+                    checked={allShownSelected}
+                    onChange={() => setSelected(allShownSelected ? new Set() : new Set(rows.map((r) => r.id)))}
+                    className="h-4 w-4 rounded accent-emerald"
+                  />
+                </th>
                 <th className="px-5 py-3 font-semibold">Name</th>
                 <th className="hidden px-5 py-3 font-semibold sm:table-cell">{type === "staff_application" ? "Role" : "Child age"}</th>
                 <th className="hidden px-5 py-3 font-semibold md:table-cell">Phone</th>
@@ -290,6 +372,15 @@ export function InboxBoard({
                 const busy = pendingIds.has(l.id);
                 return (
                   <tr key={l.id} className={`group transition hover:bg-emerald/[0.035] ${busy ? "opacity-60" : ""}`}>
+                    <td className="px-5 py-3.5">
+                      <input
+                        type="checkbox"
+                        aria-label={`Select ${l.name}`}
+                        checked={selected.has(l.id)}
+                        onChange={() => toggle(l.id)}
+                        className="h-4 w-4 rounded accent-emerald"
+                      />
+                    </td>
                     <td className="px-5 py-3.5">
                       <Link href={`/admin/leads/${l.id}`} className="flex items-center gap-3">
                         <LeadAvatar name={l.name} />

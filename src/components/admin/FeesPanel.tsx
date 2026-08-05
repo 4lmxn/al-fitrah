@@ -121,8 +121,7 @@ export function FeesPanel({
           <Icon name="add" className="text-[18px]" /> Record payment
         </button>
         <p className="mt-2 text-[11px] text-ink/45">
-          Payments can&apos;t be edited or deleted. To correct one, record a negative amount — the
-          ledger stays a record of what actually happened.
+          Payments can&apos;t be edited or deleted. To correct one, record a negative amount.
         </p>
       </ActionForm>
 

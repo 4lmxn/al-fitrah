@@ -64,7 +64,7 @@ export default async function AttendancePage({
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Daily register</p>
           <h1 className="mt-1 font-display text-3xl text-emerald-deep">Attendance</h1>
           <p className="mt-1 text-sm text-ink/55">
-            Mark the exceptions — everyone starts present. Saving again corrects the day.
+            Everyone starts present — just mark the exceptions. You can save again to correct a day.
           </p>
         </div>
         {marked && (

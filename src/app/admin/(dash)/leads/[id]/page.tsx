@@ -347,8 +347,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
               ) : (
                 <>
                   <p className="mt-2 text-xs leading-relaxed text-ink/60">
-                    Creates the student record and issues an admission number. The enquiry stays as the
-                    record of how this family found the school.
+                    Creates the student record and issues an admission number.
                   </p>
                   <ActionForm action={createStudentFromLead} className="mt-4 grid gap-3 sm:grid-cols-2">
                     <input type="hidden" name="leadId" value={lead.id} />

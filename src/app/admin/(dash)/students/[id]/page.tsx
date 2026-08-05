@@ -22,9 +22,11 @@ function toDateInput(ms: number | null): string {
 
 export default async function StudentDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const student = await getStudent(id);
+  // Independent reads — the payment ledger is keyed by student id, not by
+  // anything on the student document, so waiting for one before the other only
+  // added a round trip.
+  const [student, payments] = await Promise.all([getStudent(id), listPayments(id)]);
   if (!student) notFound();
-  const payments = await listPayments(id);
 
   return (
     <div className="mx-auto max-w-4xl">

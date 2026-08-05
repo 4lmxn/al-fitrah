@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { PIPELINES, normalizeStage, type LeadType } from "@/lib/leads";
 import { stageMeta, type StageGroup } from "@/lib/stageMeta";
 import { needsAttention } from "@/lib/attention";
-import { noteCountOf, readNotes } from "@/lib/notes";
+import { noteCountOf, readNotesRaw, resolveNotes } from "@/lib/notes";
 
 export { needsAttention };
 
@@ -207,9 +207,54 @@ export async function getInbox(
   const now = Date.now();
   const q = opts.q?.trim().toLowerCase();
 
-  const [counts, attentionCount] = await Promise.all([
+  // The rows and the header counts are independent queries, so they go out
+  // together. Awaiting the counts first and the rows after doubled the wall
+  // time of every inbox load for no reason — and a round trip to Firestore is
+  // the dominant cost of this page, not the query itself.
+  const rowsPromise: Promise<{ rows: LeadRow[]; nextCursor: string | null; searchTruncated: boolean }> =
+    opts.attention
+      ? // Cross-stage triage list — ignores the stage filter by design.
+        attentionRows(type, now).then((r) => ({
+          rows: q ? r.filter((row) => matchesSearch(row, q)) : r,
+          nextCursor: null,
+          searchTruncated: false,
+        }))
+      : q
+        ? // No index backs substring search, so scan a bounded window of the
+          // most recent leads and filter in memory. Paging a filtered scan
+          // would be misleading (page 2 of an unknown total).
+          baseQuery(type, opts.stage)
+            .limit(SEARCH_SCAN_LIMIT)
+            .get()
+            .then((snap) => ({
+              rows: snap.docs.map(toRow).filter((r) => matchesSearch(r, q)),
+              nextCursor: null,
+              searchTruncated: snap.size === SEARCH_SCAN_LIMIT,
+            }))
+        : (() => {
+            const cursor = decodeCursor(opts.cursor);
+            let pageQuery = baseQuery(type, opts.stage);
+            if (cursor) pageQuery = pageQuery.startAfter(new Date(cursor.createdAtMs), cursor.id);
+            // One extra row reveals whether another page exists, with no second
+            // query and without needing a total.
+            return pageQuery
+              .limit(PAGE_SIZE + 1)
+              .get()
+              .then((snap) => {
+                const rows = snap.docs.slice(0, PAGE_SIZE).map(toRow);
+                return {
+                  rows,
+                  nextCursor:
+                    snap.size > PAGE_SIZE && rows.length ? encodeCursor(rows[rows.length - 1]) : null,
+                  searchTruncated: false,
+                };
+              });
+          })();
+
+  const [counts, attentionCount, page] = await Promise.all([
     stageCounts(type),
     attentionCountOf(type, now),
+    rowsPromise,
   ]);
 
   const kpis: InboxKpis = { total: 0, new: 0, active: 0, won: 0, lost: 0 };
@@ -218,34 +263,7 @@ export async function getInbox(
     kpis[stageMeta(stage).group] += n;
   }
 
-  let rows: LeadRow[];
-  let nextCursor: string | null = null;
-  let searchTruncated = false;
-
-  if (opts.attention) {
-    // Cross-stage triage list — ignores the stage filter by design.
-    rows = await attentionRows(type, now);
-    if (q) rows = rows.filter((r) => matchesSearch(r, q));
-  } else if (q) {
-    // No index backs substring search, so scan a bounded window of the most
-    // recent leads and filter in memory. Paging a filtered scan would be
-    // misleading (page 2 of an unknown total), so search returns one set.
-    const snap = await baseQuery(type, opts.stage).limit(SEARCH_SCAN_LIMIT).get();
-    searchTruncated = snap.size === SEARCH_SCAN_LIMIT;
-    rows = snap.docs.map(toRow).filter((r) => matchesSearch(r, q));
-  } else {
-    const cursor = decodeCursor(opts.cursor);
-    let pageQuery = baseQuery(type, opts.stage);
-    if (cursor) pageQuery = pageQuery.startAfter(new Date(cursor.createdAtMs), cursor.id);
-    // Fetch one extra row to learn whether another page exists, without a
-    // second query and without needing a total.
-    const snap = await pageQuery.limit(PAGE_SIZE + 1).get();
-    const docs = snap.docs.slice(0, PAGE_SIZE);
-    rows = docs.map(toRow);
-    if (snap.size > PAGE_SIZE && rows.length) nextCursor = encodeCursor(rows[rows.length - 1]);
-  }
-
-  return { rows, counts, kpis, attentionCount, nextCursor, searchTruncated };
+  return { ...page, counts, kpis, attentionCount };
 }
 
 // ── Marketing insights ──────────────────────────────────────────────────────
@@ -367,10 +385,17 @@ export type LeadDetail = {
 export async function getLead(id: string): Promise<LeadDetail | null> {
   await requireAdmin();
   const db = getDb();
-  const doc = await db.collection("leads").doc(id).get();
+  // The timeline lives in a subcollection under a known path, so it does not
+  // need the parent document first — fetching them in sequence just paid for
+  // two round trips where one would do. The parent's data is only needed for
+  // the pre-migration fallback, which is applied after both land.
+  const [doc, noteDocs] = await Promise.all([
+    db.collection("leads").doc(id).get(),
+    readNotesRaw(db, id),
+  ]);
   if (!doc.exists) return null;
   const x = doc.data()!;
-  const notes = await readNotes(db, id, x);
+  const notes = resolveNotes(noteDocs, x);
   return {
     id: doc.id,
     type: x.type,

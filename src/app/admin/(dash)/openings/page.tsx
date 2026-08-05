@@ -21,12 +21,20 @@ export default async function OpeningsAdmin() {
             {openings.length} total · {activeCount} live on the public careers page.
           </p>
         </div>
+        <div className="flex flex-wrap items-center gap-2">
+        <Link
+          href="/admin?type=staff_application"
+          className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-emerald-deep shadow-soft ring-1 ring-emerald/10 transition hover:bg-emerald/5"
+        >
+          <Icon name="group" className="text-[18px]" /> View applicants
+        </Link>
         <Link
           href="/admin/openings/new"
           className="inline-flex items-center gap-2 rounded-full bg-emerald px-5 py-2.5 text-sm font-semibold text-cream transition hover:bg-emerald-deep"
         >
           <Icon name="add" className="text-[18px]" /> New opening
         </Link>
+        </div>
       </div>
 
       {openings.length === 0 ? (

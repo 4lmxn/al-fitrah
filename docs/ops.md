@@ -10,29 +10,35 @@ Project: `al-fitrah` · Hosting: Firebase App Hosting
 
 | Resource | Location |
 |---|---|
-| Firestore `(default)` | **`nam5`** — North America multi-region |
+| Firestore `(default)` | **`asia-south1`** — Mumbai (migrated 5 Aug 2026) |
 | App Hosting backend | **`asia-east1`** — Taiwan |
 | Cloud Storage (app) | `al-fitrah.firebasestorage.app` |
-| Backups | `gs://al-fitrah-backups` — `us-central1` (must match Firestore's continent) |
+| Backups | `gs://al-fitrah-backups` — `asia-south1` (must match Firestore's continent) |
 
-> ### ⚠️ Firestore is in the US, and its location cannot be changed
+> ### Firestore was migrated out of the US on 5 Aug 2026
 >
-> A Firestore database's location is fixed at creation. Moving it means creating a
-> second database and migrating, which is only cheap **right now** — the site is
-> still behind the coming-soon gate and holds 3 leads. After launch it is a
-> migration with downtime.
+> It was created in `nam5` (North America). Every admin action crossed the
+> Pacific, and children's data sat outside India. A database's location is fixed
+> at creation, so the move meant deleting `(default)` and recreating it — done
+> while the site was still gated and held four documents, which is the only
+> cheap moment it will ever have.
 >
-> What it costs today:
-> - **Latency.** Every admin action goes Taiwan → North America and back.
-> - **Price.** `nam5` multi-region runs roughly 1.7× a regional location like
->   `asia-south1` for reads, writes and storage. The budget in
->   `IMPLEMENTATION_PLAN.md` §1 used US multi-region rates, so the numbers hold —
->   but they are the real price, not the conservative ceiling they were labelled.
-> - **Disclosure.** Children's data leaving India is permitted under DPDP (the US
->   is not on the restricted list), but it must be disclosed. The privacy policy
->   now says so.
+> Recreated as `(default)` rather than a named database **on purpose**: the
+> Firestore free tier applies only to `(default)`. A named database in the right
+> region would have been simpler and would have lost 50k free reads/day.
 >
-> Decide before launch. Staying is defensible; drifting into it unnoticed is not.
+> Verified by diffing a full pre- and post-migration dump: identical, including
+> the notes subcollections and every timestamp.
+>
+> **Still outstanding:** the App Hosting backend is in `asia-east1` (Taiwan), so
+> backend→Firestore is now Taiwan→Mumbai (~60ms) rather than Taiwan→Iowa
+> (~180ms). Colocating the backend in `asia-south1` would take that to single
+> digits, but a backend's region is also fixed at creation — it means a new
+> backend and re-pointing the domain.
+>
+> The backup bucket was recreated in `asia-south1` at the same time — exports
+> must target a bucket on the database's continent, so the weekly job would
+> otherwise have started failing silently from the next Sunday.
 
 ---
 
@@ -90,9 +96,9 @@ thousand leads costs a rounding error.
 
 ```bash
 # One-time: a bucket for backups, separate from the app's Storage bucket.
-# Must be on the same continent as the database: Firestore is nam5 (US), so an
-# asia-south1 bucket is rejected outright with an INVALID_ARGUMENT.
-gcloud storage buckets create gs://al-fitrah-backups --location=us-central1 --project=al-fitrah
+# Must be on the same continent as the database. Firestore is asia-south1, so a
+# US bucket is rejected outright with an INVALID_ARGUMENT.
+gcloud storage buckets create gs://al-fitrah-backups --location=asia-south1 --project=al-fitrah
 
 # Manual export — run once to confirm permissions before scheduling.
 gcloud firestore export gs://al-fitrah-backups/$(date +%Y-%m-%d) \

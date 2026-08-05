@@ -93,6 +93,18 @@ export async function readNotes(
   leadId: string,
   lead: FirebaseFirestore.DocumentData,
 ): Promise<StoredNote[]> {
+  return resolveNotes(await readNotesRaw(db, leadId), lead);
+}
+
+/**
+ * Fetch the timeline without needing the parent document.
+ *
+ * Split out so a caller that also wants the lead can issue both requests at
+ * once. The subcollection path is derivable from the id alone, so waiting for
+ * the parent first bought nothing and cost a round trip — which is the dominant
+ * latency in a page like this, not the query.
+ */
+export async function readNotesRaw(db: Firestore, leadId: string): Promise<StoredNote[]> {
   const snap = await db
     .collection("leads")
     .doc(leadId)
@@ -100,8 +112,6 @@ export async function readNotes(
     .orderBy("at", "desc")
     .limit(NOTES_PAGE_SIZE)
     .get();
-
-  if (snap.empty) return fromLegacyArray(lead).sort((a, b) => (b.atMs ?? 0) - (a.atMs ?? 0));
 
   return snap.docs.map((d) => {
     const n = d.data();
@@ -112,4 +122,13 @@ export async function readNotes(
       kind: n.kind === "stage" ? ("stage" as const) : ("note" as const),
     };
   });
+}
+
+/** Apply the legacy-array fallback once both the notes and the lead are in hand. */
+export function resolveNotes(
+  notes: StoredNote[],
+  lead: FirebaseFirestore.DocumentData,
+): StoredNote[] {
+  if (notes.length) return notes;
+  return fromLegacyArray(lead).sort((a, b) => (b.atMs ?? 0) - (a.atMs ?? 0));
 }

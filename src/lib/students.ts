@@ -22,6 +22,17 @@ import { requireAdmin } from "@/lib/adminAuth";
 export const PROGRAMS = ["Pre-KG", "Junior KG", "Senior KG"] as const;
 export type Program = (typeof PROGRAMS)[number];
 
+/**
+ * Class sections.
+ *
+ * A fixed list rather than free text, because attendance groups by this value.
+ * Typed freely, "Rose", "rose" and "Rose " are three different classes and the
+ * register silently splits — with no error, and no way to notice except a roll
+ * that looks short. Add a section here when the school opens one.
+ */
+export const CLASS_SECTIONS = ["Rose", "Tulip", "Jasmine", "Lily", "Iris", "Orchid"] as const;
+export type ClassSection = (typeof CLASS_SECTIONS)[number];
+
 export const STUDENT_STATUSES = ["enrolled", "withdrawn", "graduated"] as const;
 export type StudentStatus = (typeof STUDENT_STATUSES)[number];
 
@@ -176,6 +187,26 @@ export async function listStudents(
     nextCursor: snap.size > PAGE_SIZE && rows.length ? encodeCursor(rows[rows.length - 1]) : null,
     searchTruncated: false,
   };
+}
+
+/**
+ * The children to show on a class register.
+ *
+ * Only enrolled students: a withdrawn child must not keep appearing on a
+ * register to be marked absent every day. Bounded because a preschool class is
+ * bounded — if a section ever exceeds this, the section is the problem.
+ */
+export const MAX_CLASS_SIZE = 60;
+
+export async function listClassRoster(classSection: string): Promise<Student[]> {
+  await requireAdmin();
+  const snap = await getDb()
+    .collection(COLLECTION)
+    .where("classSection", "==", classSection)
+    .where("status", "==", "enrolled")
+    .limit(MAX_CLASS_SIZE)
+    .get();
+  return snap.docs.map(toStudent).sort((a, b) => a.fullName.localeCompare(b.fullName));
 }
 
 export async function getStudent(id: string): Promise<Student | null> {

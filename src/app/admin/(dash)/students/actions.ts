@@ -7,6 +7,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { queueNote } from "@/lib/notes";
 import {
+  CLASS_SECTIONS,
   COLLECTION,
   PROGRAMS,
   STUDENT_STATUSES,
@@ -165,7 +166,11 @@ export async function updateStudent(formData: FormData): Promise<ActionResult> {
       lastName: clean(formData.get("lastName"), 60),
       program,
       status,
-      classSection: clean(formData.get("classSection"), 20) || null,
+      // Constrained, not free text — see CLASS_SECTIONS. An unrecognised value
+      // would create a class the register can never show.
+      classSection: (CLASS_SECTIONS as readonly string[]).includes(clean(formData.get("classSection"), 20))
+        ? clean(formData.get("classSection"), 20)
+        : null,
       emergencyContact: {
         name: clean(formData.get("emergencyName"), 80),
         phone: clean(formData.get("emergencyPhone"), 20),

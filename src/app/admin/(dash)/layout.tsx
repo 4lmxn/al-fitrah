@@ -46,6 +46,12 @@ export default async function AdminDashLayout({ children }: { children: React.Re
             <Icon name="school" className="text-[20px] text-gold-light" /> Students
           </Link>
           <Link
+            href="/admin/attendance"
+            className="mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-cream/80 transition hover:bg-cream/10"
+          >
+            <Icon name="fact_check" className="text-[20px] text-gold-light" /> Attendance
+          </Link>
+          <Link
             href="/admin/insights"
             className="mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-cream/80 transition hover:bg-cream/10"
           >
@@ -84,6 +90,9 @@ export default async function AdminDashLayout({ children }: { children: React.Re
           </Link>
           <Link href="/admin/students" className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition hover:bg-cream/10">
             <Icon name="school" className="text-[18px] text-gold-light" /> Students
+          </Link>
+          <Link href="/admin/attendance" className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition hover:bg-cream/10">
+            <Icon name="fact_check" className="text-[18px] text-gold-light" /> Attendance
           </Link>
           <Link href="/admin/insights" className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition hover:bg-cream/10">
             <Icon name="insights" className="text-[18px] text-gold-light" /> Insights

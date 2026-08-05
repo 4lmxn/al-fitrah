@@ -131,6 +131,40 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "//": "Attendance: one class's registers across a date range (monthly summary).",
+      "collectionGroup": "attendance",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "academicYear",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "classSection",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dateKey",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "//": "Class roster: enrolled children in one section.",
+      "collectionGroup": "students",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "classSection",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []

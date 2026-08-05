@@ -15,6 +15,10 @@ service cloud.firestore {
     match /students/{doc=**} {
       allow read, write: if false;
     }
+    // Attendance records which child was where on which day. Server-only.
+    match /attendance/{doc=**} {
+      allow read, write: if false;
+    }
     // CMS content collections (added in Plan 3) will allow public read here.
     // Default: deny everything not explicitly allowed.
     match /{document=**} {

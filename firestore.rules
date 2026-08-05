@@ -24,7 +24,13 @@ service cloud.firestore {
     match /payments/{doc=**} {
       allow read, write: if false;
     }
-    // CMS content collections (added in Plan 3) will allow public read here.
+    // Website content. Reads happen server-side through ISR, so this could be
+    // closed too — but posts are, by definition, published to the public, and
+    // an accidental client read here leaks nothing. Writes stay server-only.
+    match /posts/{doc=**} {
+      allow read: if resource.data.published == true;
+      allow write: if false;
+    }
     // Default: deny everything not explicitly allowed.
     match /{document=**} {
       allow read, write: if false;

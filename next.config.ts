@@ -23,7 +23,7 @@ const csp = [
   "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
-  "img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com",
+  "img-src 'self' data: blob: https://firebasestorage.googleapis.com https://www.googletagmanager.com https://*.google-analytics.com",
   "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
   // The map embed is the only third party allowed to frame content in.
   "frame-src https://www.google.com https://maps.google.com",

@@ -50,3 +50,72 @@ export async function streamObject(path: string): Promise<ReadableStream<Uint8Ar
 export async function deleteObject(path: string): Promise<void> {
   await getBucket().file(path).delete({ ignoreNotFound: true });
 }
+
+// ── Public content images (news / events) ───────────────────────────────────
+
+export const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+
+const IMAGE_TYPES: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+};
+
+// Magic bytes for the formats above. The browser-declared MIME type is
+// attacker-controlled, and these files end up served publicly from our origin,
+// so the actual bytes decide what is stored.
+const IMAGE_SIGNATURES: [string, number[]][] = [
+  ["image/jpeg", [0xff, 0xd8, 0xff]],
+  ["image/png", [0x89, 0x50, 0x4e, 0x47]],
+  ["image/webp", [0x52, 0x49, 0x46, 0x46]], // RIFF....WEBP
+];
+
+export function detectImageType(buf: Uint8Array): string | null {
+  for (const [type, sig] of IMAGE_SIGNATURES) {
+    if (sig.every((byte, i) => buf[i] === byte)) {
+      // WEBP shares the RIFF header with other container formats; the format
+      // tag at offset 8 is what actually distinguishes it.
+      if (type === "image/webp") {
+        const tag = String.fromCharCode(...buf.slice(8, 12));
+        if (tag !== "WEBP") continue;
+      }
+      return type;
+    }
+  }
+  return null;
+}
+
+export function validateImage(
+  file: { type: string; size: number },
+): { ok: true } | { ok: false; error: string } {
+  if (!file.size) return { ok: false, error: "That image looks empty." };
+  if (!IMAGE_TYPES[file.type]) return { ok: false, error: "Use a JPG, PNG or WebP image." };
+  if (file.size > MAX_IMAGE_BYTES) return { ok: false, error: "Images must be 4 MB or smaller." };
+  return { ok: true };
+}
+
+/**
+ * Store a post image and return its public URL.
+ *
+ * Content-Type comes from the sniffed bytes, not the upload, so a file claiming
+ * to be a PNG can never be served as something the browser will execute.
+ */
+export async function uploadPostImage(
+  postId: string,
+  file: { buffer: Buffer; contentType: string },
+): Promise<{ path: string; url: string }> {
+  const ext = IMAGE_TYPES[file.contentType] ?? "bin";
+  // Cache-busting name: replacing an image must not leave the old one cached
+  // under the same URL for a year.
+  const path = `content/posts/${postId}/${Date.now()}.${ext}`;
+  const bucket = getBucket();
+  await bucket.file(path).save(file.buffer, {
+    contentType: file.contentType,
+    resumable: false,
+    metadata: { cacheControl: "public, max-age=31536000, immutable" },
+  });
+  return {
+    path,
+    url: `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(path)}?alt=media`,
+  };
+}

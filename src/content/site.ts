@@ -9,6 +9,7 @@ export const site: Site = {
     { label: "Programs", href: "/programs" },
     { label: "Admissions", href: "/admissions" },
     { label: "Campus Life", href: "/campus-life" },
+    { label: "News", href: "/news" },
     { label: "FAQ", href: "/faq" },
     { label: "Contact", href: "/contact" },
   ],

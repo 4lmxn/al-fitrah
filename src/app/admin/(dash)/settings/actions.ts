@@ -2,6 +2,7 @@
 import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { saveSettings, type StageConfig } from "@/lib/settings";
+import { recordAudit } from "@/lib/audit";
 
 const clean = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
 
@@ -23,7 +24,8 @@ function lines(v: FormDataEntryValue | null, max = 50): string[] {
 
 export async function saveSchool(formData: FormData): Promise<ActionResult> {
   return attempt("saveSchool", async () => {
-    if (!(await requireOwnerForSettings())) return fail("Changing settings needs an owner account.");
+    const admin = await requireOwnerForSettings();
+    if (!admin) return fail("Changing settings needs an owner account.");
     const res = await saveSettings({
       school: {
         name: clean(formData.get("name"), 120),
@@ -44,13 +46,21 @@ export async function saveSchool(formData: FormData): Promise<ActionResult> {
         grievanceOfficerEmail: clean(formData.get("grievanceOfficerEmail"), 120),
       },
     });
-    return res.ok ? { ok: true as const } : fail(res.error);
+    if (!res.ok) return fail(res.error);
+    await recordAudit({
+      actor: admin!.email,
+      action: "settings.updated",
+      entity: { type: "settings", id: "platform" },
+      summary: "Updated school details",
+    });
+    return { ok: true as const };
   });
 }
 
 export async function saveTaxonomy(formData: FormData): Promise<ActionResult> {
   return attempt("saveTaxonomy", async () => {
-    if (!(await requireOwnerForSettings())) return fail("Changing settings needs an owner account.");
+    const admin = await requireOwnerForSettings();
+    if (!admin) return fail("Changing settings needs an owner account.");
     const res = await saveSettings({
       taxonomy: {
         programs: lines(formData.get("programs")),
@@ -61,13 +71,21 @@ export async function saveTaxonomy(formData: FormData): Promise<ActionResult> {
         paymentMethods: lines(formData.get("paymentMethods")),
       },
     });
-    return res.ok ? { ok: true as const } : fail(res.error);
+    if (!res.ok) return fail(res.error);
+    await recordAudit({
+      actor: admin!.email,
+      action: "settings.updated",
+      entity: { type: "settings", id: "platform" },
+      summary: "Updated the configured lists",
+    });
+    return { ok: true as const };
   });
 }
 
 export async function saveOperations(formData: FormData): Promise<ActionResult> {
   return attempt("saveOperations", async () => {
-    if (!(await requireOwnerForSettings())) return fail("Changing settings needs an owner account.");
+    const admin = await requireOwnerForSettings();
+    if (!admin) return fail("Changing settings needs an owner account.");
     const startMonth = Number(formData.get("startMonth"));
     if (!Number.isInteger(startMonth) || startMonth < 1 || startMonth > 12) {
       return fail("Pick a month for the academic year to start.");
@@ -107,7 +125,8 @@ export async function saveOperations(formData: FormData): Promise<ActionResult> 
  */
 export async function savePipeline(formData: FormData): Promise<ActionResult> {
   return attempt("savePipeline", async () => {
-    if (!(await requireOwnerForSettings())) return fail("Changing settings needs an owner account.");
+    const admin = await requireOwnerForSettings();
+    if (!admin) return fail("Changing settings needs an owner account.");
 
     const type = clean(formData.get("type"), 40);
     if (type !== "admission_inquiry" && type !== "staff_application") return fail("Unknown pipeline.");

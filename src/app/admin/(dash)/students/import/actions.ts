@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { COLLECTION, academicYearFor, nextAdmissionNumber } from "@/lib/students";
 import { parseStudentCsv, type ImportRow } from "@/lib/studentImport";
+import { recordAudit } from "@/lib/audit";
 import { getClassSections, getPrograms } from "@/lib/taxonomy";
 
 // Firestore batches cap at 500 writes. Each student is one write, so this is
@@ -145,7 +146,14 @@ export async function importStudents(formData: FormData): Promise<ImportOutcome>
     await batch.commit();
   }
 
-  console.log(`student import: created=${created} skipped=${skipped.length} by=${admin.email}`);
+  // Bulk creation is the single largest change anyone can make to the roll.
+  await recordAudit({
+    actor: admin.email,
+    action: "student.imported",
+    entity: { type: "student", id: "bulk" },
+    summary: `Imported ${created} student${created === 1 ? "" : "s"} from a CSV`,
+    meta: { created, skipped: skipped.length },
+  });
   revalidatePath("/admin/students");
   revalidatePath("/admin/fees");
 

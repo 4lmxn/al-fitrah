@@ -7,6 +7,8 @@ import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { parseRupees } from "@/lib/money";
 import { PAYMENTS, STUDENTS, nextReceiptNumber, type PaymentMethod } from "@/lib/fees";
 import { getPaymentMethods, pickFrom } from "@/lib/taxonomy";
+import { queueAudit } from "@/lib/audit";
+import { formatPaise } from "@/lib/money";
 
 const clean = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
 
@@ -23,10 +25,20 @@ export async function setFeeTotal(formData: FormData): Promise<ActionResult> {
     // Only the total is written. Merging the whole `fees` object would let a
     // stale form overwrite paidPaise with whatever it last rendered, silently
     // erasing recorded payments.
-    await getDb().collection(STUDENTS).doc(id).update({
+    const db = getDb();
+    const batch = db.batch();
+    batch.update(db.collection(STUDENTS).doc(id), {
       "fees.totalPaise": totalPaise,
       updatedAt: FieldValue.serverTimestamp(),
     });
+    queueAudit(db, batch, {
+      actor: admin.email,
+      action: "fee.total_set",
+      entity: { type: "student", id },
+      summary: `Set the year's fee to ${formatPaise(totalPaise)}`,
+      meta: { totalPaise },
+    });
+    await batch.commit();
 
     console.log(`fee total set student=${id} paise=${totalPaise} by=${admin.email}`);
     revalidatePath(`/admin/students/${id}`);
@@ -110,6 +122,17 @@ export async function recordPayment(formData: FormData): Promise<ActionResult> {
       tx.update(studentRef, {
         "fees.paidPaise": FieldValue.increment(amountPaise),
         updatedAt: FieldValue.serverTimestamp(),
+      });
+
+      // Money moved, so the record of who moved it commits with it.
+      tx.set(db.collection("auditLog").doc(), {
+        actor: admin.email,
+        action: "payment.recorded",
+        entity: { type: "student", id: studentId },
+        summary: `Recorded ${formatPaise(amountPaise)} by ${method} (${receiptNumber})`,
+        meta: { amountPaise, method, receiptNumber },
+        at: FieldValue.serverTimestamp(),
+        expiresAt: new Date(Date.now() + 730 * 24 * 60 * 60 * 1000),
       });
     });
 

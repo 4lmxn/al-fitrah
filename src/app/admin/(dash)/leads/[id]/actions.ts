@@ -8,6 +8,7 @@ import { getPrograms, pickFrom } from "@/lib/taxonomy";
 import { isValidStage, stageLabelFor, terminalStages } from "@/lib/pipelines";
 import { resolveFollowUp } from "@/lib/followup";
 import { queueNote } from "@/lib/notes";
+import { queueAudit } from "@/lib/audit";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 
 export async function updateStage(formData: FormData): Promise<ActionResult> {
@@ -39,10 +40,14 @@ export async function updateStage(formData: FormData): Promise<ActionResult> {
     stage,
     ...((await terminalStages(type)).has(stage) ? { followUpDate: FieldValue.delete() } : {}),
   });
-  queueNote(db, batch, id, {
-    text: `Moved to ${await stageLabelFor(type, stage)}`,
-    author: admin.email,
-    kind: "stage",
+  const stageLabel = await stageLabelFor(type, stage);
+  queueNote(db, batch, id, { text: `Moved to ${stageLabel}`, author: admin.email, kind: "stage" });
+  queueAudit(db, batch, {
+    actor: admin.email,
+    action: "lead.stage_changed",
+    entity: { type: "lead", id },
+    summary: `Moved ${data.parentName ?? data.name ?? "lead"} to ${stageLabel}`,
+    meta: { from: normalizeStage(data.stage ?? "new"), to: stage },
   });
   await batch.commit();
   console.log(`stage updated id=${id} stage=${stage} by=${admin.email}`);
@@ -157,7 +162,11 @@ export async function editContact(formData: FormData): Promise<ActionResult> {
   const email = String(formData.get("email") ?? "").trim().slice(0, 120);
   const programInterest = pickFrom(await getPrograms(), String(formData.get("programInterest") ?? "").trim());
 
-  await getDb().collection("leads").doc(id).update({
+  // Batched, not a bare update: an edit that is not recorded is worse than one
+  // that fails, because nobody knows the record changed.
+  const db2 = getDb();
+  const batch2 = db2.batch();
+  batch2.update(db2.collection("leads").doc(id), {
     parentName,
     childName: childName || null,
     phone,
@@ -166,7 +175,14 @@ export async function editContact(formData: FormData): Promise<ActionResult> {
     programInterest,
     updatedAt: FieldValue.serverTimestamp(),
   });
-  console.log(`contact edited id=${id} by=${admin.email}`);
+  queueAudit(db2, batch2, {
+    actor: admin.email,
+    action: "lead.contact_edited",
+    entity: { type: "lead", id },
+    summary: `Edited contact details for ${parentName}`,
+    meta: { phone },
+  });
+  await batch2.commit();
   revalidatePath(`/admin/leads/${id}`);
   });
 }

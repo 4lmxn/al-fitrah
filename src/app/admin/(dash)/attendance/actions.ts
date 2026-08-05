@@ -4,6 +4,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
+import { queueAudit } from "@/lib/audit";
 import { academicYearFor } from "@/lib/students";
 import { getAttendanceStatuses, getClassSections } from "@/lib/taxonomy";
 import {
@@ -59,7 +60,9 @@ export async function saveRegister(formData: FormData): Promise<ActionResult> {
     // Derived id, so re-submitting corrects the day rather than adding a second
     // register for it. merge:false is deliberate — a child removed from the
     // class should leave the register, not linger from the previous save.
-    await getDb().collection(COLLECTION).doc(id).set({
+    const db = getDb();
+    const batch = db.batch();
+    batch.set(db.collection(COLLECTION).doc(id), {
       dateKey: key,
       classSection,
       academicYear,
@@ -67,6 +70,14 @@ export async function saveRegister(formData: FormData): Promise<ActionResult> {
       markedBy: admin.email,
       markedAt: FieldValue.serverTimestamp(),
     });
+    queueAudit(db, batch, {
+      actor: admin.email,
+      action: "attendance.marked",
+      entity: { type: "attendance", id },
+      summary: `Marked ${classSection} for ${key}`,
+      meta: { classSection, dateKey: key, children: Object.keys(entries).length },
+    });
+    await batch.commit();
 
     console.log(`register saved ${id} n=${Object.keys(entries).length} by=${admin.email}`);
     revalidatePath("/admin/attendance");

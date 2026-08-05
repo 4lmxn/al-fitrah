@@ -244,6 +244,48 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "//": "Audit filtered to one actor. (A plain at-desc index is NOT declared: Firestore provides single-field descending indexes automatically and rejects the composite as unnecessary.)",
+      "collectionGroup": "auditLog",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "actor",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "at",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "//": "Audit filtered to one entity \u2014 the history of a single lead or student.",
+      "collectionGroup": "auditLog",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "entity.type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "entity.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "at",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []

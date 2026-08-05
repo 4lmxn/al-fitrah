@@ -7,6 +7,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { COLLECTION, POST_TYPES, slugTaken, slugify, type PostType } from "@/lib/posts";
 import { detectImageType, deleteObject, uploadPostImage, validateImage } from "@/lib/storage";
+import { recordAudit } from "@/lib/audit";
 
 const clean = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
 
@@ -183,7 +184,12 @@ export async function togglePublished(formData: FormData): Promise<ActionResult>
       updatedAt: FieldValue.serverTimestamp(),
     });
 
-    console.log(`post ${next ? "published" : "unpublished"} id=${id} by=${admin.email}`);
+    await recordAudit({
+      actor: admin.email,
+      action: next ? "post.published" : "post.unpublished",
+      entity: { type: "post", id },
+      summary: `${next ? "Published" : "Unpublished"} "${doc.data()!.title}"`,
+    });
     revalidatePublic(doc.data()!.slug);
   });
 }
@@ -204,7 +210,15 @@ export async function deletePost(formData: FormData): Promise<ActionResult> {
     await ref.delete();
     if (imagePath) await deleteObject(imagePath).catch((err) => console.error("post image cleanup failed", err));
 
-    console.log(`post deleted id=${id} by=${admin.email}`);
+    // Recorded after the delete, not with it: the post document is gone, so
+    // there is nothing left to batch against — and an audit entry for a delete
+    // that did not happen would be worse than one written a moment late.
+    await recordAudit({
+      actor: admin.email,
+      action: "post.deleted",
+      entity: { type: "post", id },
+      summary: `Deleted post "${doc.data()!.title}"`,
+    });
     revalidatePublic(slug);
     redirect("/admin/content");
   });

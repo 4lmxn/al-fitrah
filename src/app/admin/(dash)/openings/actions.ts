@@ -5,6 +5,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
 import { getEmploymentTypes, pickFrom } from "@/lib/taxonomy";
+import { recordAudit } from "@/lib/audit";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 
 const COLLECTION = "jobOpenings";
@@ -122,7 +123,12 @@ export async function deleteOpening(formData: FormData): Promise<ActionResult> {
   const id = String(formData.get("id") ?? "");
   if (!id) return fail("Missing opening id");
   await getDb().collection(COLLECTION).doc(id).delete();
-  console.log(`opening deleted id=${id} by=${admin.email}`);
+  await recordAudit({
+    actor: admin.email,
+    action: "opening.deleted",
+    entity: { type: "opening", id },
+    summary: "Deleted a job opening",
+  });
   revalidateAll();
   redirect("/admin/openings");
   });

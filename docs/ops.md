@@ -54,6 +54,7 @@ Applied and verified 5 Aug 2026. Nothing in this section needs re-running.
 | CV retention lifecycle | ✅ `applications/` deleted at 365 days — matches the privacy policy's promise |
 | Backup bucket | ✅ `gs://al-fitrah-backups`, 90-day lifecycle |
 | First Firestore export | ✅ `gs://al-fitrah-backups/2026-08-05/` |
+| Audit log TTL | ✅ `expiresAt` TTL policy on `auditLog`, 2-year retention — enforced by Firestore, not a cron that can silently stop |
 | Error alerting | ✅ log metric `app_errors` + policy "Al Fitrah — application errors" → owner email |
 | Budget alert | ✅ ₹500/month, alerts at 50 / 90 / 100% |
 | Weekly backup job | ✅ `.github/workflows/firestore-backup.yml` — **needs the `GCP_SA_KEY` repo secret** |

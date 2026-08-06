@@ -120,6 +120,12 @@ export function CareersForm({ roles }: { roles: string[] }) {
         </div>
       </div>
       <div className="space-y-2">
+        <label className={labelCls} htmlFor="portfolioUrl">Portfolio or LinkedIn <span className="font-normal text-ink/45">(optional)</span></label>
+        <input id="portfolioUrl" name="portfolioUrl" type="url" placeholder="https://" className={field} {...invalidProps("portfolioUrl")} />
+        <FieldError id="portfolioUrl-error" errors={fieldErrors.portfolioUrl} />
+      </div>
+
+      <div className="space-y-2">
         <label className={labelCls} htmlFor="message">Cover note</label>
         <textarea id="message" name="message" rows={4} placeholder="Tell us about your experience" className={`${field} resize-none`} {...invalidProps("message")} />
         <FieldError id="message-error" errors={fieldErrors.message} />

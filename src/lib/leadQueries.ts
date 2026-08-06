@@ -27,6 +27,7 @@ export type LeadRow = {
   noteCount: number;
   assignedTo: string | null;
   possibleDuplicateOf: string | null;
+  tags: string[];
   createdAtMs: number | null;
   followUpMs: number | null;
 };
@@ -67,6 +68,7 @@ function toRow(d: FirebaseFirestore.QueryDocumentSnapshot): LeadRow {
     noteCount: noteCountOf(x),
     assignedTo: x.assignedTo ?? null,
     possibleDuplicateOf: x.possibleDuplicateOf ?? null,
+    tags: Array.isArray(x.tags) ? x.tags : [],
     createdAtMs: x.createdAt?.toMillis?.() ?? null,
     followUpMs: x.followUpDate?.toMillis?.() ?? null,
   };
@@ -75,13 +77,14 @@ function toRow(d: FirebaseFirestore.QueryDocumentSnapshot): LeadRow {
 // Newest-first within a type, optionally within a stage. Ordered by createdAt
 // then document id: createdAt alone would drop rows whose timestamps tie, since
 // startAfter needs a total order to resume from.
-function baseQuery(type: LeadType, stage?: string, assignee?: string) {
+function baseQuery(type: LeadType, stage?: string, assignee?: string, tag?: string) {
   let q = getDb().collection("leads").where("type", "==", type);
   if (stage) q = q.where("stage", "==", stage);
   // "unassigned" is an explicit null match, which is why leadDefaults writes
   // the field rather than leaving it absent.
   if (assignee === "unassigned") q = q.where("assignedTo", "==", null);
   else if (assignee) q = q.where("assignedTo", "==", assignee);
+  if (tag) q = q.where("tags", "array-contains", tag);
   return q.orderBy("createdAt", "desc").orderBy("__name__", "desc");
 }
 
@@ -194,7 +197,7 @@ async function attentionRows(type: LeadType, now: number): Promise<LeadRow[]> {
 }
 
 function matchesSearch(r: LeadRow, q: string): boolean {
-  return [r.name, r.childName, r.phone, r.email, r.role, r.childAge]
+  return [r.name, r.childName, r.phone, r.email, r.role, r.childAge, ...r.tags]
     .filter(Boolean)
     .some((v) => String(v).toLowerCase().includes(q));
 }
@@ -208,7 +211,7 @@ function matchesSearch(r: LeadRow, q: string): boolean {
  */
 export async function getInbox(
   type: LeadType,
-  opts: { stage?: string; q?: string; attention?: boolean; cursor?: string; assignee?: string } = {},
+  opts: { stage?: string; q?: string; attention?: boolean; cursor?: string; assignee?: string; tag?: string } = {},
 ): Promise<Inbox> {
   // Auth is enforced in the data layer, not just the admin layout: layouts
   // don't re-render on client navigation, so they are not a reliable gate.
@@ -236,7 +239,7 @@ export async function getInbox(
         ? // No index backs substring search, so scan a bounded window of the
           // most recent leads and filter in memory. Paging a filtered scan
           // would be misleading (page 2 of an unknown total).
-          baseQuery(type, opts.stage, opts.assignee)
+          baseQuery(type, opts.stage, opts.assignee, opts.tag)
             .limit(SEARCH_SCAN_LIMIT)
             .get()
             .then((snap) => ({
@@ -246,7 +249,7 @@ export async function getInbox(
             }))
         : (() => {
             const cursor = decodeCursor(opts.cursor);
-            let pageQuery = baseQuery(type, opts.stage, opts.assignee);
+            let pageQuery = baseQuery(type, opts.stage, opts.assignee, opts.tag);
             if (cursor) pageQuery = pageQuery.startAfter(new Date(cursor.createdAtMs), cursor.id);
             // One extra row reveals whether another page exists, with no second
             // query and without needing a total.
@@ -396,6 +399,12 @@ export type LeadDetail = {
   cv?: { filename: string } | null;
   assignedTo: string | null;
   possibleDuplicateOf: string | null;
+  tags: string[];
+  // Staff applications only; null on admission enquiries.
+  portfolioUrl: string | null;
+  interviewAtMs: number | null;
+  interviewLocation: string | null;
+  rating: number | null;
   notes: LeadNote[];
   createdAtMs: number | null;
   updatedAtMs: number | null;
@@ -436,6 +445,11 @@ export async function getLead(id: string): Promise<LeadDetail | null> {
     cv: x.cv ? { filename: x.cv.filename } : null,
     assignedTo: x.assignedTo ?? null,
     possibleDuplicateOf: x.possibleDuplicateOf ?? null,
+    tags: Array.isArray(x.tags) ? x.tags : [],
+    portfolioUrl: x.portfolioUrl ?? null,
+    interviewAtMs: x.interviewAt?.toMillis?.() ?? null,
+    interviewLocation: x.interviewLocation ?? null,
+    rating: typeof x.rating === "number" ? x.rating : null,
     notes,
     createdAtMs: x.createdAt?.toMillis?.() ?? null,
     updatedAtMs: x.updatedAt?.toMillis?.() ?? null,

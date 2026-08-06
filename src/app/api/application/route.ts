@@ -31,6 +31,7 @@ export async function POST(req: Request) {
     email: String(form.get("email") ?? ""),
     role: String(form.get("role") ?? ""),
     message: String(form.get("message") ?? ""),
+    portfolioUrl: String(form.get("portfolioUrl") ?? ""),
     website: String(form.get("website") ?? ""),
   };
 
@@ -54,7 +55,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: fileCheck.error }, { status: 422 });
   }
 
-  const { name, phone, email, role, message } = parsed.data;
+  const { name, phone, email, role, message, portfolioUrl } = parsed.data;
   const db = getDb();
   const ref = db.collection("leads").doc(); // pre-generate id for the CV path
 
@@ -76,6 +77,7 @@ export async function POST(req: Request) {
       email: email || null,
       role,
       message: message || null,
+      portfolioUrl: portfolioUrl || null,
       cv: { path: uploaded.path, filename: cv.name, contentType: cv.type, size: cv.size },
       stage: "new",
       source: "website",

@@ -35,6 +35,10 @@ export async function getPaymentMethods(): Promise<string[]> {
   return (await getSettings()).taxonomy.paymentMethods;
 }
 
+export async function getLeadTags(): Promise<string[]> {
+  return (await getSettings()).taxonomy.leadTags;
+}
+
 export type AttendanceStatusConfig = { id: string; label: string; present: boolean; counted: boolean };
 
 export async function getAttendanceStatuses(): Promise<AttendanceStatusConfig[]> {

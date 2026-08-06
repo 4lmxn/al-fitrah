@@ -17,7 +17,7 @@ const TYPE_ICON: Record<LeadType, string> = {
 export default async function AdminInbox({
   searchParams,
 }: {
-  searchParams: Promise<{ type?: string; stage?: string; q?: string; view?: string; after?: string; assignee?: string }>;
+  searchParams: Promise<{ type?: string; stage?: string; q?: string; view?: string; after?: string; assignee?: string; tag?: string }>;
 }) {
   const sp = await searchParams;
   const { role } = await requireAdmin();
@@ -33,6 +33,7 @@ export default async function AdminInbox({
     attention,
     cursor: sp.after,
     assignee: sp.assignee,
+    tag: sp.tag,
   });
   const wonLabel = type === "staff_application" ? "Hired" : "Admitted";
 

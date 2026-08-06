@@ -394,6 +394,14 @@ export function InboxBoard({
                           <span className="block truncate text-xs text-ink/45">
                           {l.assignedTo ? `Owner: ${l.assignedTo.split("@")[0]}` : (l.email ?? "No email")}
                         </span>
+                        {l.tags.length > 0 && (
+                          <span className="mt-1 flex flex-wrap gap-1">
+                            {l.tags.slice(0, 3).map((t) => (
+                              <span key={t} className="rounded-full bg-emerald/8 px-2 py-0.5 text-[10px] font-semibold text-emerald-deep">{t}</span>
+                            ))}
+                            {l.tags.length > 3 && <span className="text-[10px] text-ink/40">+{l.tags.length - 3}</span>}
+                          </span>
+                        )}
                         </span>
                       </Link>
                     </td>

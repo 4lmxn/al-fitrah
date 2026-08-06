@@ -4,7 +4,7 @@ import { getLead } from "@/lib/leadQueries";
 import { LEAD_TYPE_LABEL } from "@/lib/leads";
 import { findStage } from "@/lib/stageMeta";
 import { getPipeline } from "@/lib/pipelines";
-import { getPrograms } from "@/lib/taxonomy";
+import { getLeadTags, getPrograms } from "@/lib/taxonomy";
 import { relativeTime } from "@/lib/relativeTime";
 import { Icon } from "@/components/ui/Icon";
 import { LeadAvatar } from "@/components/admin/LeadAvatar";
@@ -17,7 +17,7 @@ import { createStudentFromLead } from "../../students/actions";
 import { EditContact } from "@/components/admin/EditContact";
 import { sourceLabel } from "@/lib/leads";
 import { referralCode, referralLink, referralShareLink } from "@/lib/referral";
-import { updateStage, logContact, setFollowUp, snoozeFollowUp, assignLead } from "./actions";
+import { updateStage, logContact, setFollowUp, snoozeFollowUp, assignLead, setTags, scheduleInterview } from "./actions";
 import { getAllowlist } from "@/lib/roles";
 
 export const dynamic = "force-dynamic";
@@ -59,7 +59,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
   const [lead, enrolledEarly] = await Promise.all([getLead(id), studentForLead(id)]);
   if (!lead) notFound();
 
-  const [pipeline, programs] = await Promise.all([getPipeline(lead.type), getPrograms()]);
+  const [pipeline, programs, tagVocabulary] = await Promise.all([getPipeline(lead.type), getPrograms(), getLeadTags()]);
   const admins = getAllowlist();
   const currentIdx = pipeline.findIndex((s) => s.id === lead.stage);
   const wa = waLink(lead.phone);
@@ -176,6 +176,50 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
         )}
       </div>
 
+      {lead.type === "staff_application" && (
+        <section className="mt-6 rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft">
+          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+            <Icon name="event_available" className="text-[18px] text-gold" /> Interview &amp; rating
+          </h2>
+          {lead.portfolioUrl && (
+            <a href={lead.portfolioUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald hover:text-emerald-deep">
+              <Icon name="link" className="text-[16px]" /> Portfolio
+            </a>
+          )}
+          <ActionForm action={scheduleInterview} className="mt-3 grid gap-3 sm:grid-cols-3">
+            <input type="hidden" name="id" value={lead.id} />
+            <label className="block">
+              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/45">When</span>
+              <input
+                type="datetime-local"
+                name="interviewAt"
+                defaultValue={lead.interviewAtMs ? new Date(lead.interviewAtMs - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ""}
+                className="w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm outline-none focus:border-emerald focus:ring-2 focus:ring-emerald/20"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/45">Where</span>
+              <input name="interviewLocation" defaultValue={lead.interviewLocation ?? ""} placeholder="Campus / video call" className="w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm outline-none focus:border-emerald focus:ring-2 focus:ring-emerald/20" />
+            </label>
+            <label className="block">
+              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/45">Rating</span>
+              <select name="rating" defaultValue={String(lead.rating ?? 0)} className="w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm outline-none focus:border-emerald">
+                <option value="0">Not rated</option>
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <option key={n} value={n}>{"★".repeat(n)}</option>
+                ))}
+              </select>
+            </label>
+            <button type="submit" className="sm:col-span-3 justify-self-start rounded-full bg-emerald px-5 py-2 text-sm font-semibold text-cream transition hover:bg-emerald-deep">
+              Save interview
+            </button>
+          </ActionForm>
+          <p className="mt-2 text-[11px] text-ink/45">
+            Scheduling sets the follow-up date too, so the candidate appears in the daily digest on the day.
+          </p>
+        </section>
+      )}
+
       {lead.possibleDuplicateOf && (
         <div className="mt-6 flex flex-wrap items-center gap-3 rounded-2xl border border-gold/30 bg-gold-soft/40 px-5 py-4 text-sm text-[#7a611a]">
           <Icon name="content_copy" className="text-[20px]" />
@@ -211,6 +255,34 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
           <button type="submit" className="rounded-full bg-emerald px-4 py-2 text-sm font-semibold text-cream transition hover:bg-emerald-deep">
             Save owner
           </button>
+        </ActionForm>
+
+        <ActionForm action={setTags} className="mt-4 border-t border-emerald/10 pt-4">
+          <input type="hidden" name="id" value={lead.id} />
+          <span className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+            <Icon name="label" className="text-[18px] text-gold" /> Tags
+          </span>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {tagVocabulary.length === 0 ? (
+              <p className="text-xs text-ink/45">
+                No tags configured yet — add some under Settings → Lists.
+              </p>
+            ) : (
+              tagVocabulary.map((t) => (
+                <label key={t} className="cursor-pointer">
+                  <input type="checkbox" name={`tag-${t}`} defaultChecked={lead.tags.includes(t)} className="peer sr-only" />
+                  <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold text-ink/55 ring-1 ring-inset ring-emerald/15 transition peer-checked:bg-emerald peer-checked:text-cream peer-checked:ring-emerald peer-focus-visible:ring-2 peer-focus-visible:ring-emerald">
+                    {t}
+                  </span>
+                </label>
+              ))
+            )}
+          </div>
+          {tagVocabulary.length > 0 && (
+            <button type="submit" className="mt-3 rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep ring-1 ring-inset ring-emerald/20 transition hover:bg-emerald/5">
+              Save tags
+            </button>
+          )}
         </ActionForm>
       </section>
 

@@ -12,6 +12,7 @@ const row = (over: Partial<LeadRow> = {}): LeadRow => ({
   noteCount: 0,
   assignedTo: null,
   possibleDuplicateOf: null,
+  tags: [],
   createdAtMs: 1_754_300_000_000,
   followUpMs: null,
   ...over,

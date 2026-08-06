@@ -15,6 +15,10 @@ export const applicationSchema = z.object({
   email: z.string().trim().email("Please enter a valid email").max(120).optional().or(z.literal("")),
   role: z.string().trim().min(2, "Please select or enter a role").max(100),
   message: z.string().trim().max(2000).optional().or(z.literal("")),
+  // Teachers increasingly have a portfolio, a blog or a LinkedIn worth reading.
+  // Validated as a URL rather than free text so the admin console can link it
+  // without rendering whatever a stranger typed as a destination.
+  portfolioUrl: z.string().trim().url("Please enter a full link, starting with https://").max(300).optional().or(z.literal("")),
   // Honeypot — bots fill it. Accept any value here and check emptiness after
   // parse: a max(0) constraint would fail validation and return a field error
   // that tells bots exactly which field is the trap.

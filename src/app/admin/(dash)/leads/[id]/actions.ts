@@ -4,7 +4,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
 import { normalizeStage, type LeadType } from "@/lib/leads";
-import { getPrograms, pickFrom } from "@/lib/taxonomy";
+import { getLeadTags, getPrograms, pickFrom } from "@/lib/taxonomy";
 import { isValidStage, stageLabelFor, terminalStages } from "@/lib/pipelines";
 import { resolveFollowUp } from "@/lib/followup";
 import { queueNote } from "@/lib/notes";
@@ -243,6 +243,110 @@ export async function assignLead(formData: FormData): Promise<ActionResult> {
       });
     }
 
+    revalidatePath(`/admin/leads/${id}`);
+  });
+}
+
+/**
+ * Replace a lead's tags.
+ *
+ * Values are checked against the configured vocabulary. Free-text tags were the
+ * alternative, and they rot the same way free-text class sections did:
+ * "Sibling", "sibling" and "Sibling " become three tags, and a filter on any
+ * one of them quietly misses most of the leads it should match.
+ */
+export async function setTags(formData: FormData): Promise<ActionResult> {
+  return attempt("setTags", async () => {
+    const admin = await requireAdmin();
+    const id = String(formData.get("id") ?? "");
+    if (!id) return fail("Missing lead id");
+
+    const vocabulary = await getLeadTags();
+    const chosen = vocabulary.filter((t) => formData.get(`tag-${t}`) === "on");
+
+    const db = getDb();
+    const ref = db.collection("leads").doc(id);
+    const doc = await ref.get();
+    if (!doc.exists) return fail("That lead no longer exists.");
+    const before: string[] = Array.isArray(doc.data()!.tags) ? doc.data()!.tags : [];
+    if (before.length === chosen.length && before.every((t) => chosen.includes(t))) return { ok: true as const };
+
+    const batch = db.batch();
+    batch.update(ref, { tags: chosen, updatedAt: FieldValue.serverTimestamp() });
+    queueAudit(db, batch, {
+      actor: admin.email,
+      action: "lead.tags_changed",
+      entity: { type: "lead", id },
+      summary: chosen.length ? `Tagged: ${chosen.join(", ")}` : "Removed all tags",
+      meta: { before: before.join(" "), after: chosen.join(" ") },
+    });
+    await batch.commit();
+    revalidatePath(`/admin/leads/${id}`);
+  });
+}
+
+/**
+ * Schedule an interview and record a rating.
+ *
+ * Both live on the lead rather than in a separate collection: a candidate has
+ * one interview at a time and one current rating, and a subcollection would buy
+ * history nobody has asked for at the cost of a second read on every open.
+ *
+ * The interview date deliberately reuses followUpDate. The digest, the overdue
+ * query and the attention badge already work off that field — a parallel
+ * "interviewDate" would need all three taught about it, and would compete with
+ * follow-ups for the same attention.
+ */
+export async function scheduleInterview(formData: FormData): Promise<ActionResult> {
+  return attempt("scheduleInterview", async () => {
+    const admin = await requireAdmin();
+    const id = String(formData.get("id") ?? "");
+    if (!id) return fail("Missing lead id");
+
+    const raw = String(formData.get("interviewAt") ?? "").trim();
+    let interviewAt: Date | FieldValue = FieldValue.delete();
+    if (raw) {
+      const d = new Date(raw);
+      if (Number.isNaN(d.getTime())) return fail("That interview time isn't valid.");
+      interviewAt = d;
+    }
+
+    const location = String(formData.get("interviewLocation") ?? "").trim().slice(0, 120);
+    const ratingRaw = Number(formData.get("rating"));
+    // 0 clears the rating; anything outside 1-5 is a malformed submission.
+    const rating = Number.isInteger(ratingRaw) && ratingRaw >= 0 && ratingRaw <= 5 ? ratingRaw : null;
+    if (rating === null) return fail("Rating must be between 1 and 5.");
+
+    const db = getDb();
+    const ref = db.collection("leads").doc(id);
+    const doc = await ref.get();
+    if (!doc.exists) return fail("That candidate no longer exists.");
+
+    const batch = db.batch();
+    batch.update(ref, {
+      interviewAt,
+      interviewLocation: location || null,
+      rating: rating === 0 ? null : rating,
+      // Scheduling an interview is a follow-up: it puts the candidate back in
+      // the digest on the right day instead of relying on someone remembering.
+      ...(raw ? { followUpDate: new Date(raw) } : {}),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    queueNote(db, batch, id, {
+      text: raw
+        ? `Interview scheduled for ${new Date(raw).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}${location ? ` at ${location}` : ""}`
+        : "Interview cleared",
+      author: admin.email,
+      kind: "stage",
+    });
+    queueAudit(db, batch, {
+      actor: admin.email,
+      action: "application.interview_scheduled",
+      entity: { type: "lead", id },
+      summary: raw ? `Scheduled an interview for ${doc.data()!.name ?? "candidate"}` : "Cleared the interview",
+      meta: { interviewAt: raw || null, rating },
+    });
+    await batch.commit();
     revalidatePath(`/admin/leads/${id}`);
   });
 }

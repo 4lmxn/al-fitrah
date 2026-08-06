@@ -76,6 +76,7 @@ export const settingsSchema = z.object({
     manualLeadSources: taxonomy,
     employmentTypes: taxonomy,
     paymentMethods: taxonomy,
+    leadTags: taxonomy,
   }),
 
   attendance: z.object({
@@ -173,6 +174,10 @@ export const DEFAULT_SETTINGS: Settings = {
     manualLeadSources: ["walk-in", "phone", "whatsapp", "referral"],
     employmentTypes: ["Full-time", "Part-time", "Contract", "Volunteer"],
     paymentMethods: ["cash", "upi", "bank transfer", "cheque", "card"],
+    // A fixed vocabulary rather than free text. Typed freely, "Sibling",
+    // "sibling" and "Sibling " are three tags, and a filter on any one of them
+    // quietly misses most of the leads it should match.
+    leadTags: ["Sibling", "Referred", "Priority", "Financial aid", "Relocating", "Revisit later"],
   },
   attendance: {
     statuses: [

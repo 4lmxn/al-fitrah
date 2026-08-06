@@ -16,7 +16,7 @@ export default async function ParentSignInPage() {
         </span>
         <h1 className="text-center text-2xl text-emerald-deep">Parent sign in</h1>
         <p className="mt-2 text-center text-sm text-ink/60">
-          {school.name} — enter the mobile number the school has on record.
+          {school.name} — sign in with the email or mobile number the school has on record.
         </p>
         <ParentSignIn />
       </div>

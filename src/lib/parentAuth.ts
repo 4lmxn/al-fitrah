@@ -9,11 +9,19 @@ import { COLLECTION as STUDENTS } from "@/lib/students";
 /**
  * Parent identity.
  *
- * Parents sign in with a phone number and a one-time code. Phone rather than
- * email because it is what the school already holds for every family, what the
- * enquiry form already collects, and what duplicate detection already keys on —
- * adding an email login would mean asking 200 families for a second identifier
- * the school does not have.
+ * Parents sign in by EMAIL LINK where the school has an email for them, and by
+ * phone code where it does not.
+ *
+ * Email is the default because it is free: Firebase bills every verification
+ * SMS, with no free allowance, and India sits in one of the more expensive
+ * bands. Email sign-in falls under the 50,000 monthly-active-user tier that
+ * costs nothing.
+ *
+ * Phone is kept as the fallback because the school's own data requires it. A
+ * phone number is mandatory on the enquiry form, the CSV import and every
+ * guardian record; an email is optional in all three. Email-only sign-in would
+ * lock out every family that never gave one — which, in the records as they
+ * stand, is most of them.
  *
  * THE RULE THIS FILE EXISTS TO ENFORCE: which children a signed-in parent may
  * see is resolved here, server-side, from the verified phone claim in their
@@ -27,7 +35,7 @@ export const PARENT_SESSION_COOKIE = "__parent_session";
 export const PARENT_SESSION_MAX_AGE_MS = 60 * 60 * 24 * 14 * 1000; // 14 days
 
 export type ParentSession = {
-  /** Normalised digits, matching `students.guardianPhones`. */
+  /** The credential this parent signed in with — an email, or normalised digits. */
   phone: string;
   /** Every student this phone is a guardian of. Possibly several — siblings. */
   studentIds: string[];
@@ -41,6 +49,17 @@ export type ParentSession = {
  * objects — without it this would be a full-collection scan on every page a
  * parent opens.
  */
+export async function studentsForEmail(email: string): Promise<string[]> {
+  const key = email.trim().toLowerCase();
+  if (!key) return [];
+  const snap = await getDb()
+    .collection(STUDENTS)
+    .where("guardianEmails", "array-contains", key)
+    .limit(20)
+    .get();
+  return snap.docs.map((d) => d.id);
+}
+
 export async function studentsForPhone(phone: string): Promise<string[]> {
   const key = normalizeIndianPhone(phone);
   if (!key) return [];
@@ -72,12 +91,12 @@ export async function createParentSession(
     return { ok: false, status: 401, error: "That sign-in didn't work. Please request a new code." };
   }
 
-  const phone = normalizeIndianPhone(decoded.phone_number ?? "");
-  if (!phone) {
-    return { ok: false, status: 400, error: "Please sign in with a phone number." };
+  const identity = await resolveIdentity(decoded);
+  if (!identity) {
+    return { ok: false, status: 400, error: "That sign-in didn't carry an email or a phone number." };
   }
 
-  const studentIds = await studentsForPhone(phone);
+  const studentIds = identity.studentIds;
   if (studentIds.length === 0) {
     // Deliberately does not reveal whether the number is unknown to the school
     // or simply has no child enrolled — both are the same answer to the caller.
@@ -89,7 +108,27 @@ export async function createParentSession(
   }
 
   const cookie = await auth.createSessionCookie(idToken, { expiresIn: PARENT_SESSION_MAX_AGE_MS });
-  return { ok: true, cookie, phone };
+  return { ok: true, cookie, phone: identity.key };
+}
+
+/**
+ * Map a verified token to the students it may see.
+ *
+ * Email is checked first because it is the no-cost path and the one most
+ * families will use; phone is the fallback for families with no email on
+ * record. Either way the answer comes from the school's records, not from the
+ * fact that someone controls an inbox or a handset.
+ */
+async function resolveIdentity(
+  decoded: { email?: string; phone_number?: string },
+): Promise<{ key: string; studentIds: string[] } | null> {
+  const email = (decoded.email ?? "").trim().toLowerCase();
+  if (email) return { key: email, studentIds: await studentsForEmail(email) };
+
+  const phone = normalizeIndianPhone(decoded.phone_number ?? "");
+  if (phone) return { key: phone, studentIds: await studentsForPhone(phone) };
+
+  return null;
 }
 
 /**
@@ -107,20 +146,16 @@ export const getParentSession = cache(async (): Promise<ParentSession | null> =>
   const value = store.get(PARENT_SESSION_COOKIE)?.value;
   if (!value) return null;
 
-  let phone: string | null;
   try {
     // checkRevoked: a parent signing out, or the school revoking access, must
     // take effect immediately rather than at cookie expiry.
     const decoded = await getAuthAdmin().verifySessionCookie(value, true);
-    phone = normalizeIndianPhone(decoded.phone_number ?? "");
+    const identity = await resolveIdentity(decoded);
+    if (!identity || identity.studentIds.length === 0) return null;
+    return { phone: identity.key, studentIds: identity.studentIds };
   } catch {
     return null;
   }
-  if (!phone) return null;
-
-  const studentIds = await studentsForPhone(phone);
-  if (studentIds.length === 0) return null;
-  return { phone, studentIds };
 });
 
 /** Gate for every parent page. Redirects to the portal sign-in when absent. */

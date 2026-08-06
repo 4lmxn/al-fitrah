@@ -80,6 +80,8 @@ export type Student = {
    * so the two cannot drift.
    */
   guardianPhones: string[];
+  /** Normalised guardian emails, flat, for the no-cost email sign-in path. */
+  guardianEmails: string[];
   emergencyContact: { name: string; phone: string; relationship: string } | null;
   medical: Medical | null;
   /** The enquiry this student came from, when there was one. */
@@ -113,6 +115,7 @@ export function toStudent(d: FirebaseFirestore.QueryDocumentSnapshot | FirebaseF
     status: STUDENT_STATUSES.includes(x.status) ? x.status : "enrolled",
     guardians: Array.isArray(x.guardians) ? x.guardians : [],
     guardianPhones: Array.isArray(x.guardianPhones) ? x.guardianPhones : [],
+    guardianEmails: Array.isArray(x.guardianEmails) ? x.guardianEmails : [],
     emergencyContact: x.emergencyContact ?? null,
     medical: x.medical ?? null,
     leadId: x.leadId ?? null,
@@ -264,6 +267,13 @@ export function nextAdmissionNumber(year: string, highest: string | null): strin
  * this for `guardianPhones`, so a guardian added without a login, or a login
  * surviving a removed guardian, cannot happen.
  */
+export function guardianEmailsFrom(guardians: { email?: string | null }[]): string[] {
+  const keys = guardians
+    .map((g) => (g.email ?? "").trim().toLowerCase())
+    .filter(Boolean);
+  return [...new Set(keys)];
+}
+
 export function guardianPhonesFrom(guardians: { phone?: string | null }[]): string[] {
   const keys = guardians
     .map((g) => normalizeIndianPhone(g.phone ?? ""))

@@ -389,6 +389,21 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "//": "Parent sign-in by email: which students an address is a guardian of.",
+      "collectionGroup": "students",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "guardianEmails",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "admissionNumber",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []

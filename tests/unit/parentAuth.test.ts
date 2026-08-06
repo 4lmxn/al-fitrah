@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { guardianPhonesFrom } from "@/lib/students";
+import { guardianEmailsFrom, guardianPhonesFrom } from "@/lib/students";
 import { normalizeIndianPhone } from "@/lib/phone";
 
 describe("guardianPhonesFrom", () => {
@@ -29,6 +29,30 @@ describe("guardianPhonesFrom", () => {
 
   it("returns an empty list for no guardians", () => {
     expect(guardianPhonesFrom([])).toEqual([]);
+  });
+});
+
+describe("guardianEmailsFrom", () => {
+  it("lowercases so case typed by the office does not block sign-in", () => {
+    // The office records "Ayesha@Example.com"; the parent signs in as
+    // "ayesha@example.com". Both must resolve or a family is locked out.
+    expect(guardianEmailsFrom([{ email: "Ayesha@Example.com" }])).toEqual(["ayesha@example.com"]);
+  });
+
+  it("collapses duplicates across casing", () => {
+    expect(guardianEmailsFrom([{ email: "a@b.com" }, { email: "A@B.COM" }])).toEqual(["a@b.com"]);
+  });
+
+  it("drops guardians with no email rather than storing empties", () => {
+    // Most families give no email — an empty string in an array-contains index
+    // would match a query for "", which nobody should be able to sign in with.
+    expect(guardianEmailsFrom([{ email: "" }, { email: null }])).toEqual([]);
+  });
+
+  it("leaves a family with no email reachable only by phone", () => {
+    const guardians = [{ name: "P", phone: "9876543210", email: null }];
+    expect(guardianEmailsFrom(guardians)).toEqual([]);
+    expect(guardianPhonesFrom(guardians)).toEqual(["919876543210"]);
   });
 });
 

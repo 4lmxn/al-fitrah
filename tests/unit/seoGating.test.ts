@@ -50,11 +50,13 @@ describe("crawl rules once the site is live", () => {
     expect(paths.some((p) => p.startsWith("/api"))).toBe(false);
   });
 
-  it("blocks admin and api in robots", async () => {
+  it("blocks the private surfaces in robots", async () => {
     const { robots } = await loadWith("0");
     const rules = robots.rules as { allow: string; disallow: string[] };
     expect(rules.allow).toBe("/");
-    expect(rules.disallow).toEqual(["/admin", "/api"]);
+    // /portal holds children's fee and attendance records behind a parent
+    // login. Crawlers get nothing useful from it and it must never be indexed.
+    expect(rules.disallow).toEqual(["/admin", "/api", "/portal"]);
   });
 
   it("treats an unset flag as live, not gated", async () => {

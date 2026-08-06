@@ -8,6 +8,7 @@ import { COLLECTION, academicYearFor, nextAdmissionNumber } from "@/lib/students
 import { parseStudentCsv, type ImportRow } from "@/lib/studentImport";
 import { recordAudit } from "@/lib/audit";
 import { getClassSections, getPrograms } from "@/lib/taxonomy";
+import { guardianPhonesFrom } from "@/lib/students";
 
 // Firestore batches cap at 500 writes. Each student is one write, so this is
 // well inside it — but the cap is why the import commits in chunks rather than
@@ -130,6 +131,7 @@ export async function importStudents(formData: FormData): Promise<ImportOutcome>
             isPrimary: true,
           },
         ],
+        guardianPhones: guardianPhonesFrom([{ phone: row.guardianPhone }]),
         emergencyContact: null,
         medical: null,
         // Imported children have no enquiry behind them, which is the honest

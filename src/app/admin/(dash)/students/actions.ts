@@ -6,6 +6,7 @@ import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { getClassSections, getPrograms, pickFrom } from "@/lib/taxonomy";
+import { guardianPhonesFrom } from "@/lib/students";
 import { queueNote } from "@/lib/notes";
 import { recordAudit } from "@/lib/audit";
 import {
@@ -89,6 +90,15 @@ export async function createStudentFromLead(formData: FormData): Promise<ActionR
       );
 
       const leadData = lead.data()!;
+      const guardians = [
+        {
+          name: leadData.parentName ?? leadData.name ?? "—",
+          phone: leadData.phone ?? "",
+          email: leadData.email ?? null,
+          relationship: "Parent",
+          isPrimary: true,
+        },
+      ];
       const studentRef = db.collection(COLLECTION).doc();
       studentId = studentRef.id;
 
@@ -103,15 +113,10 @@ export async function createStudentFromLead(formData: FormData): Promise<ActionR
         status: "enrolled" satisfies StudentStatus,
         // Carried over from the enquiry so staff don't retype what a parent
         // already gave us. Editable on the student record afterwards.
-        guardians: [
-          {
-            name: leadData.parentName ?? leadData.name ?? "—",
-            phone: leadData.phone ?? "",
-            email: leadData.email ?? null,
-            relationship: "Parent",
-            isPrimary: true,
-          },
-        ],
+        guardians,
+        // Written together with guardians so a parent can sign in the moment a
+        // child is enrolled, and so the two can never disagree.
+        guardianPhones: guardianPhonesFrom(guardians),
         emergencyContact: null,
         medical: null,
         // Explicit zeros rather than an absent object: the dues list reads this

@@ -374,6 +374,21 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "//": "Parent sign-in: which students a phone number is a guardian of.",
+      "collectionGroup": "students",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "guardianPhones",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "admissionNumber",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []

@@ -10,7 +10,7 @@ export default function robots(): MetadataRoute.Robots {
   // page we do want indexed while gated stays crawlable.
   const rules = COMING_SOON
     ? { userAgent: "*", allow: "/$", disallow: "/" }
-    : { userAgent: "*", allow: "/", disallow: ["/admin", "/api"] };
+    : { userAgent: "*", allow: "/", disallow: ["/admin", "/api", "/portal"] };
 
   return {
     rules,

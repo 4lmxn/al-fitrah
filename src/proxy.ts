@@ -17,6 +17,9 @@ export function proxy(request: NextRequest) {
   if (
     pathname === "/coming-soon" ||
     pathname.startsWith("/admin") ||
+    // Parents of enrolled children need the portal even while the public site
+    // is still behind the holding page.
+    pathname.startsWith("/portal") ||
     pathname.startsWith("/api")
   ) {
     return NextResponse.next();

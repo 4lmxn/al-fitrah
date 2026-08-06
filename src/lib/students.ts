@@ -2,6 +2,7 @@ import "server-only";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
 import { feesOf, type StudentFees } from "@/lib/fees";
+import { normalizeIndianPhone } from "@/lib/phone";
 
 /**
  * Students.
@@ -70,6 +71,15 @@ export type Student = {
   academicYear: string;
   status: StudentStatus;
   guardians: Guardian[];
+  /**
+   * Normalised guardian numbers, flat, for parent sign-in.
+   *
+   * Duplicates what is inside `guardians[]` on purpose: Firestore cannot match
+   * a field inside an array of objects, so without this every parent page load
+   * would scan the whole roll. Written by the same code that writes guardians,
+   * so the two cannot drift.
+   */
+  guardianPhones: string[];
   emergencyContact: { name: string; phone: string; relationship: string } | null;
   medical: Medical | null;
   /** The enquiry this student came from, when there was one. */
@@ -102,6 +112,7 @@ export function toStudent(d: FirebaseFirestore.QueryDocumentSnapshot | FirebaseF
     academicYear: x.academicYear ?? "",
     status: STUDENT_STATUSES.includes(x.status) ? x.status : "enrolled",
     guardians: Array.isArray(x.guardians) ? x.guardians : [],
+    guardianPhones: Array.isArray(x.guardianPhones) ? x.guardianPhones : [],
     emergencyContact: x.emergencyContact ?? null,
     medical: x.medical ?? null,
     leadId: x.leadId ?? null,
@@ -244,4 +255,18 @@ export function nextAdmissionNumber(year: string, highest: string | null): strin
   const seq = highest ? Number(highest.split("-").pop()) : 0;
   const next = Number.isFinite(seq) ? seq + 1 : 1;
   return `AF-${year.split("-")[0]}-${String(next).padStart(4, "0")}`;
+}
+
+/**
+ * Derive the flat, normalised phone list from a guardian array.
+ *
+ * Single source for the duplication: anything that writes `guardians` calls
+ * this for `guardianPhones`, so a guardian added without a login, or a login
+ * surviving a removed guardian, cannot happen.
+ */
+export function guardianPhonesFrom(guardians: { phone?: string | null }[]): string[] {
+  const keys = guardians
+    .map((g) => normalizeIndianPhone(g.phone ?? ""))
+    .filter((v): v is string => Boolean(v));
+  return [...new Set(keys)];
 }

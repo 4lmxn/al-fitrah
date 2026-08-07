@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { parseRupees } from "@/lib/money";
 import { PAYMENTS, STUDENTS, nextReceiptNumber, type PaymentMethod } from "@/lib/fees";
+import { COLLECTION as FEE_STRUCTURES, netTotalPaise, toStructure } from "@/lib/feeStructures";
 import { getPaymentMethods, pickFrom } from "@/lib/taxonomy";
 import { queueAudit } from "@/lib/audit";
 import { formatPaise } from "@/lib/money";
@@ -29,6 +30,11 @@ export async function setFeeTotal(formData: FormData): Promise<ActionResult> {
     const batch = db.batch();
     batch.update(db.collection(STUDENTS).doc(id), {
       "fees.totalPaise": totalPaise,
+      // A hand-typed total is no longer the price list's number, and saying it
+      // still is would make a later "re-apply to the class" silently undo the
+      // amount someone deliberately typed here.
+      "fees.structureId": FieldValue.delete(),
+      "fees.structureName": FieldValue.delete(),
       updatedAt: FieldValue.serverTimestamp(),
     });
     queueAudit(db, batch, {
@@ -41,6 +47,68 @@ export async function setFeeTotal(formData: FormData): Promise<ActionResult> {
     await batch.commit();
 
     console.log(`fee total set student=${id} paise=${totalPaise} by=${admin.email}`);
+    revalidatePath(`/admin/students/${id}`);
+    revalidatePath("/admin/fees");
+  });
+}
+
+/**
+ * Put one child on a fee structure, with an optional concession.
+ *
+ * The amount is copied onto the student rather than referenced (see
+ * lib/feeStructures for why). The discount is stored alongside it so the
+ * concession survives a re-apply when the structure's amount is corrected —
+ * otherwise every price revision would quietly cancel every family's discount.
+ */
+export async function assignStructure(formData: FormData): Promise<ActionResult> {
+  return attempt("assignStructure", async () => {
+    const admin = await requireAdmin();
+    const id = clean(formData.get("id"), 60);
+    if (!id) return fail("Missing student id");
+
+    const structureId = clean(formData.get("structureId"), 60);
+    if (!structureId) return fail("Pick a fee to apply.");
+
+    const discountRaw = clean(formData.get("discount"), 20);
+    const discountPaise = discountRaw ? parseRupees(discountRaw) : 0;
+    if (discountPaise === null) return fail("Enter a discount like 2000, or leave it blank.");
+
+    const db = getDb();
+    const doc = await db.collection(FEE_STRUCTURES).doc(structureId).get();
+    if (!doc.exists) return fail("That fee no longer exists.");
+    const structure = toStructure(doc);
+
+    if (discountPaise > structure.amountPaise) {
+      return fail(`A discount can't exceed the fee of ${formatPaise(structure.amountPaise)}.`);
+    }
+
+    const totalPaise = netTotalPaise(structure.amountPaise, discountPaise);
+    const reason = clean(formData.get("discountReason"), 200);
+
+    const batch = db.batch();
+    batch.update(db.collection(STUDENTS).doc(id), {
+      "fees.totalPaise": totalPaise,
+      "fees.structureId": structureId,
+      "fees.structureName": structure.name,
+      "fees.discountPaise": discountPaise,
+      // Written only when there is one. An empty string here would be a
+      // placeholder in an indexed field, which is the pattern this codebase
+      // keeps removing (cost invariant 5).
+      ...(reason ? { "fees.discountReason": reason } : { "fees.discountReason": FieldValue.delete() }),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    queueAudit(db, batch, {
+      actor: admin.email,
+      action: "fee.structure_assigned",
+      entity: { type: "student", id },
+      summary: discountPaise
+        ? `Put on “${structure.name}” at ${formatPaise(totalPaise)} (${formatPaise(discountPaise)} off)`
+        : `Put on “${structure.name}” at ${formatPaise(totalPaise)}`,
+      meta: { structureId, totalPaise, discountPaise },
+    });
+    await batch.commit();
+
+    console.log(`fee structure assigned student=${id} structure=${structureId} by=${admin.email}`);
     revalidatePath(`/admin/students/${id}`);
     revalidatePath("/admin/fees");
   });

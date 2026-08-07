@@ -247,6 +247,22 @@ describe("money invariant: the fee ledger is append-only", () => {
   });
 });
 
+describe("cost invariant: the price list is never fetched unbounded", () => {
+  // listStructures() is read on every student page load. A bare collection read
+  // there makes the cost of opening one child's record grow with the number of
+  // fees the school has ever defined, which is the same linear curve the leads
+  // inbox was rebuilt to remove.
+  const structures = files.find((f) => f.path.endsWith(join("lib", "feeStructures.ts")))!;
+
+  it("every query is bounded or a single document", () => {
+    const bare = structures.text
+      .split(/\n\s*\n/)
+      .filter((block) => /\.get\(\)/.test(block))
+      .filter((block) => !/\.limit\(|\.count\(\)|\.doc\(/.test(block));
+    expect(bare).toEqual([]);
+  });
+});
+
 describe("consistency invariant: one implementation per rule", () => {
   // These were each written out two or three times. The failure mode is silent:
   // fix one copy and the others keep the bug, and a wrong country-code prefix

@@ -59,6 +59,16 @@ export type StudentFees = {
   promiseNote: string | null;
   /** Stops two staff members messaging the same family the same morning. */
   lastRemindedMs: number | null;
+  /**
+   * Which price list this total came from, when it came from one. The amount is
+   * copied rather than looked up (see lib/feeStructures), so this is provenance
+   * — what to re-apply after a revision — not the source of the number.
+   */
+  structureId: string | null;
+  structureName: string | null;
+  /** Concession applied at assignment. Already subtracted from totalPaise. */
+  discountPaise: number;
+  discountReason: string | null;
 };
 
 const ms = (v: unknown): number | null =>
@@ -75,6 +85,10 @@ export function feesOf(data: FirebaseFirestore.DocumentData | undefined): Studen
     promisedDateMs: ms(data?.fees?.promisedDate),
     promiseNote: data?.fees?.promiseNote ?? null,
     lastRemindedMs: ms(data?.fees?.lastRemindedAt),
+    structureId: data?.fees?.structureId ?? null,
+    structureName: data?.fees?.structureName ?? null,
+    discountPaise: Number(data?.fees?.discountPaise) || 0,
+    discountReason: data?.fees?.discountReason ?? null,
   };
 }
 

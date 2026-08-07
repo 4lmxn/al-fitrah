@@ -12,6 +12,7 @@ import { StudentPhoto } from "@/components/admin/StudentPhoto";
 import { StudentDocuments } from "@/components/admin/StudentDocuments";
 import { listDocuments } from "@/lib/studentDocuments";
 import { requireAdmin } from "@/lib/adminAuth";
+import { listStructures } from "@/lib/feeStructures";
 
 export const dynamic = "force-dynamic";
 
@@ -54,9 +55,9 @@ export default async function StudentDetail({
   // Independent reads — the payment ledger is keyed by student id, not by
   // anything on the student document, so waiting for one before the other only
   // added a round trip.
-  const [student, payments, programs, sections, methods, statuses, admin] = await Promise.all([
+  const [student, payments, programs, sections, methods, statuses, admin, structures] = await Promise.all([
     getStudent(id), listPayments(id), getPrograms(), getClassSections(), getPaymentMethods(),
-    getAttendanceStatuses(), requireAdmin(),
+    getAttendanceStatuses(), requireAdmin(), listStructures({ activeOnly: true }),
   ]);
   if (!student) notFound();
 
@@ -230,7 +231,13 @@ export default async function StudentDetail({
       </section>
 
       {tab === "fees" && (
-        <FeesPanel studentId={student.id} fees={student.fees} payments={payments} methods={methods} />
+        <FeesPanel
+          studentId={student.id}
+          fees={student.fees}
+          payments={payments}
+          methods={methods}
+          structures={structures}
+        />
       )}
 
       {/* One form, three sections. They stay together because they save

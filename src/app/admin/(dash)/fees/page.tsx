@@ -149,12 +149,21 @@ export default async function FeesPage({
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Finance</p>
-        <h1 className="mt-1 font-display text-3xl text-emerald-deep">Fee collection</h1>
-        <p className="mt-1 text-sm text-ink/55">
-          Grouped by what to do about each family, not just by what they owe. Record payments on a child&apos;s record.
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Finance</p>
+          <h1 className="mt-1 font-display text-3xl text-emerald-deep">Fee collection</h1>
+          <p className="mt-1 text-sm text-ink/55">
+            Grouped by what to do about each family, not just by what they owe. Record payments on a
+            child&apos;s record.
+          </p>
+        </div>
+        <Link
+          href="/admin/fees/structures"
+          className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep shadow-soft ring-1 ring-emerald/10 transition hover:bg-emerald/5"
+        >
+          <Icon name="receipt_long" className="text-[18px]" /> Fee structures
+        </Link>
       </div>
 
       <div className="mt-7 grid gap-4 sm:grid-cols-3">

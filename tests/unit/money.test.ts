@@ -90,6 +90,10 @@ describe("feesOf", () => {
       promisedDateMs: null,
       promiseNote: null,
       lastRemindedMs: null,
+      structureId: null,
+      structureName: null,
+      discountPaise: 0,
+      discountReason: null,
     };
     expect(feesOf(undefined)).toEqual(empty);
     expect(feesOf({})).toEqual(empty);
@@ -100,6 +104,26 @@ describe("feesOf", () => {
     expect(
       feesOf({ fees: { totalPaise: 100, paidPaise: 0, dueDate: ts(1_700_000_000_000), promiseNote: "after salary" } }),
     ).toMatchObject({ dueDateMs: 1_700_000_000_000, promisedDateMs: null, promiseNote: "after salary" });
+  });
+
+  it("reports no structure when the fee was typed in by hand", () => {
+    // An absent structure must read as absent, not as an empty string — the
+    // re-apply path keys off structureId, and "" would match nothing while
+    // still looking like an assignment in the UI.
+    expect(feesOf({ fees: { totalPaise: 1000 } })).toMatchObject({
+      structureId: null,
+      structureName: null,
+      discountPaise: 0,
+      discountReason: null,
+    });
+  });
+
+  it("carries the assignment through when there is one", () => {
+    expect(
+      feesOf({
+        fees: { totalPaise: 2_300_000, paidPaise: 0, structureId: "s1", structureName: "Nursery", discountPaise: 200_000, discountReason: "Sibling" },
+      }),
+    ).toMatchObject({ structureId: "s1", structureName: "Nursery", discountPaise: 200_000, discountReason: "Sibling" });
   });
 
   it("reports an overpayment as a negative balance", () => {

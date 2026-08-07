@@ -37,6 +37,11 @@ service cloud.firestore {
     match /resources/{doc=**} {
       allow read, write: if false;
     }
+    // The price list. Server-only: a client able to write here could restate
+    // what the school charges, and every fee applied from it afterwards.
+    match /feeStructures/{doc=**} {
+      allow read, write: if false;
+    }
     // The audit log. Server-only, and append-only in application code — a
     // client able to write here could forge or erase the record of a change.
     match /auditLog/{doc=**} {

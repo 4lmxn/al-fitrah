@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { formatPaise } from "@/lib/money";
 import { type Payment, type StudentFees } from "@/lib/fees";
-import { setFeeTotal, recordPayment, setFeeDueDate, logFeePromise } from "@/app/admin/(dash)/students/fees-actions";
+import { type FeeStructure } from "@/lib/feeStructures";
+import {
+  setFeeTotal,
+  recordPayment,
+  setFeeDueDate,
+  logFeePromise,
+  assignStructure,
+} from "@/app/admin/(dash)/students/fees-actions";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { Icon } from "@/components/ui/Icon";
 import { feeBucket, FEE_BUCKET_LABEL } from "@/lib/feeStatus";
@@ -25,12 +32,15 @@ export function FeesPanel({
   fees,
   payments,
   methods,
+  structures,
 }: {
   studentId: string;
   fees: StudentFees;
   payments: Payment[];
   /** Configured payment methods — settings are not readable from a client component. */
   methods: string[];
+  /** Fees currently in use, for the assignment picker. */
+  structures: FeeStructure[];
 }) {
   const settled = fees.balancePaise <= 0 && fees.totalPaise > 0;
   const bucket = feeBucket(fees);
@@ -72,6 +82,13 @@ export function FeesPanel({
         <div className="bg-white p-4">
           <dt className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">Total for the year</dt>
           <dd className="mt-1 tabular-nums text-ink/85">{formatPaise(fees.totalPaise)}</dd>
+          {fees.structureName && (
+            <dd className="mt-1 text-[11px] text-ink/45">
+              {fees.structureName}
+              {fees.discountPaise > 0 && ` · ${formatPaise(fees.discountPaise)} off`}
+              {fees.discountReason && ` (${fees.discountReason})`}
+            </dd>
+          )}
         </div>
         <div className="bg-white p-4">
           <dt className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">Paid</dt>
@@ -87,10 +104,62 @@ export function FeesPanel({
         </div>
       </dl>
 
+      {structures.length > 0 && (
+        <ActionForm action={assignStructure} className="mt-4 flex flex-wrap items-end gap-2">
+          <input type="hidden" name="id" value={studentId} />
+          <label className="block">
+            <span className={label}>Fee structure</span>
+            <select name="structureId" defaultValue={fees.structureId ?? ""} className={`${field} w-56`}>
+              <option value="" disabled>
+                Choose a fee…
+              </option>
+              {structures.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name} — {formatPaise(s.amountPaise)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <span className={label}>Concession (₹)</span>
+            <input
+              name="discount"
+              inputMode="decimal"
+              defaultValue={fees.discountPaise ? (fees.discountPaise / 100).toFixed(2) : ""}
+              placeholder="0"
+              className={`${field} w-28`}
+            />
+          </label>
+          <label className="block">
+            <span className={label}>Reason</span>
+            <input
+              name="discountReason"
+              defaultValue={fees.discountReason ?? ""}
+              placeholder="Sibling discount"
+              className={`${field} w-52`}
+            />
+          </label>
+          <button
+            type="submit"
+            className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep ring-1 ring-emerald/20 transition hover:bg-emerald/5"
+          >
+            Apply fee
+          </button>
+          <p className="w-full text-[11px] text-ink/45">
+            Sets the total to the fee less the concession.{" "}
+            <Link href="/admin/fees/structures" className="font-semibold text-emerald hover:text-emerald-deep">
+              Manage fee structures
+            </Link>
+          </p>
+        </ActionForm>
+      )}
+
       <ActionForm action={setFeeTotal} className="mt-4 flex flex-wrap items-end gap-2">
         <input type="hidden" name="id" value={studentId} />
         <label className="block">
-          <span className={label}>Set total for the year (₹)</span>
+          <span className={label}>
+            {structures.length > 0 ? "Or set a one-off total (₹)" : "Set total for the year (₹)"}
+          </span>
           <input
             name="total"
             inputMode="decimal"

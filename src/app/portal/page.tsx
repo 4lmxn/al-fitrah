@@ -65,6 +65,20 @@ export default async function PortalPage() {
             </li>
           ))}
         </ul>
+
+        <Link
+          href="/portal/resources"
+          className="mt-4 flex items-center gap-4 rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft transition hover:shadow-lift"
+        >
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-emerald/8 text-emerald-deep">
+            <Icon name="folder_shared" className="text-[22px]" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-display text-lg text-emerald-deep">Resources</span>
+            <span className="block text-xs text-ink/45">Newsletters, forms and worksheets</span>
+          </span>
+          <Icon name="arrow_forward" className="text-[18px] text-emerald" />
+        </Link>
       </main>
     </div>
   );

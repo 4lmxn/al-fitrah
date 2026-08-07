@@ -13,6 +13,7 @@ const routes: { path: string; priority: number; changeFrequency: MetadataRoute.S
   { path: "/campus-life", priority: 0.7, changeFrequency: "monthly" },
   { path: "/news", priority: 0.7, changeFrequency: "weekly" },
   { path: "/parent-resources", priority: 0.6, changeFrequency: "monthly" },
+  { path: "/resources", priority: 0.5, changeFrequency: "weekly" },
   { path: "/faq", priority: 0.6, changeFrequency: "monthly" },
   { path: "/careers", priority: 0.5, changeFrequency: "monthly" },
   { path: "/contact", priority: 0.8, changeFrequency: "monthly" },

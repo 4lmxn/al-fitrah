@@ -51,6 +51,21 @@ export async function deleteObject(path: string): Promise<void> {
   await getBucket().file(path).delete({ ignoreNotFound: true });
 }
 
+/**
+ * Move an object between prefixes.
+ *
+ * Exists for the resource centre, where the prefix IS the permission: a file
+ * shared publicly lives under `content/` and is world-readable, and one shared
+ * with parents lives under `resources/` and is not. Un-publishing therefore has
+ * to relocate the bytes. Leaving them behind would keep the old URL working for
+ * anyone who ever saw it — the file would be "private" everywhere except where
+ * it actually is.
+ */
+export async function moveObject(from: string, to: string): Promise<void> {
+  if (from === to) return;
+  await getBucket().file(from).move(to);
+}
+
 // ── Student photos ──────────────────────────────────────────────────────────
 
 /**
@@ -109,6 +124,87 @@ export async function uploadStudentDocument(
     metadata: { cacheControl: "private, max-age=0" },
   });
   return { path };
+}
+
+// ── Resource centre files ───────────────────────────────────────────────────
+
+export const MAX_RESOURCE_BYTES = 20 * 1024 * 1024;
+
+/**
+ * What staff may upload.
+ *
+ * An allowlist, not a blocklist, and deliberately without HTML or SVG. Both are
+ * documents a browser will execute, and a public resource is served from a URL
+ * on Google's storage domain with the type we record — an uploaded page that
+ * runs script is a real hazard, not a theoretical one. Everything here is inert
+ * when opened, or opens in an application rather than the browser.
+ */
+export const ACCEPTED_RESOURCE_TYPES: Record<string, string> = {
+  "application/pdf": "PDF",
+  "image/jpeg": "JPG",
+  "image/png": "PNG",
+  "image/webp": "WebP",
+  "application/msword": "DOC",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "DOCX",
+  "application/vnd.ms-excel": "XLS",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "XLSX",
+  "application/vnd.ms-powerpoint": "PPT",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation": "PPTX",
+  "text/plain": "TXT",
+  "application/zip": "ZIP",
+  "audio/mpeg": "MP3",
+  "video/mp4": "MP4",
+};
+
+export function validateResourceFile(
+  file: { type: string; size: number },
+): { ok: true } | { ok: false; error: string } {
+  if (!file.size) return { ok: false, error: "That file looks empty." };
+  if (!ACCEPTED_RESOURCE_TYPES[file.type]) {
+    return { ok: false, error: "Use a PDF, image, Office document, text file, ZIP, MP3 or MP4." };
+  }
+  if (file.size > MAX_RESOURCE_BYTES) {
+    return { ok: false, error: "Files must be 20 MB or smaller." };
+  }
+  return { ok: true };
+}
+
+/**
+ * Where a resource's bytes belong, given who it is shared with.
+ *
+ * `content/` is world-readable by the Storage rules; everything else is closed.
+ * So this function, not a field, is what makes a file public — which means the
+ * question "is this file reachable without a login" has exactly one answer, and
+ * it is the one the storage rules enforce.
+ */
+export function resourceStoragePath(id: string, fileName: string, isPublic: boolean): string {
+  const safe = sanitizeFilename(fileName);
+  return isPublic ? `content/resources/${id}/${safe}` : `resources/${id}/${safe}`;
+}
+
+export function publicUrlFor(path: string): string {
+  return `https://firebasestorage.googleapis.com/v0/b/${getBucket().name}/o/${encodeURIComponent(path)}?alt=media`;
+}
+
+export async function uploadResource(
+  path: string,
+  file: { buffer: Buffer; contentType: string; fileName: string },
+): Promise<void> {
+  const isPublic = path.startsWith("content/");
+  await getBucket().file(path).save(file.buffer, {
+    contentType: file.contentType,
+    resumable: false,
+    metadata: {
+      // Public files are immutable at their path (the id and name are in it),
+      // so they cache hard. Private ones are streamed through a route that sets
+      // its own headers, and must never be held by an intermediary.
+      cacheControl: isPublic ? "public, max-age=3600" : "private, max-age=0",
+      // Forces a download rather than an inline render even for types a browser
+      // would happily display, so a public file can never be pointed at as a
+      // page hosted under the school's name.
+      contentDisposition: `attachment; filename="${sanitizeFilename(file.fileName)}"`,
+    },
+  });
 }
 
 // ── Public content images (news / events) ───────────────────────────────────

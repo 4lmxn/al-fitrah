@@ -29,23 +29,36 @@ export async function createSession(
   return { ok: true, cookie, email: decoded.email! };
 }
 
-// Auth gate for every admin page, server action, and the data layer.
-// Redirects (rather than throws) so a stale session lands on the login page
-// from any entry point. Wrapped in React cache() so a page + its data-layer
-// calls verify the session cookie once per request, not once per call.
-export const requireAdmin = cache(async (): Promise<{ email: string; role: Role }> => {
+/**
+ * The signed-in admin, or null.
+ *
+ * For the places where not being an admin is an ordinary outcome rather than a
+ * mistake — the resource download route serves parents and staff from the same
+ * URL, and redirecting a parent to the admin login would be nonsense. Every
+ * page and action wants requireAdmin() below instead.
+ *
+ * Wrapped in React cache() so a request verifies the session cookie once.
+ */
+export const getAdmin = cache(async (): Promise<{ email: string; role: Role } | null> => {
   const store = await cookies();
   const value = store.get(SESSION_COOKIE)?.value;
-  if (!value) redirect("/admin/login");
-  let email: string | undefined;
+  if (!value) return null;
   try {
     const decoded = await getAuthAdmin().verifySessionCookie(value, true);
-    email = decoded.email;
+    if (!isAllowed(decoded.email)) return null;
+    return { email: decoded.email!, role: roleFor(decoded.email) };
   } catch {
-    redirect("/admin/login");
+    return null;
   }
-  if (!isAllowed(email)) redirect("/admin/login");
-  return { email: email!, role: roleFor(email) };
+});
+
+// Auth gate for every admin page, server action, and the data layer.
+// Redirects (rather than throws) so a stale session lands on the login page
+// from any entry point.
+export const requireAdmin = cache(async (): Promise<{ email: string; role: Role }> => {
+  const admin = await getAdmin();
+  if (!admin) redirect("/admin/login");
+  return admin;
 });
 
 /**

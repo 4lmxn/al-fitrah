@@ -404,6 +404,25 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "//": "Resource centre: what is shared with an audience, newest first. Covers both array-contains (public page) and array-contains-any (portal).",
+      "collectionGroup": "resources",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "audience",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []

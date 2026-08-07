@@ -30,6 +30,13 @@ service cloud.firestore {
     match /payments/{doc=**} {
       allow read, write: if false;
     }
+    // Resource metadata. Server-only: the document says who a file is for, and
+    // a client able to write here could add itself to that list. The file bytes
+    // are protected separately by storage.rules, where the prefix decides
+    // whether an object is public.
+    match /resources/{doc=**} {
+      allow read, write: if false;
+    }
     // The audit log. Server-only, and append-only in application code — a
     // client able to write here could forge or erase the record of a change.
     match /auditLog/{doc=**} {

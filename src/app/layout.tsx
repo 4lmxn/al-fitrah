@@ -4,6 +4,7 @@ import "./globals.css";
 import { SITE_URL, getBrandName, schoolJsonLd, jsonLdHtml } from "@/lib/seo";
 import { getSettings } from "@/lib/settings";
 import { Analytics } from "@/components/Analytics";
+import { ICON_NAMES } from "@/components/ui/Icon";
 
 const sans = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const display = Playfair_Display({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-playfair", display: "swap" });
@@ -54,11 +55,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* Material Symbols is not in next/font's Google catalogue, so it must
             stay a plain <link>. display=block is deliberate: with swap the
-            ligature name ("expand_more") flashes as literal text. */}
-        {/* eslint-disable-next-line @next/next/google-font-display, @next/next/no-page-custom-font */}
+            ligature name ("expand_more") flashes as literal text.
+
+            icon_names subsets the font to the icons this site actually uses:
+            316 KB for the whole set, 12 KB for ours, on a request that blocks
+            first paint. Unknown names are ignored by Google, so the list can
+            be over-inclusive; it must never be under-inclusive. */}
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block"
+          href={`https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=${ICON_NAMES.join(",")}&display=block`}
         />
       </head>
       <body className="relative bg-cream text-ink font-sans antialiased">

@@ -52,29 +52,17 @@ function format(checks: Check[]): string {
   return checks.map((c) => `    - ${c.name} — ${c.impact}`).join("\n");
 }
 
-// Not an env var, but the same class of problem: configured content that the
-// site is legally worse off without, and which fails silently — the privacy
-// page just quietly names the school instead of a person.
-function checkGrievanceOfficer(): string | null {
-  // Configuration is async and this runs at boot; the check is best-effort and
-  // never blocks startup, so an unreadable settings doc simply warns.
-  if (process.env.SKIP_GRIEVANCE_CHECK) return null;
-  return (
-    "  - site.grievanceOfficer.name is empty (src/content/site.ts)\n" +
-    "    The DPDP Act requires a NAMED contact for data grievances. The privacy\n" +
-    "    page currently falls back to the school's name, which is weaker than the\n" +
-    "    Act asks for. Ask the school who owns this and fill in the one line."
-  );
-}
+// The grievance officer is no longer checked here. It moved from a compiled-in
+// constant to the settings document, which is async and can't be read at boot —
+// so this check could only ever warn unconditionally, including after the school
+// had filled it in. The admin settings page banners it from the live value.
 
 export function checkEnv(): void {
   const missingCritical = critical.filter(missing);
   const missingDegraded = degraded.filter(missing);
   const missingOptional = optional.filter(missing);
 
-  const grievance = checkGrievanceOfficer();
-
-  if (!missingCritical.length && !missingDegraded.length && !missingOptional.length && !grievance) {
+  if (!missingCritical.length && !missingDegraded.length && !missingOptional.length) {
     console.log("[env] All required and optional environment variables are set.");
     return;
   }
@@ -93,9 +81,6 @@ export function checkEnv(): void {
     console.warn(
       `[env] ℹ Optional (using fallbacks):\n${format(missingOptional)}\n`,
     );
-  }
-  if (grievance) {
-    console.warn(`\n[env] ⚠ COMPLIANCE — required before the site goes public:\n${grievance}\n`);
   }
   console.warn("[env] See .env.example for the full list and descriptions.\n");
 }

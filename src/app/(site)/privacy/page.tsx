@@ -30,7 +30,7 @@ const retention = [
 
 // DPDP requires people to know who else touches their data, by name.
 const processors = [
-  { name: "Google (Firebase)", role: "Hosts this website and stores enquiry and student records securely, on servers in the United States." },
+  { name: "Google (Firebase)", role: "Stores enquiry and student records securely in Google's data centres in Mumbai, India, and runs the website itself from Google's data centres in Taiwan." },
   { name: "Resend", role: "Delivers the notification emails our admissions team receives." },
 ];
 
@@ -144,9 +144,11 @@ export default async function PrivacyPage() {
               information only on our instructions, and never for their own purposes.
             </p>
             <p className="mt-3 leading-relaxed text-ink/75">
-              Some of these providers store data outside India, including in the United States. The
-              protections described in this policy apply wherever your information is held, and it is
-              never transferred to a country the Government of India has restricted.
+              Your enquiry and student records are stored in India, in Google&apos;s Mumbai data
+              centres. The website that reads and writes them runs on Google servers in Taiwan, and
+              our email provider may process the contents of notification emails outside India. The
+              protections described in this policy apply wherever your information is held, and it
+              is never transferred to a country the Government of India has restricted.
             </p>
             <ul className="mt-5 space-y-3">
               {processors.map((p) => (

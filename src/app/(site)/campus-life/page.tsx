@@ -9,6 +9,8 @@ import { FeatureCard, TONES } from "@/components/ui/FeatureCard";
 import { Reveal } from "@/components/ui/Reveal";
 import { Doodle } from "@/components/ui/Doodle";
 import { RainbowWords } from "@/components/ui/Rainbow";
+import { DayTimeline, FactSection } from "@/components/pages/FactSections";
+import { facts } from "@/content/facts";
 
 // Async because the brand comes from configuration; a module-scope
 // constant cannot await, which is what kept school identity hardcoded.
@@ -51,7 +53,10 @@ export default function CampusLifePage() {
         </Container>
       </Section>
 
-      <Section className="bg-cream-deep/60">
+      {/* The timetable with real clock times. Renders once supplied. */}
+      <DayTimeline />
+
+      <Section>
         <Container>
           <Reveal className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl sm:text-4xl"><RainbowWords text={rhythm.title} words={["rhythm"]} /></h2>
@@ -66,6 +71,17 @@ export default function CampusLifePage() {
           </div>
         </Container>
       </Section>
+
+      {/* Renders once the school supplies its policies. Premises security and
+          authorised pickup are among the first things a parent checks, and the
+          campus being on a third floor makes them more pressing, not less. */}
+      <FactSection
+        items={facts.safety}
+        eyebrow="Safety & hygiene"
+        title="How we keep your child safe."
+        rainbow={["safe"]}
+        subtitle="Pickup, premises, emergencies and cleaning, stated plainly."
+      />
     </>
   );
 }

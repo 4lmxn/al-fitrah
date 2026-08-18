@@ -8,6 +8,8 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { InquiryForm } from "@/components/pages/InquiryForm";
+import { FactSection, Fees } from "@/components/pages/FactSections";
+import { facts } from "@/content/facts";
 
 // Async because the brand comes from configuration; a module-scope
 // constant cannot await, which is what kept school identity hardcoded.
@@ -31,6 +33,18 @@ export default async function AdmissionsPage() {
   return (
     <>
       <PageHero eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.subtitle} highlight={["place"]} />
+
+      {/* Both render only once the school fills content/facts.ts. Separation
+          anxiety is the first thing a parent of a 2y10m child asks about, and a
+          fee schedule they cannot find is the commonest reason they leave. */}
+      <FactSection
+        items={facts.settlingIn}
+        eyebrow="The first two weeks"
+        title="Settling in, gently."
+        rainbow={["gently"]}
+        subtitle="Starting school is a big step at this age. Here is exactly how we handle it."
+      />
+      <Fees />
 
       <Section className="pt-0">
         <Container className="grid gap-8 lg:grid-cols-12">

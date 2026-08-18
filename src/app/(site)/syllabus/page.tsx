@@ -5,6 +5,7 @@ import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
 import { CTABand } from "@/components/ui/CTABand";
+import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { Doodle } from "@/components/ui/Doodle";
 import { RainbowWords } from "@/components/ui/Rainbow";
@@ -40,35 +41,6 @@ const strands = [
   { icon: "public", title: "Environmental studies (EVS)", body: "Understanding the world, nature & community awareness, health & hygiene, and observation skills." },
 ];
 
-const years = [
-  {
-    year: "Year 1 · Pre-KG (Beginner / Level 0), entry 2y10m-3y10m",
-    points: [
-      "Settling in, routines, and circle time; building confidence and language.",
-      "Qur'an: short Surahs by listening and repetition; Noor-ul-Bayan letter foundations.",
-      "English phonics readiness and early numeracy through play.",
-      "Du'as, Islamic manners, and learning through hands-on play.",
-    ],
-  },
-  {
-    year: "Year 2 · Junior KG (Level 1)",
-    points: [
-      "Qur'an: continued reading with introductory Tajweed; Arabic letter joining.",
-      "English phonics and early writing; expanding mathematics.",
-      "EVS: nature, community, health, and hygiene awareness.",
-      "Aqeedah basics, Hadith for children, and Du'as for daily life.",
-    ],
-  },
-  {
-    year: "Year 3 · Senior KG (Level 2)",
-    points: [
-      "Qur'an: fluency and revision toward memorization of up to 2 Juz with Tajweed.",
-      "Arabic: reading fluency and simple comprehension.",
-      "English reading & writing and numeracy toward Grade 1 readiness.",
-      "Stronger independence, responsibility, and Islamic character habits.",
-    ],
-  },
-];
 
 export default function SyllabusPage() {
   return (
@@ -77,15 +49,17 @@ export default function SyllabusPage() {
         eyebrow="3-year integrated program"
         title="Our syllabus."
         highlight={["syllabus"]}
-        subtitle="A balanced journey across Qur'an, Arabic, English, Mathematics, and character, building strong foundations for both Deen and Dunya."
+        subtitle="The subject-by-subject detail behind the three-year programme. If you want to know what each year feels like instead, the programmes page walks through it year by year."
       />
 
       <Section className="relative overflow-hidden pt-0">
         <Doodle kind="sparkle" color="#b38cf4" motion="twinkle" className="right-[7%] top-6 w-5" />
         <Container className="relative z-10">
           <Reveal className="max-w-2xl">
-            <h2 className="text-3xl sm:text-4xl"><RainbowWords text="Learning strands" words={["strands"]} /></h2>
-            <p className="mt-3 text-lg text-ink/70">Six connected strands run through every year of the program.</p>
+            <h2 className="text-3xl sm:text-4xl"><RainbowWords text="Six learning strands" words={["strands"]} /></h2>
+            <p className="mt-3 text-lg text-ink/70">
+              These six run through all three years, deepening each time rather than being taught once and dropped.
+            </p>
           </Reveal>
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {strands.map((s, i) => (
@@ -104,34 +78,22 @@ export default function SyllabusPage() {
       </Section>
 
       <Section className="bg-cream-deep/60">
-        <Container>
-          <Reveal className="max-w-2xl">
-            <h2 className="text-3xl sm:text-4xl"><RainbowWords text="Year by year" words={["year"]} /></h2>
-            <p className="mt-3 text-lg text-ink/70">An indicative progression. Pace is adapted to each child and refined per cohort.</p>
+        <Container className="max-w-3xl text-center">
+          <Reveal>
+            <h2 className="text-3xl sm:text-4xl">
+              <RainbowWords text="Want it year by year instead?" words={["year by year"]} />
+            </h2>
+            <p className="mt-4 text-lg text-ink/70">
+              The programmes page takes the same six strands and shows how they land in Pre-KG,
+              Junior KG and Senior KG, with what changes between each.
+            </p>
+            <div className="mt-8 flex justify-center">
+              <Button href="/programs">See the three years</Button>
+            </div>
+            <p className="mt-10 text-sm text-ink/55">
+              This outline is indicative. Exact milestones, materials, and assessments are shared with families during admissions.
+            </p>
           </Reveal>
-          <div className="mt-10 space-y-6">
-            {years.map((y, i) => (
-              <Reveal key={y.year} delay={i * 0.06}>
-                <div className="rounded-xl4 bg-white p-8 shadow-soft">
-                  <h3 className="flex items-center gap-3 text-xl text-emerald-deep">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald/10 font-display text-emerald">{i + 1}</span>
-                    {y.year}
-                  </h3>
-                  <ul className="mt-5 grid gap-3 sm:grid-cols-2">
-                    {y.points.map((p) => (
-                      <li key={p} className="flex gap-3 text-ink/75">
-                        <Icon name="check_circle" className="mt-0.5 shrink-0 text-[20px] text-gold" />
-                        <span>{p}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-          <p className="mt-8 text-sm text-ink/55">
-            This outline is indicative. Exact milestones, materials, and assessments are shared with families during admissions.
-          </p>
         </Container>
       </Section>
 

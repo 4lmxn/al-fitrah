@@ -1,6 +1,42 @@
 import type {
-  AboutPage, ProgramsPage, AdmissionsPage, CampusPage, FaqPage, ParentPage, ContactPage,
+  AboutPage, ProgramsPage, AdmissionsPage, CampusPage, FaqPage, ParentPage, ContactPage, TrustPage,
 } from "./types";
+
+/**
+ * Why a family can believe us, stated as checkable facts.
+ *
+ * This replaces the testimonial section the design mock shipped. A quote we
+ * wrote ourselves is worth nothing; an affiliation a parent can ring up and
+ * verify is worth a great deal.
+ */
+export const trust: TrustPage = {
+  eyebrow: "Why families trust us",
+  title: "Checkable, not just claimed.",
+  rainbow: ["Checkable"],
+  subtitle: "Anyone can call themselves warm and nurturing. Here is what you can actually verify about us.",
+  items: [
+    {
+      icon: "verified",
+      title: "Affiliated with Anjuman Taleemul Qur'an, Calicut",
+      body: "Our Qur'an teaching is not in-house improvisation. We deliver the Noor-ul-Bayan System, developed in Egypt and brought to India by Anjuman Taleemul Qur'an, Calicut, with whom we are affiliated.",
+    },
+    {
+      icon: "school",
+      title: "Oxford Early Learning Curriculum",
+      body: "Academics follow a published, internationally used early-years curriculum for English, Mathematics and EVS, not a syllabus we invented.",
+    },
+    {
+      icon: "conversion_path",
+      title: "One continuous three-year journey",
+      body: "Pre-KG, Junior KG and Senior KG are a single programme with one entry point. We do not take lateral entries, because a child who joins in year two has missed the Qur'an foundation the later years are built on.",
+    },
+    {
+      icon: "tour",
+      title: "Walk in any school day, unannounced",
+      body: "No appointment, no tour script, no notice. Come between 9:00 AM and 1:30 PM on any working day and see the classrooms as they actually are.",
+    },
+  ],
+};
 
 export const about: AboutPage = {
   hero: {
@@ -9,13 +45,16 @@ export const about: AboutPage = {
     subtitle:
       "We believe every child is born with a natural capacity for learning, compassion, and connection. Al Fitrah is the environment for that nature to flourish.",
   },
+  // Rewritten to state what the school actually does rather than how it feels
+  // about children. Every competitor claims warmth; almost none of them can
+  // describe their own method in a sentence. NEEDS SCHOOL SIGN-OFF.
   mission: {
     title: "Our mission",
-    body: "To give children a strong start in both Deen and Dunya: a modern academic foundation taught alongside everyday Islamic learning, with care and patience.",
+    body: "To give every child three unbroken years in which Qur'an and academics are taught by the same teachers, in the same room, on the same day. Not a school with Islamic classes bolted on, and not a madrasa with some English: one day, one rhythm, both halves of a child's life treated as one thing.",
   },
   vision: {
-    title: "Growing the whole child",
-    body: "Developing mind, body, and character together in a calm, caring environment.",
+    title: "What we are aiming at",
+    body: "A child who leaves us able to read the Qur'an with Tajweed and ready to walk into Grade 1 at any recognised school without catching up, and who has never been taught to think of those two abilities as belonging to different parts of their life.",
   },
   team: {
     title: "Guided by experts",
@@ -47,39 +86,78 @@ export const programs: ProgramsPage = {
       { icon: "schedule", label: "Duration", value: "3 years" },
     ],
   },
-  curriculum: {
-    title: "What your child learns",
-    subtitle: "The Oxford Early Learning Curriculum alongside the Noor-ul-Bayan method for Qur'an and Arabic.",
-    quran: {
-      title: "Islamic curriculum · Noor-ul-Bayan",
-      items: [
-        { label: "Qur'an & Tajweed", body: "Qur'an reading, fluency, and the rules of recitation, built gradually from an early age." },
-        { label: "Arabic foundations", body: "Letter recognition, joining, and reading using the Noor-ul-Bayan method." },
-        { label: "Aqeedah & Hadith", body: "Islamic beliefs, Hadith, daily Du'as, and Islamic manners woven through the day." },
-      ],
-    },
-    modern: [
-      { icon: "language", title: "English", body: "Phonics, vocabulary, and early reading & writing readiness." },
-      { icon: "calculate", title: "Mathematics", body: "Numbers, counting, patterns, shapes, and logical thinking." },
-      { icon: "public", title: "Environmental studies", body: "The world around us, nature, community, health, and hygiene." },
+  // The year-by-year detail used to live only on /syllabus, where almost nobody
+  // looks. A parent deciding between preschools wants to know what year one
+  // actually contains, so it leads the programmes page now.
+  levels: {
+    title: "Three years, one continuous journey.",
+    rainbow: ["continuous"],
+    subtitle: "There is one entry point, at Pre-KG. Each year is built on the one before it, which is why we do not take lateral entries into Junior or Senior KG.",
+    items: [
+      {
+        badge: "Year 1",
+        name: "Pre-KG",
+        stage: "Ages 2y10m - 3y10m · The only entry point",
+        summary: "The year your child learns that school is a safe, happy place. Most of it is settling in: routines, first friendships, and the confidence to be away from home for a few hours.",
+        quran: "Short Surahs learned by listening and repetition, plus the Noor-ul-Bayan letter foundations. No pressure, no testing.",
+        academics: "Phonics readiness and early numeracy, taught almost entirely through play, sand, water, blocks and stories.",
+        character: "Morning and mealtime Du'as, greeting others, sharing and taking turns.",
+      },
+      {
+        badge: "Year 2",
+        name: "Junior KG",
+        stage: "The foundation year",
+        summary: "Confidence turns into skill. Your child starts reading Arabic letters properly, writing English letters properly, and working in a group rather than beside one.",
+        quran: "Continued Qur'an reading with introductory Tajweed, and Arabic letter joining through the Noor-ul-Bayan method.",
+        academics: "English phonics and early writing, expanding mathematics, and EVS: nature, community, health and hygiene.",
+        character: "Basics of Aqeedah, Hadith for children, and Du'as for daily life.",
+      },
+      {
+        badge: "Year 3",
+        name: "Senior KG",
+        stage: "Grade 1 readiness",
+        summary: "The year everything consolidates. By the end your child can read Qur'an with Tajweed and walk into Grade 1 at any recognised school without catching up.",
+        quran: "Fluency and revision toward memorisation of up to 2 Juz of selected Surahs, with Tajweed.",
+        academics: "English reading and writing, and numeracy pitched at Grade 1 readiness. Arabic reading fluency and simple comprehension.",
+        character: "Independence, responsibility, and Islamic habits a child keeps after they leave us.",
+      },
     ],
-    spiritual: {
-      title: "Learning through play",
-      tags: ["Hands-on", "Storytelling", "Art & craft"],
-      body: "Children learn best when engaged. Sensory play, role play, and group activities build confidence, curiosity, and social skills.",
-    },
-    image: "/images/real/classroom.jpg",
-    imageAlt: "A bright, glass-fronted classroom at Al Fitrah with soft play equipment",
+  },
+  // Method, not content. The year-by-year section already answers "what does my
+  // child learn"; this answers "how do you teach it", which is a different
+  // question and the one that separates us from a school with the same subjects.
+  method: {
+    title: "How we teach it.",
+    rainbow: ["teach"],
+    subtitle: "Two established methods and one conviction about how small children actually learn.",
+    items: [
+      {
+        icon: "child_care",
+        title: "Through play, not worksheets",
+        body: "Children this age learn with their hands. Sensory play, role play, stories and group activities do the work that drilling cannot at three years old.",
+      },
+      {
+        icon: "school",
+        title: "Oxford Early Learning Curriculum",
+        body: "A published, internationally used early-years curriculum for English, Mathematics and EVS. We follow it rather than inventing a syllabus of our own.",
+      },
+      {
+        icon: "menu_book",
+        title: "The Noor-ul-Bayan System",
+        body: "Developed in Egypt and delivered in India by Anjuman Taleemul Qur'an, Calicut, with whom we are affiliated. The standard your child is held to is not set by us alone.",
+      },
+    ],
+    tags: ["Hands-on", "Storytelling", "Art & craft", "Role play"],
+    image: "/images/real/play-room.jpg",
+    imageAlt: "Children's play equipment and soft flooring in the Al Fitrah play room",
     imageCaption: "Nurturing a lifelong love for learning.",
   },
   outcomes: {
-    eyebrow: "By the end of 3 years",
-    title: "Program outcomes",
-    quote: "Read the Qur'an fluently and memorize up to 2 Juz, with a strong Arabic and academic foundation.",
-    body: "By completion, In Sha Allah, students read the Qur'an fluently, grasp basic Tajweed, Aqeedah and Hadith, and are academically prepared for Grade 1 of any recognized school, grounded in faith for life.",
-    cta: { label: "View full syllabus", href: "/syllabus", variant: "primary" },
-    image: "/images/real/welcome-board.jpg",
-    imageAlt: "A colourful 'Welcome Back to School' board at Al Fitrah Pre School",
+    eyebrow: "By the end of three years",
+    title: "What three years add up to.",
+    statement: "Your child reads the Qur'an fluently with Tajweed, has memorised up to 2 Juz of selected Surahs, and can walk into Grade 1 at any recognised school without catching up.",
+    body: "We are a preschool, not a feeder for one particular institution. Families choose their onward school freely, and children leave prepared for it.",
+    cta: { label: "View full syllabus", href: "/syllabus", variant: "gold" },
   },
 };
 
@@ -149,6 +227,8 @@ export const faq: FaqPage = {
       items: [
         { q: "What is the ideal age to enroll my child?", a: "Admissions are at our Pre-KG entry level for children aged 2 years 10 months to 3 years 10 months. The program is a continuous three-year journey (Pre-KG, Junior KG, then Senior KG), so we do not offer direct entry into Junior or Senior KG." },
         { q: "Do you require an assessment or interview prior to admission?", a: "We hold a brief, friendly interaction with the child and family. It is not a formal test, but a chance to understand your child's needs and ensure our philosophy aligns with your family's values." },
+        { q: "Can I visit before deciding?", a: "Yes, and without telling us you are coming. Walk in on any working day between 9:00 AM and 1:30 PM. There is no appointment, no scheduled tour and no notice period, because a campus worth choosing should hold up on an ordinary morning." },
+        { q: "Can my child join mid-year, or start directly in Junior KG?", a: "No. There is one entry point, at Pre-KG. Junior and Senior KG are built on the Qur'an and Arabic foundation laid in year one, so a child joining later would be working from a base they have not been given." },
       ],
     },
     {
@@ -156,6 +236,8 @@ export const faq: FaqPage = {
       items: [
         { q: "How is the Qur'an taught at Al Fitrah?", a: "Through the Noor-ul-Bayan System, children build Qur'an reading, fluency, and Tajweed, and memorize up to 2 Juz of selected Surahs across the three years, integrated into the daily rhythm alongside Aqeedah, Hadith, and Du'as, not as a separate intensive track." },
         { q: "Does my child need prior Arabic knowledge to join?", a: "No prior knowledge is required. The Noor-ul-Bayan method starts from the foundations and supports every child individually, so each progresses at their own pace." },
+        { q: "What exactly is the Noor-ul-Bayan System?", a: "A structured Qur'an reading method developed in Egypt and delivered in India by Anjuman Taleemul Qur'an, Calicut, with whom Al Fitrah is affiliated. It is an established, externally governed method rather than something we devised in-house, which means the standard your child is taught to is not set by us alone." },
+        { q: "Is Qur'an taught as a separate class?", a: "No. It runs through the ordinary school day alongside English, Mathematics and EVS, taught by the same staff in the same room. Children never learn to treat Deen as the thing that happens after real school finishes." },
       ],
     },
     {
@@ -170,6 +252,8 @@ export const faq: FaqPage = {
       items: [
         { q: "What are the school hours?", a: "School runs from 9:00 AM to 1:30 PM. You're welcome to visit during these hours to see the campus and meet our team." },
         { q: "Do you provide meals?", a: "We don't have a canteen or cafeteria, so children bring their own food from home for snack and lunch." },
+        { q: "Which days are you open?", a: "Monday to Saturday, 9:00 AM to 1:30 PM. Term dates, breaks and public holidays for the year are published in full on the parent resources page." },
+        { q: "What happens after Senior KG?", a: "Children leave academically prepared for Grade 1 at any recognised school. We are a three-year preschool, not a feeder for one particular institution, so families choose their onward school freely." },
       ],
     },
   ],

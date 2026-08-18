@@ -48,19 +48,40 @@ export type AboutPage = {
   location: { eyebrow: string; title: string; lines: string[]; image: string; imageAlt: string };
 };
 
+/**
+ * One year of the programme. Parents choose by year — "what will my child do in
+ * Pre-KG?" — not by subject, so the three levels are the spine of the page and
+ * the subject breakdown is supporting detail.
+ */
+export type ProgramLevel = {
+  badge: string;
+  name: string;
+  stage: string;
+  summary: string;
+  quran: string;
+  academics: string;
+  character: string;
+};
+
 export type ProgramsPage = {
   hero: { eyebrow: string; title: string; subtitle: string; stats: { icon: string; label: string; value: string }[] };
-  curriculum: {
+  levels: { title: string; rainbow: string[]; subtitle: string; items: ProgramLevel[] };
+  /**
+   * How we teach, not what we teach. The year-by-year section above already
+   * covers content; repeating the subject list under a second heading was
+   * saying the same thing twice.
+   */
+  method: {
     title: string;
+    rainbow: string[];
     subtitle: string;
-    quran: { title: string; items: { label: string; body: string }[] };
-    modern: { icon: string; title: string; body: string }[];
-    spiritual: { title: string; tags: string[]; body: string };
+    items: { icon: string; title: string; body: string }[];
+    tags: string[];
     image: string;
     imageAlt: string;
     imageCaption: string;
   };
-  outcomes: { title: string; eyebrow: string; quote: string; body: string; cta: Cta; image: string; imageAlt: string };
+  outcomes: { eyebrow: string; title: string; statement: string; body: string; cta: Cta };
 };
 
 export type AdmissionsPage = {
@@ -99,4 +120,17 @@ export type ContactPage = {
   image: string;
   imageAlt: string;
   hours: { title: string; rows: { label: string; value: string }[]; note: string };
+};
+
+/**
+ * Verifiable credibility, in place of testimonials. Every line here is a fact
+ * that can be checked — an affiliation, a named curriculum, a published policy
+ * — rather than a sentiment a competitor could copy in thirty seconds.
+ */
+export type TrustPage = {
+  eyebrow: string;
+  title: string;
+  rainbow: string[];
+  subtitle: string;
+  items: { icon: string; title: string; body: string }[];
 };

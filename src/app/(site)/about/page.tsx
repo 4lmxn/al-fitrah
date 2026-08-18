@@ -11,6 +11,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Doodle } from "@/components/ui/Doodle";
 import { RainbowWords } from "@/components/ui/Rainbow";
 import { Eyebrow } from "@/components/ui/EyebrowPill";
+import { Teachers } from "@/components/pages/FactSections";
 
 // Async because the brand comes from configuration; a module-scope
 // constant cannot await, which is what kept school identity hardcoded.
@@ -84,6 +85,10 @@ export default function AboutPage() {
           </div>
         </Container>
       </Section>
+
+      {/* Named teachers with real qualifications. Renders once supplied — until
+          then "Guided by experts" above is the only claim we make. */}
+      <Teachers />
 
       <Section className="pt-0">
         <Container>

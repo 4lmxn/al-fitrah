@@ -8,6 +8,8 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { ProspectusMagnet } from "@/components/pages/ProspectusMagnet";
+import { FactSection } from "@/components/pages/FactSections";
+import { facts } from "@/content/facts";
 
 // Async because the brand comes from configuration; a module-scope
 // constant cannot await, which is what kept school identity hardcoded.
@@ -111,6 +113,21 @@ export default function ParentResourcesPage() {
           </div>
         </Container>
       </Section>
+      <FactSection
+        items={facts.communication}
+        eyebrow="Staying in touch"
+        title="How you will hear from us."
+        rainbow={["hear"]}
+        subtitle="What we send, how often, and who to contact when something comes up."
+        tone="deep"
+      />
+
+      <FactSection
+        items={facts.health}
+        eyebrow="Food & health"
+        title="Snacks, allergies and sick days."
+        rainbow={["health"]}
+      />
     </>
   );
 }

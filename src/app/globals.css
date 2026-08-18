@@ -49,6 +49,7 @@
   --animate-twinkle: twinkle 3.5s ease-in-out infinite;
   --animate-morph: morph 12s ease-in-out infinite;
   --animate-pulsering: pulsering 2.4s ease-out infinite;
+  --animate-ticker: ticker 22s linear infinite;
 
   @keyframes bob {
     0%, 100% { transform: translateY(0); }
@@ -69,6 +70,12 @@
   @keyframes morph {
     0%, 100% { border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%; }
     50% { border-radius: 44% 56% 44% 56% / 54% 44% 56% 46%; }
+  }
+  /* Track holds two identical copies of the message, so translating exactly
+     -50% lands the second copy where the first began and the loop is seamless. */
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
   }
   @keyframes pulsering {
     0% { transform: scale(.9); opacity: .6; }
@@ -99,6 +106,26 @@
   .wobble-4 { border-radius: 55% 45% 55% 45% / 45% 60% 40% 55%; }
   /* Arch — a mihrab silhouette, rounded top, squared feet. */
   .arch { border-radius: 999px 999px 2rem 2rem; }
+
+  /* Announcement ticker. Pauses while hovered or while anything inside it has
+     keyboard focus, and the global prefers-reduced-motion rule stops it dead —
+     at which point the duplicate copy is hidden and the text simply sits still.
+     The same admissions details are also stated plainly on /admissions, so a
+     reader who misses the scroll loses nothing. */
+  .ticker-track { animation: var(--animate-ticker); }
+  /* Above `sm` the bar fits on one centred line, so the scroll is switched off
+     here rather than with a `sm:animate-none` class — this rule lives in the
+     utilities layer and would win against it, leaving the desktop text sliding
+     out of its own centred container. */
+  @media (min-width: 640px) {
+    .ticker-track { animation: none; transform: none; }
+  }
+  .ticker:hover .ticker-track,
+  .ticker:focus-within .ticker-track { animation-play-state: paused; }
+  @media (prefers-reduced-motion: reduce) {
+    .ticker-track { transform: none !important; }
+    .ticker-dupe { display: none; }
+  }
 }
 
 @layer base {

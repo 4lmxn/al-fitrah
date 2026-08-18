@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { Doodle } from "@/components/ui/Doodle";
 import { RainbowWords } from "@/components/ui/Rainbow";
+import { SwipeRail } from "@/components/ui/SwipeRail";
 import { TONES } from "@/components/ui/FeatureCard";
 import { cn } from "@/lib/cn";
 
@@ -52,7 +53,7 @@ export default function SyllabusPage() {
         subtitle="The subject-by-subject detail behind the three-year programme. If you want to know what each year feels like instead, the programmes page walks through it year by year."
       />
 
-      <Section className="relative overflow-hidden pt-0">
+      <Section className="relative overflow-hidden pt-0 sm:pt-0">
         <Doodle kind="sparkle" color="#b38cf4" motion="twinkle" className="right-[7%] top-6 w-5" />
         <Container className="relative z-10">
           <Reveal className="max-w-2xl">
@@ -61,7 +62,7 @@ export default function SyllabusPage() {
               These six run through all three years, deepening each time rather than being taught once and dropped.
             </p>
           </Reveal>
-          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <SwipeRail label="Six learning strands" cols={3} className="mt-10">
             {strands.map((s, i) => (
               <Reveal key={s.title} delay={i * 0.05} className="h-full">
                 <div className="h-full rounded-xl4 bg-white p-7 shadow-soft transition duration-200 hover:-translate-y-2 hover:-rotate-1 hover:shadow-lift">
@@ -73,7 +74,7 @@ export default function SyllabusPage() {
                 </div>
               </Reveal>
             ))}
-          </div>
+          </SwipeRail>
         </Container>
       </Section>
 

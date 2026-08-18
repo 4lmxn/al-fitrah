@@ -63,7 +63,7 @@ export default async function PrivacyPage() {
         subtitle="We collect only what we need to support your family through admissions, and we protect it with care. This policy explains what we gather and why."
       />
 
-      <Section className="pt-0">
+      <Section className="pt-0 sm:pt-0">
         <Container className="max-w-3xl">
           <Reveal>
             <p className="text-sm text-ink/55">Last updated: {lastUpdated}</p>

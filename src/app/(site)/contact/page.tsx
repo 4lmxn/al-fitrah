@@ -39,7 +39,7 @@ export default async function ContactPage() {
     <>
       <PageHero eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.subtitle} highlight={["love"]} />
 
-      <Section className="pt-0">
+      <Section className="pt-0 sm:pt-0">
         <Container className="grid gap-6 lg:grid-cols-12">
           <Reveal className="lg:col-span-5">
             <div className="h-full rounded-xl4 bg-white p-8 shadow-soft">
@@ -99,7 +99,7 @@ export default async function ContactPage() {
 
       {/* Parents land here expecting a way to write in, not just phone numbers.
           Same form and API as the admissions page — one leads pipeline. */}
-      <Section id="message" className="pt-0">
+      <Section id="message" className="pt-0 sm:pt-0">
         <Container className="max-w-3xl">
           <Reveal>
             <div className="rounded-xl4 bg-white p-8 shadow-soft sm:p-10">
@@ -116,7 +116,7 @@ export default async function ContactPage() {
         </Container>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-0 sm:pt-0">
         <Container>
           <Reveal>
             <div className="relative overflow-hidden rounded-xl4 bg-gradient-to-br from-emerald to-emerald-deep p-10 text-center text-cream shadow-lift sm:p-14">

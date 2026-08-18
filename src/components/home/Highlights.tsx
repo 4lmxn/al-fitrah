@@ -6,6 +6,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Eyebrow } from "@/components/ui/EyebrowPill";
 import { RainbowWords } from "@/components/ui/Rainbow";
 import { Doodle } from "@/components/ui/Doodle";
+import { SwipeRail } from "@/components/ui/SwipeRail";
 
 // Each frame gets its own hand-cut silhouette so the row never reads as four
 // identical crops.
@@ -25,7 +26,7 @@ export function Highlights() {
           </h2>
           <p className="mt-4 text-lg text-ink/70">{highlights.subtitle}</p>
         </Reveal>
-        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <SwipeRail label="Campus life photographs" cols={4} className="mt-12">
           {highlights.tiles.map((tile, i) => (
             <Reveal key={tile.title} delay={i * 0.06}>
               <figure className="text-center">
@@ -47,7 +48,7 @@ export function Highlights() {
               </figure>
             </Reveal>
           ))}
-        </div>
+        </SwipeRail>
       </Container>
     </Section>
   );

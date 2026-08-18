@@ -6,6 +6,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Eyebrow } from "@/components/ui/EyebrowPill";
 import { RainbowWords } from "@/components/ui/Rainbow";
 import { Doodle } from "@/components/ui/Doodle";
+import { SwipeRail } from "@/components/ui/SwipeRail";
 import { TONES } from "@/components/ui/FeatureCard";
 import { cn } from "@/lib/cn";
 
@@ -55,7 +56,7 @@ export function FactSection({
           </h2>
           {subtitle && <p className="mt-4 text-lg text-ink/70">{subtitle}</p>}
         </Reveal>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <SwipeRail label={title} cols={3} className="mt-12">
           {items.map((item, i) => (
             <Reveal key={item.title} delay={i * 0.07} className="h-full">
               <div className="h-full rounded-xl4 bg-white p-7 shadow-soft transition duration-200 hover:-translate-y-2 hover:-rotate-1 hover:shadow-lift">
@@ -67,7 +68,7 @@ export function FactSection({
               </div>
             </Reveal>
           ))}
-        </div>
+        </SwipeRail>
       </Container>
     </Section>
   );
@@ -77,7 +78,7 @@ export function FactSection({
 export function KeyFacts() {
   if (facts.keyFacts.length === 0) return null;
   return (
-    <Section className="relative overflow-hidden pb-12 pt-12">
+    <Section className="relative overflow-hidden pb-12 pt-12 sm:pb-12 sm:pt-12">
       <Container className="relative z-10 flex flex-wrap justify-center gap-4">
         {facts.keyFacts.map((f, i) => (
           <Reveal key={f.label} delay={i * 0.07}>
@@ -154,7 +155,7 @@ export function Teachers() {
             <RainbowWords text="The people in the room." words={["people"]} />
           </h2>
         </Reveal>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <SwipeRail label="Our teachers" cols={3} className="mt-12">
           {facts.teachers.map((t, i) => (
             <Reveal key={t.name} delay={i * 0.07}>
               <div className="rounded-xl4 bg-white p-7 text-center shadow-soft">
@@ -167,7 +168,7 @@ export function Teachers() {
               </div>
             </Reveal>
           ))}
-        </div>
+        </SwipeRail>
       </Container>
     </Section>
   );

@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
+import { SwipeRail } from "@/components/ui/SwipeRail";
 
 // Async because the brand comes from configuration; a module-scope
 // constant cannot await, which is what kept school identity hardcoded.
@@ -43,16 +44,16 @@ export default async function NewsPage() {
         subtitle="Announcements, notices, and what's coming up at the school."
       />
 
-      <Section className="pt-0">
+      <Section className="pt-0 sm:pt-0">
         <Container className="max-w-4xl">
           {posts.length === 0 ? (
             <p className="rounded-xl4 bg-white p-10 text-center text-ink/60">
               Nothing posted just yet. Please check back soon, in shaa Allah.
             </p>
           ) : (
-            <ul className="grid gap-6 sm:grid-cols-2">
+            <SwipeRail label="News and events" cols={2}>
               {posts.map((p) => (
-                <li key={p.id}>
+                <div key={p.id} className="h-full">
                   <Link
                     href={`/news/${p.slug}`}
                     className="group flex h-full flex-col overflow-hidden rounded-xl4 bg-white shadow-soft transition duration-200 hover:-translate-y-2 hover:shadow-lift"
@@ -77,9 +78,9 @@ export default async function NewsPage() {
                       </span>
                     </div>
                   </Link>
-                </li>
+                </div>
               ))}
-            </ul>
+            </SwipeRail>
           )}
         </Container>
       </Section>

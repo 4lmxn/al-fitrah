@@ -6,6 +6,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Eyebrow } from "@/components/ui/EyebrowPill";
 import { RainbowWords } from "@/components/ui/Rainbow";
 import { Doodle } from "@/components/ui/Doodle";
+import { SwipeRail } from "@/components/ui/SwipeRail";
 
 export function Approach() {
   const { approach } = home;
@@ -21,13 +22,13 @@ export function Approach() {
           </h2>
           <p className="mt-4 text-lg text-ink/70">{approach.subtitle}</p>
         </Reveal>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <SwipeRail label="Our approach" cols={3} className="mt-12">
           {approach.items.map((item, i) => (
             <Reveal key={item.title} delay={i * 0.08} className="h-full">
               <FeatureCard {...item} tone={TONES[i % TONES.length]} />
             </Reveal>
           ))}
-        </div>
+        </SwipeRail>
       </Container>
     </Section>
   );

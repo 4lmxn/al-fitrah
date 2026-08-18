@@ -9,6 +9,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { ProspectusMagnet } from "@/components/pages/ProspectusMagnet";
 import { FactSection } from "@/components/pages/FactSections";
+import { SwipeRail } from "@/components/ui/SwipeRail";
 import { facts } from "@/content/facts";
 
 // Async because the brand comes from configuration; a module-scope
@@ -30,11 +31,16 @@ export default function ParentResourcesPage() {
     <>
       <PageHero eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.subtitle} highlight={["resources"]} />
 
-      <Section className="pt-0">
+      <Section className="pt-0 sm:pt-0">
         <Container>
-          <div className="grid auto-rows-[minmax(11rem,auto)] grid-cols-1 gap-5 md:grid-cols-3">
+          <SwipeRail
+            label="Parent resources"
+            cols={3}
+            className="sm:auto-rows-[minmax(11rem,auto)] sm:gap-5"
+            itemClassName={(i) => (resources[i]?.large ? "sm:col-span-2 sm:row-span-2" : "")}
+          >
             {resources.map((r, i) => (
-              <Reveal key={r.title} delay={i * 0.06} className={r.large ? "md:col-span-2 md:row-span-2" : ""}>
+              <Reveal key={r.title} delay={i * 0.06} className="h-full">
                 {/* Informational cards — no downloads are live yet, so these are
                     not links. Families are pointed to the contact CTA below. */}
                 <div
@@ -51,7 +57,7 @@ export default function ParentResourcesPage() {
                 </div>
               </Reveal>
             ))}
-          </div>
+          </SwipeRail>
 
           <Reveal className="mt-10">
             <ProspectusMagnet />
@@ -86,7 +92,7 @@ export default function ParentResourcesPage() {
             <p className="leading-relaxed text-ink/75">{academicCalendar.note}</p>
           </Reveal>
 
-          <div className="mt-8 grid gap-5 md:grid-cols-2">
+          <SwipeRail label="Academic calendar" cols={2} className="mt-8 sm:gap-5">
             {academicCalendar.groups.map((g, i) => (
               <Reveal key={g.title} delay={i * 0.06} className="h-full">
                 <div className="flex h-full flex-col rounded-xl4 bg-white p-7 shadow-soft">
@@ -110,7 +116,7 @@ export default function ParentResourcesPage() {
                 </div>
               </Reveal>
             ))}
-          </div>
+          </SwipeRail>
         </Container>
       </Section>
       <FactSection

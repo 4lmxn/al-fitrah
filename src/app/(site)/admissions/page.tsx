@@ -46,7 +46,7 @@ export default async function AdmissionsPage() {
       />
       <Fees />
 
-      <Section className="pt-0">
+      <Section className="pt-0 sm:pt-0">
         <Container className="grid gap-8 lg:grid-cols-12">
           {/* Process + assistance */}
           <div className="space-y-8 lg:col-span-5">

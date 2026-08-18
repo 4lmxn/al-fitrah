@@ -28,7 +28,7 @@ export default function AboutPage() {
     <>
       <PageHero eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.subtitle} highlight={["goodness"]} />
 
-      <Section className="pt-0">
+      <Section className="pt-0 sm:pt-0">
         <Container className="grid gap-6 lg:grid-cols-12">
           <Reveal className="lg:col-span-8">
             <div className="relative h-full overflow-hidden rounded-xl4 bg-white p-10 shadow-soft">
@@ -90,7 +90,7 @@ export default function AboutPage() {
           then "Guided by experts" above is the only claim we make. */}
       <Teachers />
 
-      <Section className="pt-0">
+      <Section className="pt-0 sm:pt-0">
         <Container>
           <Reveal>
             <div className="grid overflow-hidden rounded-xl4 bg-white shadow-soft lg:grid-cols-2">

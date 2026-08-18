@@ -6,6 +6,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { RainbowWords } from "@/components/ui/Rainbow";
 import { Doodle } from "@/components/ui/Doodle";
 import { cn } from "@/lib/cn";
+import { SwipeRail } from "@/components/ui/SwipeRail";
 
 // One illustration per year, inline SVG. Photographs would be dishonest here —
 // we do not have a picture that is specifically "the Junior KG room" — and the
@@ -63,13 +64,15 @@ export function ProgramLevels() {
           <p className="mt-4 text-lg text-ink/70">{levels.subtitle}</p>
         </Reveal>
 
-        <div className="mt-14 space-y-8">
+        <SwipeRail label="The three years" cols={1} className="mt-14 sm:space-y-8">
           {levels.items.map((l, i) => (
             <Reveal key={l.name} delay={i * 0.06}>
               <article className="grid gap-8 rounded-xl4 bg-white p-8 shadow-soft sm:p-10 lg:grid-cols-[auto_1fr]">
-                <div className="flex flex-col items-center gap-4 lg:w-56">
-                  <div className={cn("grid h-40 w-40 place-items-center rounded-[2.5rem]", artBg[i % artBg.length])}>
-                    {illustrations[i % illustrations.length]}
+                <div className="flex flex-row items-center gap-4 lg:w-56 lg:flex-col">
+                  <div className={cn("grid h-24 w-24 shrink-0 place-items-center rounded-[1.75rem] sm:h-40 sm:w-40 sm:rounded-[2.5rem]", artBg[i % artBg.length])}>
+                    <span className="[&>svg]:h-16 [&>svg]:w-16 sm:[&>svg]:h-28 sm:[&>svg]:w-28">
+                      {illustrations[i % illustrations.length]}
+                    </span>
                   </div>
                   <span className={cn("font-display text-sm font-bold uppercase tracking-widest", badgeTone[i % badgeTone.length])}>
                     {l.badge}
@@ -96,7 +99,7 @@ export function ProgramLevels() {
               </article>
             </Reveal>
           ))}
-        </div>
+        </SwipeRail>
       </Container>
     </Section>
   );

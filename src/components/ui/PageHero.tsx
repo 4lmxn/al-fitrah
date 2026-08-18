@@ -23,7 +23,7 @@ export function PageHero({
   highlight?: string[];
 }) {
   return (
-    <Section className="relative overflow-hidden pb-10 pt-14">
+    <Section className="relative overflow-hidden pb-10 pt-14 sm:pb-10 sm:pt-14">
       <Doodle kind="sun" color="#c9a227" className="left-[3%] top-6 w-14 sm:w-16" />
       <Doodle kind="sparkle" color="#b38cf4" motion="twinkle" className="left-[10%] top-32 w-5" />
       <Doodle kind="cloud" color="#dbeafe" motion="bob2" className="right-[8%] top-8 w-12 sm:w-16" />

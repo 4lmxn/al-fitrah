@@ -6,6 +6,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Eyebrow } from "@/components/ui/EyebrowPill";
 import { RainbowWords } from "@/components/ui/Rainbow";
 import { Doodle } from "@/components/ui/Doodle";
+import { SwipeRail } from "@/components/ui/SwipeRail";
 import { TONES } from "@/components/ui/FeatureCard";
 import { cn } from "@/lib/cn";
 
@@ -38,7 +39,7 @@ export function Trust() {
           </h2>
           <p className="mt-4 text-lg text-ink/70">{trust.subtitle}</p>
         </Reveal>
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
+        <SwipeRail label="Why families trust us" cols={2} className="mt-12" cardClassName="w-[86%]">
           {trust.items.map((item, i) => (
             <Reveal key={item.title} delay={i * 0.07} className="h-full">
               <div className="flex h-full gap-5 rounded-xl4 bg-white p-7 shadow-soft transition duration-200 hover:-translate-y-1.5 hover:shadow-lift">
@@ -52,7 +53,7 @@ export function Trust() {
               </div>
             </Reveal>
           ))}
-        </div>
+        </SwipeRail>
       </Container>
     </Section>
   );

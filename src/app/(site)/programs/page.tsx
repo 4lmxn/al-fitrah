@@ -12,6 +12,7 @@ import { Doodle } from "@/components/ui/Doodle";
 import { Reveal } from "@/components/ui/Reveal";
 import { TONES } from "@/components/ui/FeatureCard";
 import { ProgramLevels } from "@/components/pages/ProgramLevels";
+import { SwipeRail } from "@/components/ui/SwipeRail";
 import { cn } from "@/lib/cn";
 
 // Async because the brand comes from configuration; a module-scope
@@ -36,7 +37,7 @@ export default function ProgramsPage() {
   const { hero, method, outcomes } = programs;
   return (
     <>
-      <Section className="relative overflow-hidden pb-10 pt-14">
+      <Section className="relative overflow-hidden pb-10 pt-14 sm:pb-10 sm:pt-14">
         <Doodle kind="sun" color="#c9a227" className="left-[3%] top-6 w-14 sm:w-16" />
         <Doodle kind="star" color="#7cc15e" motion="twinkle" className="right-[9%] top-10 w-5" />
         <Doodle kind="cloud" color="#dbeafe" motion="bob2" className="bottom-4 left-[12%] hidden w-12 lg:block" />
@@ -80,7 +81,7 @@ export default function ProgramsPage() {
             <p className="mt-4 text-lg text-ink/70">{method.subtitle}</p>
           </Reveal>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
+          <SwipeRail label="How we teach" cols={3} className="mt-12">
             {method.items.map((m, i) => (
               <Reveal key={m.title} delay={i * 0.07} className="h-full">
                 <div className="h-full rounded-xl4 bg-white p-7 shadow-soft transition duration-200 hover:-translate-y-2 hover:-rotate-1 hover:shadow-lift">
@@ -92,7 +93,7 @@ export default function ProgramsPage() {
                 </div>
               </Reveal>
             ))}
-          </div>
+          </SwipeRail>
 
           <Reveal delay={0.1}>
             <div className="relative mt-8 min-h-[340px] overflow-hidden rounded-xl4 shadow-soft sm:min-h-[420px]">
@@ -113,7 +114,7 @@ export default function ProgramsPage() {
 
       {/* The payoff. This is the page's closing argument, so it gets the weight
           of a band rather than sitting in a card beside a photograph. */}
-      <Section className="pt-0">
+      <Section className="pt-0 sm:pt-0">
         <Container>
           <Reveal>
             <div className="relative overflow-hidden rounded-xl4 bg-gradient-to-br from-emerald to-emerald-deep px-8 py-16 text-center text-cream shadow-lift sm:px-14">

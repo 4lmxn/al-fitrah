@@ -6,6 +6,7 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { RainbowWords } from "@/components/ui/Rainbow";
+import { SwipeRail } from "@/components/ui/SwipeRail";
 import { CareersForm } from "@/components/pages/CareersForm";
 import { listActiveOpenings } from "@/lib/jobOpenings";
 
@@ -67,9 +68,9 @@ export default async function CareersPage() {
         subtitle="We're always looking for nurturing, qualified educators who believe in honouring the natural goodness in every child."
       />
 
-      <Section className="pt-0">
+      <Section className="pt-0 sm:pt-0">
         <Container>
-          <div className="grid gap-6 md:grid-cols-3">
+          <SwipeRail label="Why work at Al Fitrah" cols={3}>
             {values.map((v, i) => (
               <Reveal key={v.title} delay={i * 0.06} className="h-full">
                 <div className="h-full rounded-xl4 bg-white p-7 shadow-soft">
@@ -81,7 +82,7 @@ export default async function CareersPage() {
                 </div>
               </Reveal>
             ))}
-          </div>
+          </SwipeRail>
         </Container>
       </Section>
 

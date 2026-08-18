@@ -8,6 +8,7 @@ import { PageHero } from "@/components/ui/PageHero";
 import { FeatureCard, TONES } from "@/components/ui/FeatureCard";
 import { Reveal } from "@/components/ui/Reveal";
 import { Doodle } from "@/components/ui/Doodle";
+import { SwipeRail } from "@/components/ui/SwipeRail";
 import { RainbowWords } from "@/components/ui/Rainbow";
 import { DayTimeline, FactSection } from "@/components/pages/FactSections";
 import { facts } from "@/content/facts";
@@ -31,11 +32,11 @@ export default function CampusLifePage() {
     <>
       <PageHero eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.subtitle} highlight={["joyful"]} />
 
-      <Section className="relative overflow-hidden pt-0">
+      <Section className="relative overflow-hidden pt-0 sm:pt-0">
         <Doodle kind="star" color="#ee7f82" motion="twinkle" className="left-[5%] top-4 w-5" />
         <Doodle kind="dot" color="#7cc15e" motion="twinkle" className="bottom-8 right-[6%] w-4" />
         <Container className="relative z-10">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <SwipeRail label="Campus photographs" cols={3} className="sm:gap-8">
             {gallery.map((tile, i) => (
               <Reveal key={tile.title} delay={i * 0.05}>
                 <figure className="text-center">
@@ -49,7 +50,7 @@ export default function CampusLifePage() {
                 </figure>
               </Reveal>
             ))}
-          </div>
+          </SwipeRail>
         </Container>
       </Section>
 
@@ -62,13 +63,13 @@ export default function CampusLifePage() {
             <h2 className="text-3xl sm:text-4xl"><RainbowWords text={rhythm.title} words={["rhythm"]} /></h2>
             <p className="mt-4 text-lg text-ink/70">{rhythm.subtitle}</p>
           </Reveal>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
+          <SwipeRail label="The daily rhythm" cols={3} className="mt-12">
             {rhythm.items.map((item, i) => (
               <Reveal key={item.title} delay={i * 0.08} className="h-full">
                 <FeatureCard {...item} tone={TONES[i % TONES.length]} />
               </Reveal>
             ))}
-          </div>
+          </SwipeRail>
         </Container>
       </Section>
 

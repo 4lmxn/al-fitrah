@@ -210,12 +210,13 @@ export function FeesPanel({
       </ActionForm>
 
       {payments.length > 0 && (
-        <table className="mt-5 w-full text-left text-sm">
+        <div className="mt-5 -mx-2 overflow-x-auto px-2">
+        <table className="w-full min-w-[22rem] text-left text-sm">
           <thead className="text-[11px] uppercase tracking-wide text-ink/45">
             <tr>
               <th className="pb-2 font-semibold">Receipt</th>
               <th className="pb-2 font-semibold">Date</th>
-              <th className="pb-2 font-semibold">Method</th>
+              <th className="hidden pb-2 font-semibold sm:table-cell">Method</th>
               <th className="pb-2 text-right font-semibold">Amount</th>
             </tr>
           </thead>
@@ -227,7 +228,7 @@ export function FeesPanel({
                   {p.reference && <span className="ml-2 text-xs text-ink/40">{p.reference}</span>}
                 </td>
                 <td className="py-2.5 text-ink/70">{fmtDate(p.receivedAtMs)}</td>
-                <td className="py-2.5 text-ink/70">{p.method}</td>
+                <td className="hidden py-2.5 text-ink/70 sm:table-cell">{p.method}</td>
                 <td className={`py-2.5 text-right tabular-nums font-semibold ${p.amountPaise < 0 ? "text-red-700" : "text-emerald-deep"}`}>
                   {formatPaise(p.amountPaise)}
                 </td>
@@ -235,6 +236,7 @@ export function FeesPanel({
             ))}
           </tbody>
         </table>
+        </div>
       )}
 
       <p className="mt-4 border-t border-emerald/10 pt-3 text-[11px] text-ink/45">

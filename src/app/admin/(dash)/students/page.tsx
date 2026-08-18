@@ -104,7 +104,8 @@ export default async function StudentsPage({
             </p>
           </div>
         ) : (
-          <table className="w-full text-left text-sm">
+          <div className="-mx-2 overflow-x-auto px-2">
+          <table className="w-full min-w-[20rem] text-left text-sm">
             <thead className="border-b border-emerald/10 bg-cream/40 text-[11px] uppercase tracking-wide text-ink/45">
               <tr>
                 <th className="px-5 py-3 font-semibold">Admission no.</th>
@@ -150,6 +151,7 @@ export default async function StudentsPage({
               })}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

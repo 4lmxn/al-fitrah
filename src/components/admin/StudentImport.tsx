@@ -116,8 +116,8 @@ export function StudentImport() {
           <p className="border-b border-emerald/10 bg-cream/40 px-5 py-3 text-sm font-semibold text-emerald-deep">
             {state.preview.length} {state.preview.length === 1 ? "row" : "rows"} ready — check them, then import
           </p>
-          <div className="max-h-80 overflow-y-auto">
-            <table className="w-full text-left text-sm">
+          <div className="max-h-80 overflow-auto">
+            <table className="w-full min-w-[34rem] text-left text-sm">
               <thead className="sticky top-0 bg-cream/60 text-[11px] uppercase tracking-wide text-ink/45">
                 <tr>
                   <th className="px-4 py-2 font-semibold">Admission no.</th>

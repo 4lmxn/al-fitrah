@@ -347,7 +347,8 @@ export function InboxBoard({
             )}
           </div>
         ) : (
-          <table className="w-full text-left text-sm">
+          <div className="-mx-2 overflow-x-auto px-2">
+          <table className="w-full min-w-[20rem] text-left text-sm">
             <thead className="border-b border-emerald/10 bg-cream/40 text-[11px] uppercase tracking-wide text-ink/45">
               <tr>
                 <th className="px-5 py-3">
@@ -471,6 +472,7 @@ export function InboxBoard({
               })}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

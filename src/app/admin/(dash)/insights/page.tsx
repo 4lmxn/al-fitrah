@@ -58,7 +58,8 @@ export default async function InsightsPage() {
           {sources.length === 0 ? (
             <p className="mt-5 text-sm text-ink/45">No enquiries yet.</p>
           ) : (
-            <table className="mt-4 w-full text-left text-sm">
+            <div className="mt-4 -mx-2 overflow-x-auto px-2">
+            <table className="w-full min-w-[20rem] text-left text-sm">
               <thead className="text-[11px] uppercase tracking-wide text-ink/45">
                 <tr>
                   <th className="pb-2 font-semibold">Channel</th>
@@ -76,6 +77,7 @@ export default async function InsightsPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
           <p className="mt-4 border-t border-emerald/10 pt-3 text-[11px] text-ink/45">
             Tag links with <code className="rounded bg-emerald/8 px-1 py-0.5">?utm_source=…</code> to attribute a campaign.

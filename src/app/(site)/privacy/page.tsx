@@ -73,8 +73,8 @@ export default async function PrivacyPage() {
             <h2 className="text-2xl text-emerald-deep">What we collect</h2>
             <div className="mt-6 grid gap-5 sm:grid-cols-2">
               {collect.map((c) => (
-                <div key={c.title} className="rounded-xl3 border border-emerald/10 bg-white/80 p-7 shadow-soft">
-                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald/8 text-emerald ring-1 ring-emerald/10">
+                <div key={c.title} className="rounded-xl4 bg-white p-7 shadow-soft">
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald/10 text-emerald">
                     <Icon name={c.icon} className="text-[22px]" />
                   </span>
                   <h3 className="mt-4 text-lg text-emerald-deep">{c.title}</h3>
@@ -97,7 +97,7 @@ export default async function PrivacyPage() {
           </Reveal>
 
           <Reveal className="mt-12">
-            <div className="rounded-xl3 border border-emerald/10 bg-cream-deep/60 p-8 shadow-soft">
+            <div className="rounded-xl4 bg-cream-deep/60 p-8 shadow-soft">
               <h2 className="text-2xl text-emerald-deep">How we protect it</h2>
               <div className="mt-4 space-y-4 leading-relaxed text-ink/75">
                 <p>Inquiry submissions are stored securely on Google Firebase infrastructure and are accessible only to authorised Al Fitrah admissions staff. We do not sell, rent, or trade your personal information.</p>
@@ -130,7 +130,7 @@ export default async function PrivacyPage() {
                 <li key={r.what} className="flex gap-3 text-ink/75">
                   <Icon name="schedule" className="mt-0.5 shrink-0 text-[20px] text-gold" />
                   <span>
-                    <b className="font-semibold text-emerald-deep">{r.what}</b> — {r.how}
+                    <b className="font-semibold text-emerald-deep">{r.what}</b>: {r.how}
                   </span>
                 </li>
               ))}
@@ -155,7 +155,7 @@ export default async function PrivacyPage() {
                 <li key={p.name} className="flex gap-3 text-ink/75">
                   <Icon name="cloud" className="mt-0.5 shrink-0 text-[20px] text-gold" />
                   <span>
-                    <b className="font-semibold text-emerald-deep">{p.name}</b> — {p.role}
+                    <b className="font-semibold text-emerald-deep">{p.name}</b>: {p.role}
                   </span>
                 </li>
               ))}
@@ -175,11 +175,11 @@ export default async function PrivacyPage() {
           </Reveal>
 
           <Reveal className="mt-12">
-            <div className="rounded-xl3 bg-emerald-deep p-8 text-cream shadow-lift">
+            <div className="rounded-xl4 bg-gradient-to-br from-emerald to-emerald-deep p-8 text-cream shadow-lift">
               <h2 className="text-2xl text-cream">Grievance officer</h2>
               <p className="mt-3 text-cream/80">
-                If you have a question or a complaint about how we handle your information — including
-                a request to see, correct or delete it — contact:
+                If you have a question or a complaint about how we handle your information, including
+                a request to see, correct or delete it, contact:
               </p>
               <div className="mt-5 space-y-1 text-cream/90">
                 <p className="font-semibold">{school.grievanceOfficerName || school.name}</p>

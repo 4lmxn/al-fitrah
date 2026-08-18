@@ -68,7 +68,7 @@ export async function pageMeta(
   { title, description }: { title: string; description: string },
 ): Promise<Metadata> {
   const BRAND_NAME = await getBrandName();
-  const fullTitle = `${title} — ${BRAND_NAME}`;
+  const fullTitle = `${title} | ${BRAND_NAME}`;
   return {
     title,
     description,

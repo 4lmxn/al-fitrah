@@ -18,7 +18,7 @@ export function SubmitErrorFallback({
     <div
       role="alert"
       className={`space-y-3 rounded-xl px-4 py-3.5 ${
-        dark ? "bg-cream/10 ring-1 ring-gold/30" : "border border-red-200 bg-red-50"
+        dark ? "bg-cream/10 " : "border border-red-200 bg-red-50"
       }`}
     >
       <p className={`text-sm font-medium ${dark ? "text-gold-light" : "text-red-700"}`}>

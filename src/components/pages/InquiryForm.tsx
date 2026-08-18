@@ -6,12 +6,12 @@ import { SubmitErrorFallback } from "@/components/pages/SubmitErrorFallback";
 import { AGE_BANDS } from "@/lib/leadSchema";
 
 const field =
-  "w-full rounded-xl border border-emerald/15 bg-cream/40 px-4 py-3 text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20 placeholder:text-ink/35";
-const labelCls = "block text-sm font-semibold text-emerald-deep";
+  "w-full rounded-2xl border-2 border-emerald/15 bg-cream/50 px-4 py-3 text-ink outline-none transition focus:border-emerald placeholder:text-ink/50";
+const labelCls = "block font-display text-sm font-semibold text-emerald-deep";
 
 const AGE_BAND_LABELS: Record<(typeof AGE_BANDS)[number], string> = {
   below: "Below 2 years 10 months",
-  eligible: "2y 10m – 3y 10m (Pre-KG eligible)",
+  eligible: "2y 10m - 3y 10m (Pre-KG eligible)",
   above: "Above 3 years 10 months",
 };
 
@@ -79,7 +79,7 @@ export function InquiryForm({ programs }: { programs: string[] }) {
       }
       setStatus("success");
     } catch {
-      setError("Network error — your enquiry didn't send.");
+      setError("Network error. Your enquiry didn't send.");
       setStatus("error");
     } finally {
       clearTimeout(timer);
@@ -92,7 +92,7 @@ export function InquiryForm({ programs }: { programs: string[] }) {
         <span className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald text-cream">
           <Icon name="check" className="text-[26px]" />
         </span>
-        <h3 className="text-xl text-emerald-deep">Thank you — we&apos;ve received your inquiry</h3>
+        <h3 className="text-xl text-emerald-deep">Thank you, we&apos;ve received your inquiry</h3>
         <p className="text-ink/70">Our admissions team will be in touch shortly, in shaa Allah.</p>
       </div>
     );

@@ -37,17 +37,17 @@ export default async function ContactPage() {
   ];
   return (
     <>
-      <PageHero eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.subtitle} />
+      <PageHero eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.subtitle} highlight={["love"]} />
 
       <Section className="pt-0">
         <Container className="grid gap-6 lg:grid-cols-12">
           <Reveal className="lg:col-span-5">
-            <div className="h-full rounded-xl3 border border-emerald/10 bg-white/80 p-8 shadow-soft">
+            <div className="h-full rounded-xl4 bg-white p-8 shadow-soft">
               <h2 className="border-b border-emerald/10 pb-4 text-2xl text-emerald-deep">Contact details</h2>
               <ul className="mt-6 space-y-6">
                 {rows.map((r) => (
                   <li key={r.label} className="flex items-start gap-4">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald/8 text-emerald ring-1 ring-emerald/10">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald/10 text-emerald">
                       <Icon name={r.icon} className="text-[22px]" />
                     </span>
                     <div>
@@ -86,7 +86,7 @@ export default async function ContactPage() {
             </div>
           </Reveal>
           <Reveal delay={0.1} className="lg:col-span-7">
-            <div className="relative h-full min-h-[360px] overflow-hidden rounded-xl3 border border-emerald/10 shadow-soft">
+            <div className="relative h-full min-h-[360px] overflow-hidden rounded-xl4 shadow-soft">
               <MapEmbed
                 embedUrl={school.mapsEmbedUrl}
                 directionsUrl={school.mapsDirectionsUrl}
@@ -102,7 +102,7 @@ export default async function ContactPage() {
       <Section id="message" className="pt-0">
         <Container className="max-w-3xl">
           <Reveal>
-            <div className="rounded-xl3 border border-emerald/10 bg-white/80 p-8 shadow-soft sm:p-10">
+            <div className="rounded-xl4 bg-white p-8 shadow-soft sm:p-10">
               <h2 className="text-2xl text-emerald-deep">Send us a message</h2>
               <p className="mt-2 text-ink/70">
                 Tell us a little about your child and we&apos;ll get back to you. Prefer to talk? Call or
@@ -119,7 +119,7 @@ export default async function ContactPage() {
       <Section className="pt-0">
         <Container>
           <Reveal>
-            <div className="relative overflow-hidden rounded-xl3 bg-emerald-deep p-10 text-center text-cream shadow-lift sm:p-14">
+            <div className="relative overflow-hidden rounded-xl4 bg-gradient-to-br from-emerald to-emerald-deep p-10 text-center text-cream shadow-lift sm:p-14">
               <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-gold/15 blur-3xl" aria-hidden />
               <span className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-gold/15 text-gold-light ring-1 ring-gold/20">
                 <Icon name="schedule" className="text-[28px]" />

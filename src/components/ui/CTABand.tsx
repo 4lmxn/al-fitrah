@@ -2,6 +2,7 @@ import { Container } from "./Container";
 import { Section } from "./Section";
 import { Button } from "./Button";
 import { Icon } from "./Icon";
+import { Doodle } from "./Doodle";
 
 export function CTABand({
   title,
@@ -17,12 +18,14 @@ export function CTABand({
   return (
     <Section>
       <Container>
-        <div className="relative overflow-hidden rounded-xl3 bg-emerald-deep px-8 py-16 text-center text-cream shadow-lift">
-          {/* depth: geometric texture + soft gold glow + emerald wash, no flat fill */}
+        <div className="relative overflow-hidden rounded-xl4 bg-gradient-to-br from-emerald to-emerald-deep px-8 py-16 text-center text-cream shadow-lift">
+          {/* depth: geometric texture + soft gold glow, then a sun bleeding off
+              the corner so the band reads hand-made rather than stamped */}
           <div className="bg-geo-on-emerald pointer-events-none absolute inset-0 opacity-70" aria-hidden />
           <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-gold/15 blur-3xl" aria-hidden />
-          <div className="pointer-events-none absolute -bottom-20 -left-10 h-64 w-64 rounded-full bg-emerald/40 blur-3xl" aria-hidden />
-          <div className="relative">
+          <Doodle kind="sun" color="#e3c97c" motion="none" className="-right-5 -top-6 w-28 opacity-40" />
+          <Doodle kind="star" color="#e3c97c" motion="twinkle" className="bottom-8 left-8 w-6 opacity-60" />
+          <div className="relative z-10">
             <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gold/15 text-gold-light ring-1 ring-gold/20">
               <Icon name={icon} className="text-[32px]" />
             </span>

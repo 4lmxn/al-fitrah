@@ -42,7 +42,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           <Icon name="arrow_back" className="text-[18px]" /> All news &amp; events
         </Link>
 
-        <span className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-emerald/8 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-emerald-deep">
+        <span className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-emerald/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-emerald-deep">
           <Icon name={post.type === "event" ? "event" : "campaign"} className="text-[14px]" />
           {POST_TYPE_LABEL[post.type]}
         </span>
@@ -55,7 +55,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
         {post.imageUrl && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={post.imageUrl} alt="" className="mt-7 w-full rounded-xl3 object-cover shadow-soft" />
+          <img src={post.imageUrl} alt="" className="mt-7 w-full rounded-xl4 object-cover shadow-soft" />
         )}
 
         {/* Rendered as plain paragraphs, never as HTML. The editor is a plain

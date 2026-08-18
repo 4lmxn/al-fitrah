@@ -12,7 +12,7 @@ export function Accordion({ items }: { items: FaqItem[] }) {
         const isOpen = open === i;
         const panelId = `${uid}-panel-${i}`;
         return (
-          <div key={it.q} className={`overflow-hidden rounded-2xl border bg-white/80 shadow-soft transition-colors ${isOpen ? "border-emerald/30" : "border-emerald/10"}`}>
+          <div key={it.q} className={`overflow-hidden rounded-xl3 bg-white shadow-soft transition ${isOpen ? "ring-2 ring-emerald/30" : ""}`}>
             <button
               type="button"
               aria-expanded={isOpen}
@@ -20,8 +20,12 @@ export function Accordion({ items }: { items: FaqItem[] }) {
               onClick={() => setOpen(isOpen ? null : i)}
               className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left focus-visible:outline"
             >
-              <span className="font-semibold text-emerald-deep">{it.q}</span>
-              <Icon name="expand_more" className={`shrink-0 text-ink/50 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+              <span className="font-display text-lg font-semibold text-emerald-deep">{it.q}</span>
+              {/* A plus that rotates into a cross — friendlier than a chevron and
+                  it reads as "add"/"close" at a glance. */}
+              <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full bg-emerald/10 text-emerald transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`}>
+                <Icon name="add" className="text-[20px]" />
+              </span>
             </button>
             {/* inert hides collapsed text from AT/find-in-page without breaking the grid-rows animation */}
             <div id={panelId} inert={!isOpen} aria-hidden={!isOpen} className={`grid transition-all duration-300 ease-out ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>

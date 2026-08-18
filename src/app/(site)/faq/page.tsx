@@ -35,7 +35,7 @@ export default function FaqPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(faqJsonLd) }} />
-      <PageHero eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.subtitle} />
+      <PageHero eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.subtitle} highlight={["questions"]} />
 
       <Section className="pt-0">
         <Container className="grid gap-10 lg:grid-cols-12">

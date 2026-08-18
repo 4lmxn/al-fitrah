@@ -11,7 +11,7 @@ export const about: AboutPage = {
   },
   mission: {
     title: "Our mission",
-    body: "To give children a strong start in both Deen and Dunya — a modern academic foundation taught alongside everyday Islamic learning, with care and patience.",
+    body: "To give children a strong start in both Deen and Dunya: a modern academic foundation taught alongside everyday Islamic learning, with care and patience.",
   },
   vision: {
     title: "Growing the whole child",
@@ -19,11 +19,11 @@ export const about: AboutPage = {
   },
   team: {
     title: "Guided by experts",
-    subtitle: "Our teachers are the heart of Al Fitrah — patient with young children, and steady on both learning and good character.",
+    subtitle: "Our teachers are the heart of Al Fitrah. They are patient with young children, and steady on both learning and good character.",
     image: "/images/circle-time.png",
     imageAlt: "An Al Fitrah teacher leading circle time with children, illustrated",
     points: [
-      { icon: "verified", title: "Authentic Qur'anic method", body: "Our teaching is rooted in the Noor-ul-Bayan System — developed in Egypt and delivered in India through Anjuman Taleemul Qur'an, Calicut, with whom Al Fitrah is proudly affiliated." },
+      { icon: "verified", title: "Authentic Qur'anic method", body: "Our teaching is rooted in the Noor-ul-Bayan System, developed in Egypt and delivered in India through Anjuman Taleemul Qur'an, Calicut, with whom Al Fitrah is proudly affiliated." },
       { icon: "favorite", title: "Nurturing methodology", body: "We pair the Oxford Early Learning Curriculum with Islamic values, treating every child with respect and empathy to build calm confidence." },
     ],
   },
@@ -41,9 +41,9 @@ export const programs: ProgramsPage = {
     eyebrow: "Our programme",
     title: "A 3-year integrated program.",
     subtitle:
-      "Three years that pair a solid academic foundation with daily Qur'an and Islamic learning — preparing your child for school, and for life.",
+      "Three years that pair a solid academic foundation with daily Qur'an and Islamic learning, preparing your child for school, and for life.",
     stats: [
-      { icon: "child_care", label: "Age group", value: "2.10 – 3.10 yrs" },
+      { icon: "child_care", label: "Age group", value: "2.10 - 3.10 yrs" },
       { icon: "schedule", label: "Duration", value: "3 years" },
     ],
   },
@@ -66,7 +66,7 @@ export const programs: ProgramsPage = {
     spiritual: {
       title: "Learning through play",
       tags: ["Hands-on", "Storytelling", "Art & craft"],
-      body: "Children learn best when engaged — sensory play, role play, and group activities build confidence, curiosity, and social skills.",
+      body: "Children learn best when engaged. Sensory play, role play, and group activities build confidence, curiosity, and social skills.",
     },
     image: "/images/real/classroom.jpg",
     imageAlt: "A bright, glass-fronted classroom at Al Fitrah with soft play equipment",
@@ -76,7 +76,7 @@ export const programs: ProgramsPage = {
     eyebrow: "By the end of 3 years",
     title: "Program outcomes",
     quote: "Read the Qur'an fluently and memorize up to 2 Juz, with a strong Arabic and academic foundation.",
-    body: "By completion, In Sha Allah, students read the Qur'an fluently, grasp basic Tajweed, Aqeedah and Hadith, and are academically prepared for Grade 1 of any recognized school — grounded in faith for life.",
+    body: "By completion, In Sha Allah, students read the Qur'an fluently, grasp basic Tajweed, Aqeedah and Hadith, and are academically prepared for Grade 1 of any recognized school, grounded in faith for life.",
     cta: { label: "View full syllabus", href: "/syllabus", variant: "primary" },
     image: "/images/real/welcome-board.jpg",
     imageAlt: "A colourful 'Welcome Back to School' board at Al Fitrah Pre School",
@@ -85,7 +85,7 @@ export const programs: ProgramsPage = {
 
 export const admissions: AdmissionsPage = {
   hero: {
-    eyebrow: "Admissions 2026–27",
+    eyebrow: "Admissions 2026-27",
     title: "Secure your child's place.",
     subtitle:
       "Admissions are at the Pre-KG entry level for children aged 2 years 10 months to 3 years 10 months. The process is clear, supportive, and welcoming to every family.",
@@ -94,7 +94,7 @@ export const admissions: AdmissionsPage = {
     title: "Admissions process",
     steps: [
       { icon: "edit_note", title: "Submit inquiry", body: "Fill out the form to express interest and share a few basic details." },
-      { icon: "tour", title: "Campus visit", body: "Drop by during school hours (9:00 AM – 1:30 PM) to experience our nurturing environment." },
+      { icon: "tour", title: "Campus visit", body: "Drop by during school hours (9:00 AM - 1:30 PM) to experience our nurturing environment." },
       { icon: "groups", title: "Interaction", body: "A brief, friendly meeting to understand your child's needs." },
       { icon: "verified", title: "Enrollment", body: "Complete the paperwork and secure your child's spot." },
     ],
@@ -116,7 +116,7 @@ export const campus: CampusPage = {
     eyebrow: "Campus life",
     title: "A calm, joyful daily rhythm.",
     subtitle:
-      "A calm, structured day built around learning, play, and Qur'an — with room for every child to grow at their own pace.",
+      "A calm, structured day built around learning, play, and Qur'an, with room for every child to grow at their own pace.",
   },
   gallery: [
     { title: "A warm welcome", caption: "Our bright, welcoming entrance", image: "/images/real/entrance-wide.jpg" },
@@ -147,14 +147,14 @@ export const faq: FaqPage = {
     {
       id: "admissions", icon: "assignment", category: "Admissions process",
       items: [
-        { q: "What is the ideal age to enroll my child?", a: "Admissions are at our Pre-KG entry level for children aged 2 years 10 months to 3 years 10 months. The program is a continuous three-year journey — Pre-KG, Junior KG, then Senior KG — so we do not offer direct entry into Junior or Senior KG." },
+        { q: "What is the ideal age to enroll my child?", a: "Admissions are at our Pre-KG entry level for children aged 2 years 10 months to 3 years 10 months. The program is a continuous three-year journey (Pre-KG, Junior KG, then Senior KG), so we do not offer direct entry into Junior or Senior KG." },
         { q: "Do you require an assessment or interview prior to admission?", a: "We hold a brief, friendly interaction with the child and family. It is not a formal test, but a chance to understand your child's needs and ensure our philosophy aligns with your family's values." },
       ],
     },
     {
       id: "islamic", icon: "menu_book", category: "Islamic curriculum (Noor-ul-Bayan)",
       items: [
-        { q: "How is the Qur'an taught at Al Fitrah?", a: "Through the Noor-ul-Bayan System, children build Qur'an reading, fluency, and Tajweed, and memorize up to 2 Juz of selected Surahs across the three years — integrated into the daily rhythm alongside Aqeedah, Hadith, and Du'as, not as a separate intensive track." },
+        { q: "How is the Qur'an taught at Al Fitrah?", a: "Through the Noor-ul-Bayan System, children build Qur'an reading, fluency, and Tajweed, and memorize up to 2 Juz of selected Surahs across the three years, integrated into the daily rhythm alongside Aqeedah, Hadith, and Du'as, not as a separate intensive track." },
         { q: "Does my child need prior Arabic knowledge to join?", a: "No prior knowledge is required. The Noor-ul-Bayan method starts from the foundations and supports every child individually, so each progresses at their own pace." },
       ],
     },
@@ -187,67 +187,67 @@ export const parent: ParentPage = {
     subtitle: "Academic calendars, uniform guidance, and the practical details families ask about most.",
   },
   resources: [
-    { icon: "event", title: "Academic calendar", body: "Holidays, assessments, parent meetings, and celebrations for 2026–27 — see the full year below.", action: "See dates below", large: true },
+    { icon: "event", title: "Academic calendar", body: "Holidays, assessments, parent meetings, and celebrations for 2026-27. See the full year below.", action: "See dates below", large: true },
     { icon: "styler", title: "Uniform guidelines", body: "Modest, comfortable attire requirements.", action: "Read more" },
     { icon: "menu_book", title: "Parent handbook", body: "Policies, procedures, and core values.", action: "Read more" },
     { icon: "volunteer_activism", title: "Get involved", body: "Volunteer opportunities for parents.", action: "Read more" },
   ],
   academicCalendar: {
-    title: "Academic Year 2026–27",
-    subtitle: "The key dates families need through the year. A few dates are tentative and may shift slightly — we'll always confirm ahead of time.",
+    title: "Academic Year 2026-27",
+    subtitle: "The key dates families need through the year. A few dates are tentative and may shift slightly, and we'll always confirm ahead of time.",
     note: "Returning students reopen on 3 June 2026. Pre-KG (Beginners) orientation is 6 June, with classes from 8 June.",
     groups: [
       {
         icon: "celebration",
         title: "Celebrations & special days",
         items: [
-          "Red Day — 25 Jun",
-          "Green Day — 9 Jul",
-          "Fruit Day — 23 Jul",
-          "Independence Day celebration — 14 Aug",
-          "Blue Day — 10 Sep",
-          "School picnic — 15 Oct",
-          "Professions Day — 5 Nov",
-          "Sports Day — 28 Nov",
-          "Yellow Day — 3 Dec",
-          "Number Day — 7 Jan",
-          "Annual Day — 30 Jan (tentative)",
+          "Red Day - 25 Jun",
+          "Green Day - 9 Jul",
+          "Fruit Day - 23 Jul",
+          "Independence Day celebration - 14 Aug",
+          "Blue Day - 10 Sep",
+          "School picnic - 15 Oct",
+          "Professions Day - 5 Nov",
+          "Sports Day - 28 Nov",
+          "Yellow Day - 3 Dec",
+          "Number Day - 7 Jan",
+          "Annual Day - 30 Jan (tentative)",
         ],
       },
       {
         icon: "fact_check",
         title: "Assessments & parent meetings",
         items: [
-          "Assessment 1 — 16–24 Sep",
-          "PTM 1 — 26 Sep",
-          "Assessment 2 — 10–18 Dec",
-          "PTM 2 — 2 Jan",
-          "Assessment 3 — 17–25 Mar",
-          "PTM 3 — 27 Mar",
+          "Assessment 1 - 16-24 Sep",
+          "PTM 1 - 26 Sep",
+          "Assessment 2 - 10-18 Dec",
+          "PTM 2 - 2 Jan",
+          "Assessment 3 - 17-25 Mar",
+          "PTM 3 - 27 Mar",
         ],
       },
       {
         icon: "beach_access",
         title: "Breaks & vacations",
         items: [
-          "Winter break — 24–29 Dec (reopens 30 Dec)",
-          "Ramadan & Eid break — 1–14 Mar (reopens 15 Mar)",
-          "Last working day — 31 Mar (tentative)",
-          "Summer vacation — 1 Apr – 31 May",
+          "Winter break - 24-29 Dec (reopens 30 Dec)",
+          "Ramadan & Eid break - 1-14 Mar (reopens 15 Mar)",
+          "Last working day - 31 Mar (tentative)",
+          "Summer vacation - 1 Apr - 31 May",
         ],
       },
       {
         icon: "event_busy",
         title: "Public holidays",
         items: [
-          "Muharram — 26 Jun",
-          "Independence Day — 15 Aug",
-          "Ganesh Chaturthi — 14 Sep",
-          "Gandhi Jayanti — 2 Oct",
-          "Dussehra — 19–21 Oct",
-          "Diwali — 9 Nov",
-          "Sankranti — 15 Jan",
-          "Republic Day — 26 Jan",
+          "Muharram - 26 Jun",
+          "Independence Day - 15 Aug",
+          "Ganesh Chaturthi - 14 Sep",
+          "Gandhi Jayanti - 2 Oct",
+          "Dussehra - 19-21 Oct",
+          "Diwali - 9 Nov",
+          "Sankranti - 15 Jan",
+          "Republic Day - 26 Jan",
         ],
       },
     ],
@@ -271,9 +271,9 @@ export const contact: ContactPage = {
   hours: {
     title: "Visit us",
     rows: [
-      { label: "School hours", value: "9:00 AM – 1:30 PM" },
+      { label: "School hours", value: "9:00 AM - 1:30 PM" },
       { label: "Campus visits", value: "Walk in during school hours" },
     ],
-    note: "You're welcome to visit during school hours — no appointment needed. Feel free to call or message ahead if you'd like.",
+    note: "You're welcome to visit during school hours, no appointment needed. Feel free to call or message ahead if you'd like.",
   },
 };

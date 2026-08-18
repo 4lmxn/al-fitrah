@@ -1,13 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Baloo_2, Nunito } from "next/font/google";
 import "./globals.css";
 import { SITE_URL, getBrandName, schoolJsonLd, jsonLdHtml } from "@/lib/seo";
 import { getSettings } from "@/lib/settings";
 import { Analytics } from "@/components/Analytics";
 import { ICON_NAMES } from "@/components/ui/Icon";
 
-const sans = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const display = Playfair_Display({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-playfair", display: "swap" });
+// Rounded and friendly, per the approved design direction: Baloo 2 carries the
+// display voice, Nunito the body. Both are variable-weight, so the two families
+// together cost about what Playfair + Inter did.
+const sans = Nunito({ subsets: ["latin"], variable: "--font-nunito", display: "swap" });
+const display = Baloo_2({ subsets: ["latin"], variable: "--font-baloo", display: "swap" });
 
 
 
@@ -21,10 +24,10 @@ export const viewport: Viewport = {
 export async function generateMetadata(): Promise<Metadata> {
   const [{ school }, BRAND_NAME] = await Promise.all([getSettings(), getBrandName()]);
   const description = school.tagline;
-  const homeTitle = `${BRAND_NAME} — Islamic Preschool in Bengaluru`;
+  const homeTitle = `${BRAND_NAME} | Islamic Preschool in Bengaluru`;
   return {
     metadataBase: new URL(SITE_URL),
-    title: { default: homeTitle, template: `%s — ${BRAND_NAME}` },
+    title: { default: homeTitle, template: `%s | ${BRAND_NAME}` },
     description,
     applicationName: BRAND_NAME,
     keywords: [

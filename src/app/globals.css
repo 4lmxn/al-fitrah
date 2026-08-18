@@ -3,6 +3,10 @@
 @source not "../../design";
 
 @theme {
+  /* ---------------------------------------------------------------------
+     BRAND — unchanged. Emerald and gold are the school's colours and stay
+     exactly as they were. Everything below them is additive.
+     --------------------------------------------------------------------- */
   --color-emerald: #065f46;
   --color-emerald-dark: #044235;
   --color-emerald-deep: #004532;
@@ -13,13 +17,64 @@
   --color-cream: #faf7f0;
   --color-ink: #1c1917;
   --color-cream-deep: #f3ecdf;
-  --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-display: var(--font-playfair), Georgia, serif;
+
+  /* ---------------------------------------------------------------------
+     PLAYFUL ACCENTS — doodles, illustrations, rainbow letters and card
+     tints only. Never a primary button, never a brand surface.
+     --------------------------------------------------------------------- */
+  --color-coral: #ee7f82;
+  --color-coral-soft: #fde9e9;
+  --color-sky: #6fb2f0;
+  --color-sky-soft: #e6f1fd;
+  --color-grape: #b38cf4;
+  --color-grape-soft: #efe6fd;
+  --color-leaf: #7cc15e;
+  --color-leaf-soft: #e9f5e3;
+
+  --font-sans: var(--font-nunito), system-ui, sans-serif;
+  --font-display: var(--font-baloo), "Baloo 2", system-ui, sans-serif;
+
   --radius-xl2: 1.25rem;
   --radius-xl3: 1.75rem;
+  --radius-xl4: 2.5rem;
   /* Emerald-tinted depth — no flat black shadows */
   --shadow-soft: 0 1px 2px rgba(6, 95, 70, 0.06), 0 18px 40px -28px rgba(6, 95, 70, 0.30);
   --shadow-lift: 0 2px 4px rgba(6, 95, 70, 0.08), 0 30px 60px -32px rgba(6, 95, 70, 0.45);
+
+  /* Floating doodle motion. Slow and small — background life, not a circus. */
+  --animate-bob: bob 6s ease-in-out infinite;
+  --animate-bob2: bob2 7s ease-in-out infinite;
+  --animate-sway: sway 5s ease-in-out infinite;
+  --animate-spin-slow: spin 42s linear infinite;
+  --animate-twinkle: twinkle 3.5s ease-in-out infinite;
+  --animate-morph: morph 12s ease-in-out infinite;
+  --animate-pulsering: pulsering 2.4s ease-out infinite;
+
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  @keyframes bob2 {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-10px) rotate(5deg); }
+  }
+  @keyframes sway {
+    0%, 100% { transform: rotate(-7deg); }
+    50% { transform: rotate(7deg); }
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: .25; transform: scale(.8); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+  @keyframes morph {
+    0%, 100% { border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%; }
+    50% { border-radius: 44% 56% 44% 56% / 54% 44% 56% 46%; }
+  }
+  @keyframes pulsering {
+    0% { transform: scale(.9); opacity: .6; }
+    70% { transform: scale(1.7); opacity: 0; }
+    100% { opacity: 0; }
+  }
 }
 
 @layer utilities {
@@ -31,6 +86,19 @@
   .bg-geo-on-emerald {
     background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23faf7f0' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   }
+
+  /* Organic photo frames. `.blob` breathes; the numbered wobbles are static
+     hand-cut shapes for gallery grids. */
+  .blob {
+    border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
+    animation: var(--animate-morph);
+  }
+  .wobble-1 { border-radius: 60% 40% 45% 55% / 55% 55% 45% 45%; }
+  .wobble-2 { border-radius: 45% 55% 60% 40% / 50% 45% 55% 50%; }
+  .wobble-3 { border-radius: 50% 50% 40% 60% / 60% 40% 55% 45%; }
+  .wobble-4 { border-radius: 55% 45% 55% 45% / 45% 60% 40% 55%; }
+  /* Arch — a mihrab silhouette, rounded top, squared feet. */
+  .arch { border-radius: 999px 999px 2rem 2rem; }
 }
 
 @layer base {
@@ -43,7 +111,9 @@
     background-attachment: fixed;
   }
   h1, h2, h3 {
-    @apply font-display font-semibold tracking-tight text-ink;
+    @apply font-display font-bold tracking-normal text-ink;
+    /* Baloo 2 is a rounded display face — it wants tighter leading than a serif */
+    line-height: 1.12;
     /* Balance display headings so a single word never orphans on its own line */
     text-wrap: balance;
   }
@@ -63,5 +133,16 @@
     direction: ltr;
     -webkit-font-feature-settings: "liga";
     -webkit-font-smoothing: antialiased;
+  }
+
+  /* One switch kills every decorative loop on the page. The doodles are
+     ambience; nobody should have to sit through them to read an admissions
+     page. Framer Motion reveals opt out separately via useReducedMotion. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
   }
 }

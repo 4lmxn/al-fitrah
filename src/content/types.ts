@@ -5,13 +5,29 @@ export type Site = {
   branch: string;
   tagline: string;
   ctaLabel: string;
+  /** Top announcement bar. Split so one phrase can be picked out in gold. */
+  announcement: { before: string; highlight: string; after: string };
   nav: NavItem[];
 };
 export type Home = {
-  hero: { eyebrow: string; title: string; subtitle: string; cta: Cta; image: string; imageAlt: string; badge: string };
+  hero: {
+    eyebrow: string;
+    title: string;
+    /** Words inside `title` to render in rainbow letters. */
+    rainbow: string[];
+    subtitle: string;
+    cta: Cta;
+    image: string;
+    imageAlt: string;
+    badge: string;
+    /** Small facts that float over the hero photo. */
+    chips: { icon: string; label: string }[];
+  };
+  /** Count-up strip. `value` animates from zero when scrolled into view. */
+  stats: { value: number; suffix?: string; label: string }[];
   quickFacts: { icon: string; label: string; value: string }[];
-  approach: { eyebrow: string; title: string; items: { icon: string; title: string; body: string }[] };
-  highlights: { title: string; caption: string; image: string }[];
+  approach: { eyebrow: string; title: string; rainbow: string[]; subtitle: string; items: { icon: string; title: string; body: string }[] };
+  highlights: { eyebrow: string; title: string; rainbow: string[]; subtitle: string; tiles: { title: string; caption: string; image: string }[] };
   welcome: { eyebrow: string; title: string; body: string[]; by: string; role: string };
   seats: { title: string; subtitle: string; cta: Cta };
   contact: { title: string; subtitle: string; address: string; phone: string; email: string; image: string; imageAlt: string };

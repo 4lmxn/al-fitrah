@@ -12,7 +12,7 @@ export function CaptureForm({
   source,
   cta = "Register interest",
   successTitle = "You're on the list",
-  successBody = "Thank you — our admissions team will be in touch soon, in shaa Allah.",
+  successBody = "Thank you. Our admissions team will be in touch soon, in shaa Allah.",
   onSuccess,
   dark = false,
 }: {
@@ -73,7 +73,7 @@ export function CaptureForm({
       }
       setStatus("success");
     } catch {
-      setError("Network error — that didn't send.");
+      setError("Network error. That didn't send.");
       setStatus("error");
     } finally {
       clearTimeout(timer);
@@ -81,8 +81,8 @@ export function CaptureForm({
   }
 
   const field = dark
-    ? "w-full rounded-xl border border-cream/20 bg-cream/10 px-4 py-3 text-cream outline-none transition focus:border-gold placeholder:text-cream/40"
-    : "w-full rounded-xl border border-emerald/15 bg-cream/40 px-4 py-3 text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20 placeholder:text-ink/35";
+    ? "w-full rounded-2xl border-2 border-cream/20 bg-cream/10 px-4 py-3 text-cream outline-none transition focus:border-gold placeholder:text-cream/70"
+    : "w-full rounded-2xl border-2 border-emerald/15 bg-cream/50 px-4 py-3 text-ink outline-none transition focus:border-emerald placeholder:text-ink/50";
 
   if (status === "success") {
     return (

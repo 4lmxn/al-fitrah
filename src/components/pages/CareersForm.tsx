@@ -4,8 +4,8 @@ import { Icon } from "@/components/ui/Icon";
 import { MAX_CV_BYTES, ACCEPTED_CV_TYPES } from "@/lib/applicationSchema";
 
 const field =
-  "w-full rounded-xl border border-emerald/15 bg-cream/40 px-4 py-3 text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20 placeholder:text-ink/35";
-const labelCls = "block text-sm font-semibold text-emerald-deep";
+  "w-full rounded-2xl border-2 border-emerald/15 bg-cream/50 px-4 py-3 text-ink outline-none transition focus:border-emerald placeholder:text-ink/50";
+const labelCls = "block font-display text-sm font-semibold text-emerald-deep";
 
 type Status = "idle" | "submitting" | "success" | "error";
 type FieldErrors = Record<string, string[]>;
@@ -81,7 +81,7 @@ export function CareersForm({ roles }: { roles: string[] }) {
         <span className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald text-cream">
           <Icon name="check" className="text-[26px]" />
         </span>
-        <h3 className="text-xl text-emerald-deep">Thank you — we&apos;ve received your application</h3>
+        <h3 className="text-xl text-emerald-deep">Thank you, we&apos;ve received your application</h3>
         <p className="text-ink/70">Our team will review it and be in touch if there&apos;s a fit, in shaa Allah.</p>
       </div>
     );
@@ -131,7 +131,7 @@ export function CareersForm({ roles }: { roles: string[] }) {
         <FieldError id="message-error" errors={fieldErrors.message} />
       </div>
       <div className="space-y-2">
-        <label className={labelCls} htmlFor="cv">CV / Resume * <span className="font-normal text-ink/50">(PDF, DOC, DOCX — max 5 MB)</span></label>
+        <label className={labelCls} htmlFor="cv">CV / Resume * <span className="font-normal text-ink/50">(PDF, DOC, DOCX, max 5 MB)</span></label>
         <input id="cv" name="cv" type="file" required accept={ACCEPTED_CV_TYPES.join(",")} className={`${field} cursor-pointer file:mr-3 file:rounded-full file:border-0 file:bg-emerald file:px-4 file:py-1.5 file:text-cream`} />
       </div>
 

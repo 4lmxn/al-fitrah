@@ -14,7 +14,7 @@ import { InquiryForm } from "@/components/pages/InquiryForm";
 export async function generateMetadata(): Promise<Metadata> {
   return pageMeta("/admissions", {
   title: "Admissions",
-  description: "Pre-KG admissions for 2026–27 at Al Fitrah Pre School, Sarjapura, Bengaluru — a clear, welcoming process for children aged 2y10m–3y10m. Enquire today.",
+  description: "Pre-KG admissions for 2026-27 at Al Fitrah Pre School, Sarjapura, Bengaluru. A clear, welcoming process for children aged 2y10m-3y10m. Enquire today.",
 });
 }
 
@@ -30,21 +30,21 @@ export default async function AdmissionsPage() {
   const { hero, process, assist, form } = admissions;
   return (
     <>
-      <PageHero eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.subtitle} />
+      <PageHero eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.subtitle} highlight={["place"]} />
 
       <Section className="pt-0">
         <Container className="grid gap-8 lg:grid-cols-12">
           {/* Process + assistance */}
           <div className="space-y-8 lg:col-span-5">
             <Reveal>
-              <div className="rounded-xl3 border border-emerald/10 bg-white/80 p-8 shadow-soft">
+              <div className="rounded-xl4 bg-white p-8 shadow-soft">
                 <h2 className="flex items-center gap-3 text-2xl text-emerald-deep">
                   <Icon name="list_alt" className="text-gold" /> {process.title}
                 </h2>
                 <ol className="mt-8 space-y-7">
                   {process.steps.map((s, i) => (
                     <li key={s.title} className="flex gap-4">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald/8 font-display text-lg text-emerald ring-1 ring-emerald/10">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald/10 font-display text-lg text-emerald">
                         {i + 1}
                       </span>
                       <div>
@@ -57,7 +57,7 @@ export default async function AdmissionsPage() {
               </div>
             </Reveal>
             <Reveal delay={0.1}>
-              <div className="relative overflow-hidden rounded-xl3 bg-emerald-deep p-8 text-cream shadow-lift">
+              <div className="relative overflow-hidden rounded-xl4 bg-gradient-to-br from-emerald to-emerald-deep p-8 text-cream shadow-lift">
                 <div className="pointer-events-none absolute -bottom-14 -right-10 h-48 w-48 rounded-full bg-gold/15 blur-3xl" aria-hidden />
                 <h2 className="text-2xl text-cream">{assist.title}</h2>
                 <ul className="mt-6 space-y-4 text-cream/85">
@@ -75,7 +75,7 @@ export default async function AdmissionsPage() {
           </div>
           {/* Form */}
           <Reveal delay={0.1} className="lg:col-span-7">
-            <div id="enroll" className="scroll-mt-28 rounded-xl3 border border-emerald/10 bg-white/80 p-8 shadow-soft sm:p-10">
+            <div id="enroll" className="scroll-mt-28 rounded-xl4 bg-white p-8 shadow-soft sm:p-10">
               <h2 className="text-2xl text-emerald-deep">{form.title}</h2>
               <p className="mt-2 text-ink/70">{form.subtitle}</p>
               {/* Privacy consent line lives inside InquiryForm so admissions

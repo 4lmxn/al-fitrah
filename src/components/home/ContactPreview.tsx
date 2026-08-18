@@ -5,25 +5,27 @@ import { Section } from "@/components/ui/Section";
 import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
+import { Doodle } from "@/components/ui/Doodle";
 
 const rows = (c: typeof home.contact) => [
-  { icon: "location_on", label: "Address", value: c.address },
-  { icon: "call", label: "Phone", value: c.phone },
-  { icon: "mail", label: "Email", value: c.email },
+  { icon: "location_on", label: "Address", value: c.address, tint: "bg-emerald/10 text-emerald" },
+  { icon: "call", label: "Phone", value: c.phone, tint: "bg-coral-soft text-coral" },
+  { icon: "mail", label: "Email", value: c.email, tint: "bg-grape-soft text-grape" },
 ];
 
 export function ContactPreview() {
   const { contact } = home;
   return (
-    <Section>
-      <Container className="grid items-center gap-10 lg:grid-cols-2">
+    <Section className="relative overflow-hidden">
+      <Doodle kind="cloud" color="#dbeafe" motion="bob2" className="left-[4%] top-[10%] hidden w-12 lg:block" />
+      <Container className="relative z-10 grid items-center gap-10 lg:grid-cols-2">
         <Reveal>
           <h2 className="text-3xl sm:text-4xl">{contact.title}</h2>
           <p className="mt-4 max-w-md text-lg leading-relaxed text-ink/70">{contact.subtitle}</p>
           <ul className="mt-8 space-y-5">
             {rows(contact).map((r) => (
               <li key={r.label} className="flex items-start gap-4">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald/8 text-emerald ring-1 ring-emerald/10">
+                <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${r.tint}`}>
                   <Icon name={r.icon} className="text-[22px]" />
                 </span>
                 <div>
@@ -38,7 +40,7 @@ export function ContactPreview() {
           </div>
         </Reveal>
         <Reveal delay={0.1}>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-xl3 border border-emerald/10 shadow-soft">
+          <div className="arch relative aspect-[4/3] overflow-hidden border-[6px] border-white shadow-lift">
             <Image src={contact.image} alt={contact.imageAlt} fill sizes="(min-width: 1024px) 46vw, 100vw" className="object-cover" />
           </div>
         </Reveal>

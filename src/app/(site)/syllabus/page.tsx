@@ -6,6 +6,10 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
 import { CTABand } from "@/components/ui/CTABand";
 import { Reveal } from "@/components/ui/Reveal";
+import { Doodle } from "@/components/ui/Doodle";
+import { RainbowWords } from "@/components/ui/Rainbow";
+import { TONES } from "@/components/ui/FeatureCard";
+import { cn } from "@/lib/cn";
 
 // Async because the brand comes from configuration; a module-scope
 // constant cannot await, which is what kept school identity hardcoded.
@@ -16,9 +20,20 @@ export async function generateMetadata(): Promise<Metadata> {
 });
 }
 
+// Same tint set the shared FeatureCard uses, applied here because these cards
+// carry a different layout.
+const tints = {
+  emerald: "bg-emerald/10 text-emerald",
+  gold: "bg-gold-soft text-gold",
+  coral: "bg-coral-soft text-coral",
+  grape: "bg-grape-soft text-grape",
+  sky: "bg-sky-soft text-sky",
+  leaf: "bg-leaf-soft text-leaf",
+};
+
 const strands = [
   { icon: "menu_book", title: "Qur'an & Tajweed", body: "Qur'an reading and fluency with the rules of recitation, building toward memorization of up to 2 Juz of selected Surahs by the end of the program." },
-  { icon: "translate", title: "Arabic — Noor-ul-Bayan", body: "Letter recognition, joining, and reading fluency using the Noor-ul-Bayan System (Anjuman Taleemul Qur'an, Calicut)." },
+  { icon: "translate", title: "Arabic with Noor-ul-Bayan", body: "Letter recognition, joining, and reading fluency using the Noor-ul-Bayan System (Anjuman Taleemul Qur'an, Calicut)." },
   { icon: "auto_awesome", title: "Aqeedah, Hadith & manners", body: "Islamic beliefs, Hadith, daily Du'as, and Islamic etiquettes (adab) woven gently through the day." },
   { icon: "language", title: "English & literacy", body: "Phonics, letter recognition, vocabulary, listening & speaking, and early reading & writing readiness (Oxford Early Learning)." },
   { icon: "calculate", title: "Mathematics", body: "Number recognition, counting, patterns, shapes, and logical thinking & problem solving." },
@@ -27,7 +42,7 @@ const strands = [
 
 const years = [
   {
-    year: "Year 1 · Pre-KG (Beginner / Level 0) — entry 2y10m–3y10m",
+    year: "Year 1 · Pre-KG (Beginner / Level 0), entry 2y10m-3y10m",
     points: [
       "Settling in, routines, and circle time; building confidence and language.",
       "Qur'an: short Surahs by listening and repetition; Noor-ul-Bayan letter foundations.",
@@ -61,21 +76,23 @@ export default function SyllabusPage() {
       <PageHero
         eyebrow="3-year integrated program"
         title="Our syllabus."
-        subtitle="A balanced journey across Qur'an, Arabic, English, Mathematics, and character — building strong foundations for both Deen and Dunya."
+        highlight={["syllabus"]}
+        subtitle="A balanced journey across Qur'an, Arabic, English, Mathematics, and character, building strong foundations for both Deen and Dunya."
       />
 
-      <Section className="pt-0">
-        <Container>
+      <Section className="relative overflow-hidden pt-0">
+        <Doodle kind="sparkle" color="#b38cf4" motion="twinkle" className="right-[7%] top-6 w-5" />
+        <Container className="relative z-10">
           <Reveal className="max-w-2xl">
-            <h2 className="text-3xl sm:text-4xl">Learning strands</h2>
+            <h2 className="text-3xl sm:text-4xl"><RainbowWords text="Learning strands" words={["strands"]} /></h2>
             <p className="mt-3 text-lg text-ink/70">Six connected strands run through every year of the program.</p>
           </Reveal>
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {strands.map((s, i) => (
               <Reveal key={s.title} delay={i * 0.05} className="h-full">
-                <div className="h-full rounded-xl3 border border-emerald/10 bg-white/80 p-7 shadow-soft">
-                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald/8 text-emerald ring-1 ring-emerald/10">
-                    <Icon name={s.icon} className="text-[24px]" />
+                <div className="h-full rounded-xl4 bg-white p-7 shadow-soft transition duration-200 hover:-translate-y-2 hover:-rotate-1 hover:shadow-lift">
+                  <span className={cn("inline-flex h-14 w-14 items-center justify-center rounded-2xl", tints[TONES[i % TONES.length]])}>
+                    <Icon name={s.icon} className="text-[26px]" />
                   </span>
                   <h3 className="mt-5 text-xl text-emerald-deep">{s.title}</h3>
                   <p className="mt-2 leading-relaxed text-ink/70">{s.body}</p>
@@ -89,15 +106,15 @@ export default function SyllabusPage() {
       <Section className="bg-cream-deep/60">
         <Container>
           <Reveal className="max-w-2xl">
-            <h2 className="text-3xl sm:text-4xl">Year by year</h2>
+            <h2 className="text-3xl sm:text-4xl"><RainbowWords text="Year by year" words={["year"]} /></h2>
             <p className="mt-3 text-lg text-ink/70">An indicative progression. Pace is adapted to each child and refined per cohort.</p>
           </Reveal>
           <div className="mt-10 space-y-6">
             {years.map((y, i) => (
               <Reveal key={y.year} delay={i * 0.06}>
-                <div className="rounded-xl3 border border-emerald/10 bg-white/80 p-8 shadow-soft">
+                <div className="rounded-xl4 bg-white p-8 shadow-soft">
                   <h3 className="flex items-center gap-3 text-xl text-emerald-deep">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald/8 font-display text-emerald ring-1 ring-emerald/10">{i + 1}</span>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald/10 font-display text-emerald">{i + 1}</span>
                     {y.year}
                   </h3>
                   <ul className="mt-5 grid gap-3 sm:grid-cols-2">

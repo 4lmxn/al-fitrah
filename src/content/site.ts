@@ -7,6 +7,11 @@ export const site: Site = {
   branch: "Sarjapura",
   tagline: "Where young hearts and minds grow with faith.",
   ctaLabel: "Enroll Now",
+  announcement: {
+    before: "Admissions open for ",
+    highlight: "2026-27",
+    after: " · Limited seats · Ages 2y10m-3y10m · Sompura Gate, Sarjapura",
+  },
   nav: [
     { label: "About", href: "/about" },
     { label: "Programs", href: "/programs" },

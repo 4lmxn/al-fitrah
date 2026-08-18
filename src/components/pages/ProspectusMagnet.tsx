@@ -12,9 +12,9 @@ export function ProspectusMagnet() {
   const pdfUrl = process.env.NEXT_PUBLIC_PROSPECTUS_URL;
 
   return (
-    <div className="grid items-center gap-8 rounded-xl3 border border-emerald/10 bg-white/80 p-8 shadow-soft sm:p-10 md:grid-cols-[1.1fr_1fr]">
+    <div className="grid items-center gap-8 rounded-xl4 bg-white p-8 shadow-soft sm:p-10 md:grid-cols-[1.1fr_1fr]">
       <div>
-        <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald/8 text-emerald ring-1 ring-emerald/10">
+        <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald/10 text-emerald">
           <Icon name="picture_as_pdf" className="text-[24px]" />
         </span>
         <h2 className="mt-5 text-2xl text-emerald-deep">Get the prospectus</h2>
@@ -39,7 +39,7 @@ export function ProspectusMagnet() {
             source="prospectus"
             cta="Send me the prospectus"
             successTitle="On its way"
-            successBody="Thank you — we'll send the prospectus to you shortly, in shaa Allah."
+            successBody="Thank you. We'll send the prospectus to you shortly, in shaa Allah."
             onSuccess={() => setDone(true)}
           />
         )}

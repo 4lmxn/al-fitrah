@@ -3,7 +3,7 @@ import { SchoolContactProvider } from "@/components/SchoolContact";
 import { waEnquiryLink } from "@/lib/seo";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
+import { FloatingLead } from "@/components/layout/FloatingLead";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
 
 // Marketing chrome lives here — admin routes sit outside this group, so they
@@ -27,7 +27,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         <main id="content">{children}</main>
         <Footer />
       </div>
-      <FloatingWhatsApp waBase={wa} />
+      <FloatingLead waBase={wa} />
     </SchoolContactProvider>
   );
 }

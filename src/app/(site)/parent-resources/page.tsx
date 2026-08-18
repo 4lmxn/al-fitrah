@@ -14,15 +14,19 @@ import { ProspectusMagnet } from "@/components/pages/ProspectusMagnet";
 export async function generateMetadata(): Promise<Metadata> {
   return pageMeta("/parent-resources", {
   title: "Parent Resources",
-  description: "Parent resources for Al Fitrah Pre School, Sarjapura — the 2026–27 academic calendar, uniform and handbook guidance, and ways to get involved.",
+  description: "Parent resources for Al Fitrah Pre School, Sarjapura: the 2026-27 academic calendar, uniform and handbook guidance, and ways to get involved.",
 });
 }
+
+// Same tint set the shared FeatureCard uses, applied here because these cards
+// carry a different layout.
+const tints = ["bg-emerald/10 text-emerald", "bg-coral-soft text-coral", "bg-grape-soft text-grape", "bg-gold-soft text-gold", "bg-sky-soft text-sky", "bg-leaf-soft text-leaf"];
 
 export default function ParentResourcesPage() {
   const { hero, resources, academicCalendar } = parent;
   return (
     <>
-      <PageHero eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.subtitle} />
+      <PageHero eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.subtitle} highlight={["resources"]} />
 
       <Section className="pt-0">
         <Container>
@@ -32,11 +36,11 @@ export default function ParentResourcesPage() {
                 {/* Informational cards — no downloads are live yet, so these are
                     not links. Families are pointed to the contact CTA below. */}
                 <div
-                  className={`group relative flex h-full flex-col justify-between overflow-hidden rounded-xl3 border border-emerald/10 bg-white/80 p-8 shadow-soft`}
+                  className={`group relative flex h-full flex-col justify-between overflow-hidden rounded-xl4 bg-white p-8 shadow-soft`}
                 >
                   <Icon name={r.icon} className={`pointer-events-none absolute -right-4 -top-2 text-emerald/5 ${r.large ? "text-[140px]" : "text-[96px]"}`} />
                   <div className="relative">
-                    <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald/8 text-emerald ring-1 ring-emerald/10">
+                    <span className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl ${tints[i % tints.length]}`}>
                       <Icon name={r.icon} className="text-[24px]" />
                     </span>
                     <h3 className={`mt-5 text-emerald-deep ${r.large ? "text-2xl" : "text-xl"}`}>{r.title}</h3>
@@ -51,7 +55,7 @@ export default function ParentResourcesPage() {
             <ProspectusMagnet />
           </Reveal>
 
-          <Reveal className="mt-6 flex flex-col items-center gap-4 rounded-xl3 border border-emerald/10 bg-emerald/5 p-8 text-center sm:flex-row sm:justify-between sm:text-left">
+          <Reveal className="mt-6 flex flex-col items-center gap-4 rounded-xl4 bg-emerald/5 p-8 text-center sm:flex-row sm:justify-between sm:text-left">
             <p className="max-w-xl leading-relaxed text-ink/75">
               Need the parent handbook or uniform details? Our team will share the latest copy with you directly.
             </p>
@@ -83,16 +87,16 @@ export default function ParentResourcesPage() {
           <div className="mt-8 grid gap-5 md:grid-cols-2">
             {academicCalendar.groups.map((g, i) => (
               <Reveal key={g.title} delay={i * 0.06} className="h-full">
-                <div className="flex h-full flex-col rounded-xl3 border border-emerald/10 bg-white/80 p-7 shadow-soft">
+                <div className="flex h-full flex-col rounded-xl4 bg-white p-7 shadow-soft">
                   <div className="flex items-center gap-3">
-                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald/8 text-emerald ring-1 ring-emerald/10">
+                    <span className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ${tints[i % tints.length]}`}>
                       <Icon name={g.icon} className="text-[22px]" />
                     </span>
                     <h3 className="text-xl text-emerald-deep">{g.title}</h3>
                   </div>
                   <ul className="mt-5 space-y-2.5">
                     {g.items.map((item) => {
-                      const [event, date] = item.split(" — ");
+                      const [event, date] = item.split(" - ");
                       return (
                         <li key={item} className="flex items-baseline justify-between gap-4 border-b border-emerald/5 pb-2.5 last:border-0 last:pb-0">
                           <span className="text-ink/75">{event}</span>

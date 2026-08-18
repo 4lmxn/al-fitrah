@@ -19,7 +19,7 @@ env:
   # Coming-soon holding page. "1" rewrites every public route to /coming-soon
   # (admin + API stay open). Set to "0" and redeploy to reveal the full site.
   - variable: NEXT_PUBLIC_COMING_SOON
-    value: "1"
+    value: "0"
     availability: [BUILD, RUNTIME]
 
   # Google Analytics 4 + Search Console. Inert until real values are pasted in

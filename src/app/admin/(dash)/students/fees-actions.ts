@@ -143,3 +143,133 @@ export async function recordPayment(formData: FormData): Promise<ActionResult> {
     revalidatePath("/admin/fees");
   });
 }
+
+/**
+ * Parse a date input into local midnight, or null for a deliberate clear.
+ *
+ * Local midnight because the buckets in lib/feeStatus compare against the
+ * school's start of day. `new Date("2026-08-20")` is parsed as UTC, which in IST
+ * lands at 5:30 AM on the 20th — close enough to look right in testing and
+ * wrong enough to put a due date on the previous day for anyone west of us.
+ */
+function parseDay(raw: string): Date | null | undefined {
+  const v = raw.trim();
+  if (v === "clear") return null;
+  if (!v) return undefined;
+  const d = new Date(`${v}T00:00:00`);
+  return Number.isNaN(d.getTime()) ? undefined : d;
+}
+
+/**
+ * Set (or clear) the date the outstanding balance falls due.
+ *
+ * Without this every family owing anything looks identical to the console, so
+ * the only available action is to message all of them on the same day — the
+ * blast that teaches parents school fee reminders are safe to ignore.
+ */
+export async function setFeeDueDate(formData: FormData): Promise<ActionResult> {
+  return attempt("setFeeDueDate", async () => {
+    const admin = await requireAdmin();
+    const id = clean(formData.get("id"), 60);
+    if (!id) return fail("Missing student id");
+
+    const due = parseDay(clean(formData.get("dueDate"), 20));
+    if (due === undefined) return fail("Pick a due date, or choose Clear.");
+
+    const db = getDb();
+    const batch = db.batch();
+    batch.update(db.collection(STUDENTS).doc(id), {
+      "fees.dueDate": due,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    queueAudit(db, batch, {
+      actor: admin.email,
+      action: "fee.due_date_set",
+      entity: { type: "student", id },
+      summary: due ? `Fee due ${due.toLocaleDateString("en-IN")}` : "Cleared the fee due date",
+      meta: { dueDateMs: due?.getTime() ?? null },
+    });
+    await batch.commit();
+
+    revalidatePath(`/admin/students/${id}`);
+    revalidatePath("/admin/fees");
+  });
+}
+
+/**
+ * Record that a parent said when they will pay.
+ *
+ * "I'll pay by next week" is the commonest reply to a fee reminder, and on
+ * paper it goes in the margin of a register and is forgotten by the time next
+ * week arrives. That forgotten callback is where most uncollected fees are
+ * actually lost — not to refusal, but to nobody following up.
+ *
+ * Storing the date does two things: it silences the chase until the date passes
+ * (so a parent who committed is not nagged in the meantime), and it puts them
+ * at the very top of the list the morning after it does.
+ */
+export async function logFeePromise(formData: FormData): Promise<ActionResult> {
+  return attempt("logFeePromise", async () => {
+    const admin = await requireAdmin();
+    const id = clean(formData.get("id"), 60);
+    if (!id) return fail("Missing student id");
+
+    const promised = parseDay(clean(formData.get("promisedDate"), 20));
+    if (promised === undefined) return fail("Pick the date they promised, or choose Clear.");
+    const note = clean(formData.get("promiseNote"), 300) || null;
+
+    const db = getDb();
+    const batch = db.batch();
+    batch.update(db.collection(STUDENTS).doc(id), {
+      "fees.promisedDate": promised,
+      "fees.promiseNote": promised ? note : null,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    queueAudit(db, batch, {
+      actor: admin.email,
+      action: promised ? "fee.promise_logged" : "fee.promise_cleared",
+      entity: { type: "student", id },
+      summary: promised
+        ? `Parent promised to pay by ${promised.toLocaleDateString("en-IN")}`
+        : "Cleared the payment promise",
+      meta: { promisedDateMs: promised?.getTime() ?? null, note },
+    });
+    await batch.commit();
+
+    revalidatePath(`/admin/students/${id}`);
+    revalidatePath("/admin/fees");
+  });
+}
+
+/**
+ * Note that a reminder went out.
+ *
+ * The WhatsApp message itself is sent from the staff member's own phone, so the
+ * system cannot observe it. Recording the click is the only signal available,
+ * and it is enough for the one job that matters: stopping a second staff member
+ * messaging the same family about the same balance an hour later.
+ */
+export async function markFeeReminded(formData: FormData): Promise<ActionResult> {
+  return attempt("markFeeReminded", async () => {
+    const admin = await requireAdmin();
+    const id = clean(formData.get("id"), 60);
+    if (!id) return fail("Missing student id");
+
+    const db = getDb();
+    const batch = db.batch();
+    batch.update(db.collection(STUDENTS).doc(id), {
+      "fees.lastRemindedAt": FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    queueAudit(db, batch, {
+      actor: admin.email,
+      action: "fee.reminder_sent",
+      entity: { type: "student", id },
+      summary: "Sent a fee reminder on WhatsApp",
+    });
+    await batch.commit();
+
+    revalidatePath(`/admin/students/${id}`);
+    revalidatePath("/admin/fees");
+  });
+}

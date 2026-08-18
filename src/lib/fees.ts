@@ -49,12 +49,33 @@ export type StudentFees = {
   paidPaise: number;
   /** Positive means the family still owes; negative means they overpaid. */
   balancePaise: number;
+  /**
+   * Collection state. A balance alone cannot tell an office who to ring today —
+   * see lib/feeStatus.ts for why these three fields exist and how they rank.
+   */
+  dueDateMs: number | null;
+  /** A date the parent named themselves. Silences the chase until it passes. */
+  promisedDateMs: number | null;
+  promiseNote: string | null;
+  /** Stops two staff members messaging the same family the same morning. */
+  lastRemindedMs: number | null;
 };
+
+const ms = (v: unknown): number | null =>
+  (v as { toMillis?: () => number } | undefined)?.toMillis?.() ?? null;
 
 export function feesOf(data: FirebaseFirestore.DocumentData | undefined): StudentFees {
   const totalPaise = Number(data?.fees?.totalPaise) || 0;
   const paidPaise = Number(data?.fees?.paidPaise) || 0;
-  return { totalPaise, paidPaise, balancePaise: totalPaise - paidPaise };
+  return {
+    totalPaise,
+    paidPaise,
+    balancePaise: totalPaise - paidPaise,
+    dueDateMs: ms(data?.fees?.dueDate),
+    promisedDateMs: ms(data?.fees?.promisedDate),
+    promiseNote: data?.fees?.promiseNote ?? null,
+    lastRemindedMs: ms(data?.fees?.lastRemindedAt),
+  };
 }
 
 function toPayment(d: FirebaseFirestore.QueryDocumentSnapshot): Payment {

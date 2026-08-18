@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { formatPaise } from "@/lib/money";
 import { type Payment, type StudentFees } from "@/lib/fees";
-import { setFeeTotal, recordPayment } from "@/app/admin/(dash)/students/fees-actions";
+import { setFeeTotal, recordPayment, setFeeDueDate, logFeePromise } from "@/app/admin/(dash)/students/fees-actions";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { Icon } from "@/components/ui/Icon";
+import { feeBucket, FEE_BUCKET_LABEL } from "@/lib/feeStatus";
 
 const field =
   "w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20";
@@ -32,9 +33,18 @@ export function FeesPanel({
   methods: string[];
 }) {
   const settled = fees.balancePaise <= 0 && fees.totalPaise > 0;
+  const bucket = feeBucket(fees);
+  const urgent = bucket === "broken" || bucket === "overdue";
+
+  const dayInput = (ms: number | null): string => {
+    if (!ms) return "";
+    const d = new Date(ms);
+    const p = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  };
 
   return (
-    <section className="mt-6 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
+    <section id="fees" className="mt-6 scroll-mt-24 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
           <Icon name="payments" className="text-[18px] text-gold" /> Fees
@@ -43,16 +53,18 @@ export function FeesPanel({
           className={`rounded-full px-3 py-1 text-xs font-semibold ${
             settled
               ? "bg-emerald/8 text-emerald-deep"
-              : fees.balancePaise > 0
+              : urgent
                 ? "bg-red-50 text-red-700"
-                : "bg-ink/5 text-ink/50"
+                : fees.balancePaise > 0
+                  ? "bg-gold-soft text-ink"
+                  : "bg-ink/5 text-ink/50"
           }`}
         >
           {fees.totalPaise === 0
             ? "No fee set"
             : settled
               ? "Settled"
-              : `${formatPaise(fees.balancePaise)} due`}
+              : `${formatPaise(fees.balancePaise)} · ${FEE_BUCKET_LABEL[bucket]}`}
         </span>
       </div>
 
@@ -90,6 +102,75 @@ export function FeesPanel({
         <button type="submit" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep ring-1 ring-emerald/20 transition hover:bg-emerald/5">
           Save total
         </button>
+      </ActionForm>
+
+      {/* When the balance falls due. Without it nothing can distinguish a family
+          who is late from one whose fee is not payable yet, and the only
+          available action becomes messaging all of them on the same day. */}
+      <ActionForm action={setFeeDueDate} className="mt-3 flex flex-wrap items-end gap-2">
+        <input type="hidden" name="id" value={studentId} />
+        <label className="block">
+          <span className={label}>Balance due on</span>
+          <input type="date" name="dueDate" defaultValue={dayInput(fees.dueDateMs)} className={`${field} w-44`} />
+        </label>
+        <button type="submit" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep ring-1 ring-emerald/20 transition hover:bg-emerald/5">
+          Save due date
+        </button>
+        {fees.dueDateMs && (
+          <button
+            type="submit"
+            name="dueDate"
+            value="clear"
+            className="rounded-full px-3 py-2 text-sm font-semibold text-ink/50 transition hover:text-ink"
+          >
+            Clear
+          </button>
+        )}
+      </ActionForm>
+
+      {/* "I'll pay by Friday" is the commonest reply to a fee reminder, and on
+          paper it is forgotten by the time Friday arrives. That forgotten
+          callback is where most uncollected fees are actually lost. Logging it
+          silences the chase until the date passes, then puts the family at the
+          top of the collection list the morning after. */}
+      <ActionForm action={logFeePromise} className="mt-3 rounded-xl border border-emerald/15 bg-cream/30 p-4">
+        <input type="hidden" name="id" value={studentId} />
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">
+          Parent promised to pay
+        </p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-[11rem_1fr]">
+          <label className="block">
+            <span className={label}>By</span>
+            <input type="date" name="promisedDate" defaultValue={dayInput(fees.promisedDateMs)} className={field} />
+          </label>
+          <label className="block">
+            <span className={label}>What they said</span>
+            <input
+              name="promiseNote"
+              defaultValue={fees.promiseNote ?? ""}
+              placeholder="After salary comes in, before the 5th"
+              className={field}
+            />
+          </label>
+        </div>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <button type="submit" className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep ring-1 ring-emerald/20 transition hover:bg-emerald/5">
+            <Icon name="handshake" className="text-[18px]" /> Log promise
+          </button>
+          {fees.promisedDateMs && (
+            <button
+              type="submit"
+              name="promisedDate"
+              value="clear"
+              className="rounded-full px-3 py-2 text-sm font-semibold text-ink/50 transition hover:text-ink"
+            >
+              Clear promise
+            </button>
+          )}
+          {fees.lastRemindedMs && (
+            <span className="text-[11px] text-ink/45">Last reminded {fmtDate(fees.lastRemindedMs)}</span>
+          )}
+        </div>
       </ActionForm>
 
       <ActionForm action={recordPayment} className="mt-5 rounded-xl border border-emerald/15 bg-cream/30 p-4">
@@ -159,7 +240,7 @@ export function FeesPanel({
       <p className="mt-4 border-t border-emerald/10 pt-3 text-[11px] text-ink/45">
         Showing the most recent {payments.length} {payments.length === 1 ? "payment" : "payments"}.{" "}
         <Link href="/admin/fees" className="font-semibold text-emerald hover:text-emerald-deep">
-          See everyone with dues
+          Go to fee collection
         </Link>
       </p>
     </section>

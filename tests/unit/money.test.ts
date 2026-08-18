@@ -71,7 +71,7 @@ describe("formatPaise", () => {
 
 describe("feesOf", () => {
   it("derives the balance", () => {
-    expect(feesOf({ fees: { totalPaise: 2_500_000, paidPaise: 1_000_000 } })).toEqual({
+    expect(feesOf({ fees: { totalPaise: 2_500_000, paidPaise: 1_000_000 } })).toMatchObject({
       totalPaise: 2_500_000,
       paidPaise: 1_000_000,
       balancePaise: 1_500_000,
@@ -79,8 +79,27 @@ describe("feesOf", () => {
   });
 
   it("treats a missing fee record as zeros, not NaN", () => {
-    expect(feesOf(undefined)).toEqual({ totalPaise: 0, paidPaise: 0, balancePaise: 0 });
-    expect(feesOf({})).toEqual({ totalPaise: 0, paidPaise: 0, balancePaise: 0 });
+    const empty = {
+      totalPaise: 0,
+      paidPaise: 0,
+      balancePaise: 0,
+      // Collection dates must come back null rather than undefined: the buckets
+      // in lib/feeStatus branch on `=== null`, and an undefined would classify a
+      // family with no schedule as though a date had been read and found absent.
+      dueDateMs: null,
+      promisedDateMs: null,
+      promiseNote: null,
+      lastRemindedMs: null,
+    };
+    expect(feesOf(undefined)).toEqual(empty);
+    expect(feesOf({})).toEqual(empty);
+  });
+
+  it("reads collection dates off Firestore timestamps", () => {
+    const ts = (ms: number) => ({ toMillis: () => ms });
+    expect(
+      feesOf({ fees: { totalPaise: 100, paidPaise: 0, dueDate: ts(1_700_000_000_000), promiseNote: "after salary" } }),
+    ).toMatchObject({ dueDateMs: 1_700_000_000_000, promisedDateMs: null, promiseNote: "after salary" });
   });
 
   it("reports an overpayment as a negative balance", () => {

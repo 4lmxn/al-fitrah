@@ -44,7 +44,7 @@ export default function ParentResourcesPage() {
                 {/* Informational cards — no downloads are live yet, so these are
                     not links. Families are pointed to the contact CTA below. */}
                 <div
-                  className={`group relative flex h-full flex-col justify-between overflow-hidden rounded-xl4 bg-white p-8 shadow-soft`}
+                  className={`group relative flex h-full flex-col justify-between overflow-hidden rounded-xl4 bg-white p-6 shadow-soft sm:p-8`}
                 >
                   <Icon name={r.icon} className={`pointer-events-none absolute -right-4 -top-2 text-emerald/5 ${r.large ? "text-[140px]" : "text-[96px]"}`} />
                   <div className="relative">
@@ -95,7 +95,7 @@ export default function ParentResourcesPage() {
           <SwipeRail label="Academic calendar" cols={2} className="mt-8 sm:gap-5">
             {academicCalendar.groups.map((g, i) => (
               <Reveal key={g.title} delay={i * 0.06} className="h-full">
-                <div className="flex h-full flex-col rounded-xl4 bg-white p-7 shadow-soft">
+                <div className="flex h-full flex-col rounded-xl4 bg-white p-6 shadow-soft sm:p-7">
                   <div className="flex items-center gap-3">
                     <span className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ${tints[i % tints.length]}`}>
                       <Icon name={g.icon} className="text-[22px]" />

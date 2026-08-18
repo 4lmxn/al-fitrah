@@ -17,7 +17,7 @@ export function Stats() {
         <SwipeRail label="Al Fitrah by the numbers" cols={3} cardClassName="w-[58%]">
           {home.stats.map((s, i) => (
             <Reveal key={s.label} delay={i * 0.08} className="h-full">
-              <div className="h-full rounded-xl3 bg-white px-7 py-6 text-center shadow-soft">
+              <div className="h-full rounded-xl3 bg-white px-5 py-6 text-center shadow-soft sm:px-7">
               <p className={`font-display text-[2.4rem] font-extrabold leading-none ${numberTone[i % numberTone.length]}`}>
                 <CountUp to={s.value} />
                 {s.suffix && <span className="text-xl">{s.suffix}</span>}

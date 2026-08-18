@@ -59,7 +59,7 @@ export function FactSection({
         <SwipeRail label={title} cols={3} className="mt-12">
           {items.map((item, i) => (
             <Reveal key={item.title} delay={i * 0.07} className="h-full">
-              <div className="h-full rounded-xl4 bg-white p-7 shadow-soft transition duration-200 hover:-translate-y-2 hover:-rotate-1 hover:shadow-lift">
+              <div className="h-full rounded-xl4 bg-white p-6 shadow-soft sm:p-7 transition duration-200 hover:-translate-y-2 hover:-rotate-1 hover:shadow-lift">
                 <span className={cn("grid h-14 w-14 place-items-center rounded-2xl", tints[TONES[i % TONES.length]])}>
                   <Icon name={item.icon} className="text-[26px]" />
                 </span>

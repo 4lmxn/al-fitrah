@@ -72,8 +72,11 @@ export function SwipeRail({
         <div
           key={i}
           className={cn(
-            // 82% leaves a deliberate sliver of the next card visible.
-            "w-[82%] shrink-0 snap-start sm:w-auto",
+            // 90% still leaves a visible sliver of the next card, but leaves a
+            // readable measure inside it. At 82% the text column fell to ~230px,
+            // about 28 characters a line, which is well under the 45–75 that
+            // prose needs — the rail was cheaper to scroll and worse to read.
+            "w-[90%] shrink-0 snap-start sm:w-auto",
             cardClassName,
             itemClassName?.(i),
           )}

@@ -65,7 +65,7 @@ export default function SyllabusPage() {
           <SwipeRail label="Six learning strands" cols={3} className="mt-10">
             {strands.map((s, i) => (
               <Reveal key={s.title} delay={i * 0.05} className="h-full">
-                <div className="h-full rounded-xl4 bg-white p-7 shadow-soft transition duration-200 hover:-translate-y-2 hover:-rotate-1 hover:shadow-lift">
+                <div className="h-full rounded-xl4 bg-white p-6 shadow-soft sm:p-7 transition duration-200 hover:-translate-y-2 hover:-rotate-1 hover:shadow-lift">
                   <span className={cn("inline-flex h-14 w-14 items-center justify-center rounded-2xl", tints[TONES[i % TONES.length]])}>
                     <Icon name={s.icon} className="text-[26px]" />
                   </span>

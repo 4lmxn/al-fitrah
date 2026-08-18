@@ -30,7 +30,7 @@ export function FeatureCard({
   tone?: Tone;
 }) {
   return (
-    <div className="group relative h-full overflow-hidden rounded-xl4 bg-white p-8 shadow-soft transition duration-200 hover:-translate-y-2 hover:-rotate-1 hover:shadow-lift">
+    <div className="group relative h-full overflow-hidden rounded-xl4 bg-white p-6 shadow-soft sm:p-8 transition duration-200 hover:-translate-y-2 hover:-rotate-1 hover:shadow-lift">
       <span className={cn("inline-flex h-16 w-16 items-center justify-center rounded-2xl", tones[tone])}>
         <Icon name={icon} className="text-[30px]" />
       </span>

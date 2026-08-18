@@ -67,10 +67,10 @@ export function ProgramLevels() {
         <SwipeRail label="The three years" cols={1} className="mt-14 sm:space-y-8">
           {levels.items.map((l, i) => (
             <Reveal key={l.name} delay={i * 0.06}>
-              <article className="grid gap-8 rounded-xl4 bg-white p-8 shadow-soft sm:p-10 lg:grid-cols-[auto_1fr]">
+              <article className="grid gap-8 rounded-xl4 bg-white p-6 shadow-soft sm:p-8 sm:p-10 lg:grid-cols-[auto_1fr]">
                 <div className="flex flex-row items-center gap-4 lg:w-56 lg:flex-col">
-                  <div className={cn("grid h-24 w-24 shrink-0 place-items-center rounded-[1.75rem] sm:h-40 sm:w-40 sm:rounded-[2.5rem]", artBg[i % artBg.length])}>
-                    <span className="[&>svg]:h-16 [&>svg]:w-16 sm:[&>svg]:h-28 sm:[&>svg]:w-28">
+                  <div className={cn("grid h-20 w-20 shrink-0 place-items-center rounded-[1.5rem] sm:h-40 sm:w-40 sm:rounded-[2.5rem]", artBg[i % artBg.length])}>
+                    <span className="[&>svg]:h-14 [&>svg]:w-14 sm:[&>svg]:h-28 sm:[&>svg]:w-28">
                       {illustrations[i % illustrations.length]}
                     </span>
                   </div>
@@ -80,18 +80,18 @@ export function ProgramLevels() {
                 </div>
 
                 <div>
-                  <h3 className="text-3xl text-emerald-deep">{l.name}</h3>
-                  <p className="mt-1 font-display text-base font-semibold text-ink/55">{l.stage}</p>
-                  <p className="mt-4 text-lg leading-relaxed text-ink/75">{l.summary}</p>
+                  <h3 className="text-2xl text-emerald-deep sm:text-3xl">{l.name}</h3>
+                  <p className="mt-1 font-display text-sm font-semibold text-ink/55 sm:text-base">{l.stage}</p>
+                  <p className="mt-3 leading-relaxed text-ink/75 sm:mt-4 sm:text-lg">{l.summary}</p>
 
-                  <dl className="mt-7 grid gap-5 sm:grid-cols-3">
+                  <dl className="mt-5 grid gap-4 sm:mt-7 sm:gap-5 sm:grid-cols-3">
                     {rows(l).map((r) => (
                       <div key={r.label}>
                         <dt className="flex items-center gap-2 font-display text-sm font-bold text-emerald">
                           <Icon name={r.icon} className="text-[18px]" />
                           {r.label}
                         </dt>
-                        <dd className="mt-1.5 text-sm leading-relaxed text-ink/70">{r.body}</dd>
+                        <dd className="mt-1 text-sm leading-relaxed text-ink/70">{r.body}</dd>
                       </div>
                     ))}
                   </dl>

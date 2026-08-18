@@ -73,7 +73,7 @@ export default async function CareersPage() {
           <SwipeRail label="Why work at Al Fitrah" cols={3}>
             {values.map((v, i) => (
               <Reveal key={v.title} delay={i * 0.06} className="h-full">
-                <div className="h-full rounded-xl4 bg-white p-7 shadow-soft">
+                <div className="h-full rounded-xl4 bg-white p-6 shadow-soft sm:p-7">
                   <span className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl ${tints[i % tints.length]}`}>
                     <Icon name={v.icon} className="text-[24px]" />
                   </span>
@@ -100,7 +100,7 @@ export default async function CareersPage() {
             <div className="mt-10 space-y-4">
               {openings.map((o, i) => (
                 <Reveal key={o.id} delay={i * 0.05}>
-                  <div className="flex flex-col gap-4 rounded-xl4 bg-white p-7 shadow-soft sm:flex-row sm:items-start sm:justify-between">
+                  <div className="flex flex-col gap-4 rounded-xl4 bg-white p-6 shadow-soft sm:p-7 sm:flex-row sm:items-start sm:justify-between">
                     <div className="max-w-xl">
                       <div className="flex flex-wrap items-center gap-3">
                         <h3 className="text-xl text-emerald-deep">{o.title}</h3>
@@ -135,7 +135,7 @@ export default async function CareersPage() {
       <Section>
         <Container className="max-w-3xl">
           <Reveal>
-            <div className="rounded-xl4 bg-white p-8 shadow-soft sm:p-10">
+            <div className="rounded-xl4 bg-white p-6 shadow-soft sm:p-8 sm:p-10">
               <h2 className="text-2xl text-emerald-deep">What we offer</h2>
               <ul className="mt-6 grid gap-3 sm:grid-cols-2">
                 {benefits.map((b) => (
@@ -153,7 +153,7 @@ export default async function CareersPage() {
       <Section id="apply" className="bg-cream-deep/60">
         <Container className="max-w-3xl">
           <Reveal>
-            <div className="rounded-xl4 bg-white p-8 shadow-soft sm:p-10">
+            <div className="rounded-xl4 bg-white p-6 shadow-soft sm:p-8 sm:p-10">
               <h2 className="text-2xl text-emerald-deep">Apply now</h2>
               <p className="mt-2 text-ink/70">Share your details and attach your CV. We review every application.</p>
               <div className="mt-8">

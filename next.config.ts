@@ -18,15 +18,39 @@ import type { NextConfig } from "next";
 //
 // ponytail: revisit if these pages ever become dynamic for another reason —
 // the nonce is then free.
+// Firebase Auth needs four origins that were missing, and their absence broke
+// sign-in outright: signInWithPopup loads the gapi helper from apis.google.com
+// to relay the popup's result back, and the browser refused it —
+//
+//   Refused to load https://apis.google.com/js/api.js?onload=__iframefcb...
+//   because it does not appear in the script-src directive
+//
+// with the console reporting only "Sign-in was cancelled or failed".
+//
+// This was not introduced by the move to Cloud Run. The header is byte-identical
+// on both deployments; the move merely forced a fresh sign-in, where an existing
+// five-day session cookie had been hiding it. Anyone signing in from a new
+// browser was already hitting this.
+//
+// Each addition is the narrowest host that works, not a wildcard:
+//   apis.google.com            the gapi iframe helper (script-src)
+//   al-fitrah.firebaseapp.com  the configured authDomain — hosts the auth
+//                              iframe and the popup handler (frame-src)
+//   accounts.google.com        Google's own account chooser (frame-src)
+//   identitytoolkit / securetoken   token exchange and refresh (connect-src)
+//
+// www.gstatic.com and www.google.com cover the invisible reCAPTCHA that gates
+// parent phone sign-in — the thing standing between a public form and an
+// unbounded SMS bill, so it must not be the next thing CSP quietly breaks.
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://apis.google.com https://www.gstatic.com https://www.google.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
   "img-src 'self' data: blob: https://firebasestorage.googleapis.com https://www.googletagmanager.com https://*.google-analytics.com",
-  "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
-  // The map embed is the only third party allowed to frame content in.
-  "frame-src https://www.google.com https://maps.google.com",
+  "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com",
+  // The map embed, plus the Firebase Auth handler and Google's account chooser.
+  "frame-src https://www.google.com https://maps.google.com https://al-fitrah.firebaseapp.com https://accounts.google.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

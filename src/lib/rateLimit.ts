@@ -17,7 +17,7 @@ import { getDb } from "@/lib/firebaseAdmin";
 //
 // Housekeeping: documents carry `expiresAt` for a Firestore TTL policy on the
 // `rateLimits` collection. Without that policy nothing breaks, the collection
-// just grows — see docs/aws-cloudflare.md.
+// just grows — see docs/deploy-cloudrun-cloudflare.md.
 
 const COLLECTION = "rateLimits";
 

@@ -22,7 +22,7 @@
 // every limit here. So trust is opt-in via TRUST_CLOUDFLARE_IP, and that flag
 // must not be set until the origin is locked to Cloudflare — Authenticated
 // Origin Pulls, or a firewall allowing only Cloudflare's published ranges.
-// See docs/aws-cloudflare.md. Default is off, which is correct today.
+// See docs/deploy-cloudrun-cloudflare.md. Default is off, which is correct today.
 const TRUST_CLOUDFLARE = process.env.TRUST_CLOUDFLARE_IP === "1";
 
 export function getClientIp(req: Request): string {

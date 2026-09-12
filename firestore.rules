@@ -19,6 +19,12 @@ service cloud.firestore {
     match /attendance/{doc=**} {
       allow read, write: if false;
     }
+    // Staff check-in: who was at work, when, and the coordinates they were at.
+    // Staff location history is personal data and the fence is only meaningful
+    // if the record cannot be written by the client it judges. Server-only.
+    match /staffAttendance/{doc=**} {
+      allow read, write: if false;
+    }
     // The fee ledger. Server-only, and append-only in application code — a
     // client able to write here could rewrite what a family has paid.
     match /payments/{doc=**} {
@@ -40,6 +46,12 @@ service cloud.firestore {
     match /posts/{doc=**} {
       allow read: if resource.data.published == true;
       allow write: if false;
+    }
+    // Rate-limit counters. Server-only: a client able to write here could
+    // reset its own counter and walk past every limit; one able to read gets
+    // a map of which keys are currently being throttled.
+    match /rateLimits/{doc=**} {
+      allow read, write: if false;
     }
     // Default: deny everything not explicitly allowed.
     match /{document=**} {

@@ -9,6 +9,7 @@
  *
  * Usage:
  *   node scripts/build-proposal.mjs            # write docs/proposal.html
+ *   node scripts/build-proposal.mjs docs/x.md  # write docs/x.html instead
  *   node scripts/build-proposal.mjs --pdf      # also render docs/proposal.pdf
  *   node scripts/build-proposal.mjs --selftest # assert the renderer still works
  *
@@ -21,9 +22,12 @@ import path from "node:path";
 import assert from "node:assert/strict";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const SRC = path.join(ROOT, "docs/proposal.md");
-const OUT_HTML = path.join(ROOT, "docs/proposal.html");
-const OUT_PDF = path.join(ROOT, "docs/proposal.pdf");
+const args = process.argv.slice(2);
+// Optional first non-flag argument picks a different source document, so a
+// second proposal renders through the same pipeline without a second script.
+const SRC = path.resolve(ROOT, args.find((a) => !a.startsWith("--")) ?? "docs/proposal.md");
+const OUT_HTML = SRC.replace(/\.md$/, ".html");
+const OUT_PDF = SRC.replace(/\.md$/, ".pdf");
 
 const escapeHtml = (s) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -251,7 +255,6 @@ function selftest() {
   console.log("selftest ok");
 }
 
-const args = process.argv.slice(2);
 if (args.includes("--selftest")) {
   selftest();
 } else {
@@ -265,7 +268,7 @@ if (args.includes("--selftest")) {
       console.log("wrote", path.relative(ROOT, OUT_PDF));
     } catch (err) {
       console.error("PDF render failed:", err.message.split("\n")[0]);
-      console.error("Open docs/proposal.html and print to PDF (Cmd+P), or run: npx playwright install chromium");
+      console.error("Open " + path.relative(ROOT, OUT_HTML) + " and print to PDF (Cmd+P), or run: npx playwright install chromium");
       process.exitCode = 1;
     }
   }

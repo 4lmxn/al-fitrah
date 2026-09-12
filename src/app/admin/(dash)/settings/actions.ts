@@ -95,10 +95,29 @@ export async function saveOperations(formData: FormData): Promise<ActionResult> 
     const low = Number(formData.get("lowAttendancePercent"));
     if (!Number.isInteger(low) || low < 0 || low > 100) return fail("Low-attendance threshold must be 0–100.");
 
+    const lat = Number(formData.get("campusLat"));
+    const lng = Number(formData.get("campusLng"));
+    const radiusM = Number(formData.get("campusRadiusM"));
+    const maxAccuracyM = Number(formData.get("campusMaxAccuracyM"));
+    const enforce = formData.get("campusEnforce") === "on";
+    if (!Number.isFinite(lat) || lat < -90 || lat > 90) return fail("Campus latitude must be between -90 and 90.");
+    if (!Number.isFinite(lng) || lng < -180 || lng > 180) return fail("Campus longitude must be between -180 and 180.");
+    if (!Number.isInteger(radiusM) || radiusM < 20 || radiusM > 5000) return fail("Campus radius must be 20–5000 m.");
+    if (!Number.isInteger(maxAccuracyM) || maxAccuracyM < 20 || maxAccuracyM > 2000) {
+      return fail("Location accuracy ceiling must be 20–2000 m.");
+    }
+    // Enforcing against an unset pin locks every teacher out of the register
+    // and leaves no one able to fix it from inside the app. Null Island is not
+    // a campus, so treat it as "pin not set yet" and refuse the combination.
+    if (enforce && lat === 0 && lng === 0) {
+      return fail("Set the campus latitude and longitude before switching enforcement on.");
+    }
+
     const res = await saveSettings({
       academicYear: { startMonth },
       attendance: {
         lowAttendancePercent: low,
+        campus: { lat, lng, radiusM, maxAccuracyM, enforce },
         // Checkbox per weekday; unchecked days simply aren't submitted.
         nonSchoolDays: [0, 1, 2, 3, 4, 5, 6].filter((d) => formData.get(`nonSchoolDay-${d}`) === "on"),
       },

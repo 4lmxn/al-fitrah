@@ -1,11 +1,22 @@
 # Firebase App Hosting config for the Al Fitrah Next.js app.
 # Server-side Firestore writes use Application Default Credentials automatically.
 runConfig:
-  # ⚠️ Do not raise without reading src/lib/rateLimit.ts first.
-  # Rate limiting is per-instance and in-memory: at N instances every limit
-  # becomes N times looser, silently. Move the counters to Firestore before
-  # scaling out.
-  maxInstances: 1
+  # Keep one instance warm. Measured cold start on this app was 2.7s TTFB on a
+  # server-rendered admin page against 0.18s warm — the entire perceived
+  # slowness of the system, paid every time the instance had scaled to zero
+  # (first visitor of the morning, every time).
+  #
+  # 💰 This is what ends the ₹0 free tier: an always-on instance bills around
+  # the clock, roughly ₹900-1,500/month. Set back to 0 to return to ₹0/month
+  # and 2.7s cold starts. That trade is the whole Firebase-vs-AWS question in
+  # one line — see docs/aws-cloudflare.md.
+  minInstances: 1
+
+  # Safe to raise now: rate-limit counters moved to Firestore, so limits are
+  # per-deployment rather than per-instance. (They were in-process memory,
+  # which silently made every limit N times looser at N instances — the reason
+  # this used to be pinned at 1.)
+  maxInstances: 2
 
 env:
   # Canonical origin for metadataBase, canonicals, sitemap.xml and JSON-LD.
@@ -15,6 +26,15 @@ env:
   - variable: NEXT_PUBLIC_SITE_URL
     value: "https://www.alfitrahsarjapura.in"
     availability: [BUILD, RUNTIME]
+
+  # ⚠️ Set to "1" ONLY once the origin cannot be reached except through
+  # Cloudflare (Authenticated Origin Pulls, or a firewall allowing only
+  # Cloudflare's published IP ranges). Until then CF-Connecting-IP is
+  # attacker-settable and trusting it removes rate limiting entirely.
+  # See src/lib/clientIp.ts and docs/aws-cloudflare.md.
+  - variable: TRUST_CLOUDFLARE_IP
+    value: "0"
+    availability: [RUNTIME]
 
   # Coming-soon holding page. "1" rewrites every public route to /coming-soon
   # (admin + API stay open). Set to "0" and redeploy to reveal the full site.

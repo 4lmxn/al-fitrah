@@ -195,6 +195,43 @@ export default async function SettingsPage() {
           </div>
 
           <div>
+            <span className={label}>Campus location (staff check-in)</span>
+            <p className="-mt-1 mb-3 text-xs text-ink/50">
+              Stand at the campus and check in on the attendance page — the card reports how far it
+              thinks you are from this pin. Correct these numbers until that reads near zero, then
+              switch enforcement on. Right-click the campus in Google Maps to copy its coordinates.
+            </p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block">
+                <span className={label}>Latitude</span>
+                <input type="number" step="any" name="campusLat" defaultValue={settings.attendance.campus.lat} className={field} />
+              </label>
+              <label className="block">
+                <span className={label}>Longitude</span>
+                <input type="number" step="any" name="campusLng" defaultValue={settings.attendance.campus.lng} className={field} />
+              </label>
+              <label className="block">
+                <span className={label}>Allowed radius (m)</span>
+                <input type="number" name="campusRadiusM" min={20} max={5000} defaultValue={settings.attendance.campus.radiusM} className={field} />
+              </label>
+              <label className="block">
+                <span className={label}>Reject fixes vaguer than (m)</span>
+                <input type="number" name="campusMaxAccuracyM" min={20} max={2000} defaultValue={settings.attendance.campus.maxAccuracyM} className={field} />
+              </label>
+            </div>
+            <label className="mt-3 flex items-start gap-2 rounded-lg border border-emerald/10 bg-cream/20 px-3 py-2 text-sm">
+              <input type="checkbox" name="campusEnforce" defaultChecked={settings.attendance.campus.enforce} className="mt-0.5 h-4 w-4 rounded accent-emerald" />
+              <span>
+                <span className="font-semibold text-ink/80">Block attendance marked away from campus</span>
+                <span className="block text-xs text-ink/50">
+                  Off: the distance is still recorded, nobody is stopped. On: check-in and the class
+                  register are both refused off-campus, and the attempt is written to the audit log.
+                </span>
+              </span>
+            </label>
+          </div>
+
+          <div>
             <span className={label}>Features</span>
             <div className="space-y-2">
               {([

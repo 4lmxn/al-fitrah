@@ -9,7 +9,7 @@ export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   const ip = getClientIp(req);
-  if (rateLimited(`login:${ip}`, { max: 10 })) {
+  if (await rateLimited(`login:${ip}`, { max: 10 })) {
     return NextResponse.json({ ok: false, error: "Too many attempts. Please try again shortly." }, { status: 429 });
   }
 

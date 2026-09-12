@@ -287,3 +287,58 @@ grievanceOfficer: {
 ```
 
 The boot warning disappears and the privacy page names them instead of the school.
+
+## 10. Campus geofence — a two-step activation, on purpose
+
+Staff check-in and the class register are both guarded by a distance check
+against a campus pin. It ships in **advisory** mode: every check-in records how
+far away it was, and nobody is refused.
+
+That is not timidity, it is the only safe order. The pin in
+`DEFAULT_SETTINGS` is an approximate reading for Sompura Gate. Enforcing against
+a pin that is 300 m out locks every teacher out of the register on day one, from
+a screen that offers them no way to fix it. So:
+
+1. **Week one — measure.** Leave enforcement off. Staff check in as normal. The
+   card on `/admin/attendance` reports the distance for every check-in, and so
+   does the audit log.
+2. **Correct the pin.** Stand at the campus, check in, read the distance. If it
+   says 180 m, the pin is wrong, not the teacher. Copy the real coordinates
+   (right-click the campus in Google Maps → click the lat,lng to copy) into
+   **Settings → Operations → Campus location**. Repeat until a check-in from the
+   gate reads near zero.
+3. **Widen the radius before enforcing, not after.** 150 m is the default. A
+   school occupying one floor of one building can go tighter; anywhere with a
+   playground or a car park should go wider. Too tight is indistinguishable from
+   a broken feature.
+4. **Then tick "Block attendance marked away from campus".** From that point a
+   check-in or a register save from off-campus is refused, and the attempt is
+   written to the audit log with its coordinates.
+
+The settings form refuses to enable enforcement while the pin is still `0,0`,
+which is the one configuration guaranteed to lock everyone out.
+
+### What it actually defends against
+
+Worth being straight with the school about this, because it is sold as a
+headline feature:
+
+- **Stops** a teacher opening the register at home and marking themselves in.
+  The browser reports a real position, the server refuses it, and the attempt is
+  on the record with coordinates.
+- **Does not stop** someone who opens developer tools and overrides the
+  geolocation sensor, or runs a browser with a mocked location. Browser
+  geolocation is supplied by the client and no amount of server-side work
+  changes that.
+
+It is a real control against casual abuse, and it leaves evidence either way. It
+is not proof of presence. If it ever needs to be, the next step is a native app
+reading the campus wifi BSSID, or a rotating code posted in the staff room —
+both of which move the secret off the client.
+
+### Requires HTTPS
+
+`navigator.geolocation` is refused on an insecure origin. The feature works on
+`localhost` and on the live HTTPS site, and will silently fail to get a position
+on any plain-HTTP hostname — which, in advisory mode, looks like everything
+working with no distances recorded.

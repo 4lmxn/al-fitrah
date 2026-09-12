@@ -12,9 +12,13 @@ import {
   monthBounds,
   summarise,
 } from "@/lib/attendance";
+import { getStaffDay, staffKey } from "@/lib/staffAttendance";
+import { requireAdmin } from "@/lib/adminAuth";
 import { saveRegister } from "./actions";
 import { Icon } from "@/components/ui/Icon";
 import { ActionForm } from "@/components/admin/ActionForm";
+import { CheckInCard } from "@/components/admin/CheckInCard";
+import { LocationFields } from "@/components/admin/LocationFields";
 
 export const dynamic = "force-dynamic";
 
@@ -32,10 +36,12 @@ export default async function AttendancePage({
 }) {
   const sp = await searchParams;
   const today = dateKey();
-  const [sections, statuses, settings] = await Promise.all([
+  const [sections, statuses, settings, admin, staffDay] = await Promise.all([
     getClassSections(),
     getAttendanceStatuses(),
     getSettings(),
+    requireAdmin(),
+    getStaffDay(),
   ]);
   const nonSchoolDays = settings.attendance.nonSchoolDays;
   const lowThreshold = settings.attendance.lowAttendancePercent;
@@ -78,6 +84,12 @@ export default async function AttendancePage({
           </p>
         )}
       </div>
+
+      <CheckInCard
+        me={staffDay.entries[staffKey(admin.email)] ?? null}
+        day={staffDay}
+        enforce={settings.attendance.campus.enforce}
+      />
 
       {/* Class + date pickers */}
       <div className="mt-7 flex flex-wrap items-center gap-2">
@@ -200,6 +212,9 @@ export default async function AttendancePage({
           </div>
 
           <div className="mt-4 flex flex-wrap items-center gap-3">
+            {/* Same fence as staff check-in — a register marked from off-campus
+                is the thing the feature exists to stop. */}
+            <LocationFields />
             <button
               type="submit"
               className="inline-flex items-center gap-2 rounded-full bg-emerald px-6 py-2.5 text-sm font-semibold text-cream transition hover:bg-emerald-deep"

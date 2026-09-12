@@ -43,14 +43,22 @@ const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  // Nothing here needs a camera, microphone or location.
-  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
+  // Camera and microphone stay fully denied. Geolocation is allowed for our own
+  // origin only (`self`), because staff check-in captures a position at the
+  // moment of marking — no third-party frame can ask on our behalf, and
+  // `geolocation=()` would have denied it to us as well.
+  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(self), interest-cohort=()" },
 ];
 
 const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  // Emit .next/standalone: a self-contained server bundle with only the
+  // node_modules it actually imports. Firebase App Hosting does not need this,
+  // but it is what makes the app runnable in a container on Lightsail, ECS or
+  // anywhere else, and it costs nothing to emit while still on App Hosting.
+  output: "standalone",
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

@@ -18,7 +18,7 @@ export const runtime = "nodejs";
  */
 export async function POST(req: Request) {
   const ip = getClientIp(req);
-  if (ip !== "unknown" && rateLimited(`parent-login:${ip}`, { max: 10, windowMs: 10 * 60_000 })) {
+  if (ip !== "unknown" && await rateLimited(`parent-login:${ip}`, { max: 10, windowMs: 10 * 60_000 })) {
     return NextResponse.json(
       { ok: false, error: "Too many attempts. Please wait a few minutes and try again." },
       { status: 429 },

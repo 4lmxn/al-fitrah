@@ -152,6 +152,16 @@ export const programs: ProgramsPage = {
     imageAlt: "Children's play equipment and soft flooring in the Al Fitrah play room",
     imageCaption: "Nurturing a lifelong love for learning.",
   },
+  quranMethod: {
+    eyebrow: "The Noor-ul-Bayan method",
+    title: "Qur'an, taught letter by letter.",
+    rainbow: ["letter"],
+    subtitle: "Recitation and Tajweed built up the same way for every child: one letter, one rule, one Surah at a time.",
+    images: [
+      { src: "/images/quran/tajweed-guidance.jpg", alt: "A student receiving one-to-one Qur'an recitation guidance, following the Tajweed rules", caption: "One-to-one Tajweed guidance" },
+      { src: "/images/quran/reading-together.jpg", alt: "Two students reading the Qur'an together", caption: "Reading and revising together" },
+    ],
+  },
   outcomes: {
     eyebrow: "By the end of three years",
     title: "What three years add up to.",

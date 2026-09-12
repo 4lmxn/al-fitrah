@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.github
+.env*
+!.env.example
+docs
+design
+tests
+test-results
+.playwright-mcp
+*.pdf
+serviceAccountKey.json

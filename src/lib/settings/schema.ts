@@ -92,6 +92,29 @@ export const settingsSchema = z.object({
     nonSchoolDays: z.array(z.number().int().min(0).max(6)).max(7),
     /** Below this, the register flags a child. */
     lowAttendancePercent: z.number().int().min(0).max(100),
+    /**
+     * The campus, for staff check-in.
+     *
+     * Configuration rather than env because the pin is something the office
+     * corrects by standing at the gate and reading the distance off a check-in —
+     * that should not need a deploy.
+     *
+     * `enforce` ships OFF on purpose. A guessed pin with enforcement on locks
+     * every teacher out of the register on day one, and the school has no way
+     * to fix it without a developer. With it off, check-ins still record their
+     * distance from the pin, so the office can watch a week of real numbers,
+     * correct the pin, and only then turn the block on. One toggle, no deploy.
+     */
+    campus: z.object({
+      lat: z.number().min(-90).max(90),
+      lng: z.number().min(-180).max(180),
+      /** How far from the pin still counts as "at school". */
+      radiusM: z.number().int().min(20).max(5_000),
+      /** A fix vaguer than this is treated as no answer at all. */
+      maxAccuracyM: z.number().int().min(20).max(2_000),
+      /** Off: record the distance but never refuse. On: refuse off-campus. */
+      enforce: z.boolean(),
+    }),
   }),
 
   notifications: z.object({
@@ -189,6 +212,16 @@ export const DEFAULT_SETTINGS: Settings = {
     ],
     nonSchoolDays: [0],
     lowAttendancePercent: 75,
+    campus: {
+      // Sompura Gate, Sarjapura — approximate, and approximate is exactly why
+      // `enforce` is false. Stand at the campus, check in, read the distance
+      // the card reports, correct these two numbers, then turn enforce on.
+      lat: 12.8797,
+      lng: 77.7712,
+      radiusM: 150,
+      maxAccuracyM: 250,
+      enforce: false,
+    },
   },
   notifications: {
     events: {

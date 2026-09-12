@@ -34,7 +34,7 @@ const tints = {
 };
 
 export default function ProgramsPage() {
-  const { hero, method, outcomes } = programs;
+  const { hero, method, quranMethod, outcomes } = programs;
   return (
     <>
       <Section className="relative overflow-hidden pb-10 pt-14 sm:pb-10 sm:pt-14">
@@ -109,6 +109,34 @@ export default function ProgramsPage() {
               </div>
             </div>
           </Reveal>
+        </Container>
+      </Section>
+
+      {/* Representative imagery for the Qur'an method — not photos of Al
+          Fitrah's own students, so captioned generically rather than as
+          campus photos. Swap for real classroom photos if the school sends
+          them. */}
+      <Section className="relative overflow-hidden bg-cream-deep/60">
+        <Doodle kind="crescent" color="#c9a227" motion="bob" className="right-[6%] top-[10%] w-8" />
+        <Container className="relative z-10">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <Eyebrow>{quranMethod.eyebrow}</Eyebrow>
+            <h2 className="mt-3 text-3xl sm:text-4xl">
+              <RainbowWords text={quranMethod.title} words={quranMethod.rainbow} />
+            </h2>
+            <p className="mt-4 text-lg text-ink/70">{quranMethod.subtitle}</p>
+          </Reveal>
+          <div className="mt-12 grid gap-8 sm:grid-cols-2">
+            {quranMethod.images.map((img, i) => (
+              <Reveal key={img.src} delay={i * 0.08}>
+                <div className="blob relative aspect-[4/3] overflow-hidden border-[8px] border-white shadow-lift">
+                  <Image src={img.src} alt={img.alt} fill sizes="(min-width:768px) 46vw, 100vw" className="object-cover" />
+                </div>
+                <p className="mt-3 text-center text-sm text-ink/55">{img.caption}</p>
+              </Reveal>
+            ))}
+          </div>
+          <p className="mt-6 text-center text-xs text-ink/40">Representative imagery.</p>
         </Container>
       </Section>
 

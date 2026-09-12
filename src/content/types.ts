@@ -82,6 +82,18 @@ export type ProgramsPage = {
     imageCaption: string;
   };
   outcomes: { eyebrow: string; title: string; statement: string; body: string; cta: Cta };
+  /**
+   * Representative imagery for the Qur'an method, not photos of Al Fitrah's
+   * own students — captioned generically for that reason. Swap for real
+   * classroom photos if/when the school supplies them.
+   */
+  quranMethod: {
+    eyebrow: string;
+    title: string;
+    rainbow: string[];
+    subtitle: string;
+    images: { src: string; alt: string; caption: string }[];
+  };
 };
 
 export type AdmissionsPage = {

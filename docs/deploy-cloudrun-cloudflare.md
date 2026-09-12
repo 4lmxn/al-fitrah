@@ -428,18 +428,24 @@ also roll back individually:
 
 ## 9. Outstanding
 
-**Firestore TTL policy** — do this now, independent of everything above.
-`rateLimits/{key}` carries `expiresAt`; without a policy the collection simply
-grows forever.
+**Firestore TTL policies — done 2026-09-13.** Three collections write an
+`expiresAt` and, without a policy, none of them were ever being cleaned up:
+`rateLimits` (one document per limited request), `auditLog` (`RETENTION_DAYS`
+= 730 in `src/lib/audit.ts`) and `notifications` (90 days in
+`src/lib/notify/adapters.ts`). All three now carry an ACTIVE policy:
 
 ```bash
-gcloud firestore fields ttls update expiresAt \
-  --collection-group=rateLimits --enable-ttl --project=al-fitrah
+for C in rateLimits auditLog notifications; do
+  gcloud firestore fields ttls update expiresAt \
+    --collection-group="$C" --enable-ttl --project=al-fitrah
+done
+
+gcloud firestore fields ttls list --project=al-fitrah   # three rows, ACTIVE
 ```
 
-Same for `auditLog` and `notifications`, which carry `expiresAt` for the same
-reason (`RETENTION_DAYS` in `src/lib/audit.ts`, 90 days in
-`src/lib/notify/adapters.ts`).
+Worth knowing for a future move: this is enforced by the database, so nothing
+can silently stop. Postgres has no equivalent and would need `pg_cron` plus an
+alert on the job — a cron that dies is invisible until the table is enormous.
 
 **Post images have no CDN.** `uploadPostImage` returns a raw
 `firebasestorage.googleapis.com/...?alt=media` URL, rendered by plain `<img>` on

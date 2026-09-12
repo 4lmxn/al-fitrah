@@ -56,6 +56,22 @@ a developer.
 > that does not exist. Those are gone. The screens that need class names now say
 > they are missing instead of inventing them.
 
+## 2c. How long do you keep a child's documents after they leave?
+
+Guardians can now upload documents to their child's record — birth certificate,
+ID proof, medical papers — and the school can too. These are a child's identity
+documents, so how long they are kept is a decision with obligations attached,
+not a default a developer should pick.
+
+- **After a child leaves, how long must the school hold their records?**
+  Is there a rule you follow, from the board or otherwise?
+- **Who inside the school should be able to open them?** Everyone with a login,
+  or only the principal and office?
+
+Until this is answered, documents are kept indefinitely and every admin can see
+them. Both are the recoverable direction — deleting early cannot be undone, and
+narrowing access later breaks nothing.
+
 ## 3. Safety, hygiene and pickup
 
 The campus is on a third floor. That makes these questions more pressing to a

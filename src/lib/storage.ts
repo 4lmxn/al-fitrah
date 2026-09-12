@@ -86,6 +86,31 @@ export async function uploadStudentPhoto(
   return { path };
 }
 
+/**
+ * Store a document against a child and return its path.
+ *
+ * The object name is random, not derived from what the uploader called the
+ * file. Two reasons: a guardian and the office can both upload "certificate.pdf"
+ * without one silently replacing the other, and the bucket listing never
+ * becomes a readable index of what each family submitted.
+ *
+ * The display name lives in Firestore, where it belongs — see
+ * src/lib/studentDocuments.ts.
+ */
+export async function uploadStudentDocument(
+  studentId: string,
+  docId: string,
+  file: { buffer: Buffer; contentType: string; ext: string },
+): Promise<{ path: string }> {
+  const path = `students/${studentId}/documents/${docId}.${file.ext}`;
+  await getBucket().file(path).save(file.buffer, {
+    contentType: file.contentType,
+    resumable: false,
+    metadata: { cacheControl: "private, max-age=0" },
+  });
+  return { path };
+}
+
 // ── Public content images (news / events) ───────────────────────────────────
 
 export const MAX_IMAGE_BYTES = 4 * 1024 * 1024;

@@ -151,6 +151,58 @@ describe("privacy invariant: children's files never reach a shared cache", () =>
   });
 });
 
+describe("privacy invariant: a guardian's document path", () => {
+  // The only write path in the system a member of the public can reach, and it
+  // accepts files against a child's record. Each rule below is the difference
+  // between a feature and an incident.
+  const route = files.find((f) =>
+    f.path.endsWith(join("portal", "[studentId]", "documents", "[docId]", "route.ts")),
+  );
+  const action = files.find((f) => f.path.endsWith(join("portal", "[studentId]", "actions.ts")));
+
+  it("both halves exist", () => {
+    expect(route).toBeDefined();
+    expect(action).toBeDefined();
+  });
+
+  it("the download proves the child belongs to this parent", () => {
+    // Never from the URL. assertOwnStudent resolves the parent's own children
+    // from their verified session claim.
+    expect(route!.text).toMatch(/assertOwnStudent\(/);
+  });
+
+  it("the upload proves it too, and rate limits", () => {
+    expect(action!.text).toMatch(/assertOwnStudent\(/);
+    expect(action!.text).toMatch(/rateLimited\(/);
+  });
+
+  it("the upload caps size and count", () => {
+    // A size cap alone still allows ten thousand small files.
+    expect(action!.text).toMatch(/MAX_DOCUMENT_BYTES/);
+    expect(action!.text).toMatch(/MAX_DOCUMENTS/);
+  });
+
+  it("the upload trusts the bytes, not the browser's claimed type", () => {
+    expect(action!.text).toMatch(/detectDocumentType\(/);
+  });
+
+  it("never lands in a shared cache", () => {
+    expect(route!.text).toMatch(/Cache-Control["']?\s*:\s*["'][^"']*private/);
+    expect(route!.text).not.toMatch(/Cache-Control["']?\s*:\s*["'][^"']*public/);
+  });
+
+  it("downloads as an attachment, never rendered inline", () => {
+    // An uploaded file rendered inline on this origin is how an upload becomes
+    // stored XSS against the next signed-in guardian.
+    expect(route!.text).toMatch(/attachment;/);
+  });
+
+  it("streams rather than handing out a signed URL", () => {
+    expect(route!.text).toMatch(/streamObject\(/);
+    expect(route!.text).not.toMatch(/getSignedUrl/);
+  });
+});
+
 describe("money invariant: the fee ledger is append-only", () => {
   // A mutable "amount paid" field loses money silently: two staff recording
   // payments at once both read 5000, both write 7000, and one parent's ₹2,000

@@ -5,6 +5,8 @@ import { requireParent } from "@/lib/parentAuth";
 import { getOwnStudent } from "@/lib/portalQueries";
 import { formatPaise } from "@/lib/money";
 import { Icon } from "@/components/ui/Icon";
+import { listDocuments } from "@/lib/studentDocuments";
+import { PortalDocuments } from "@/components/portal/PortalDocuments";
 
 export const metadata: Metadata = { title: "Fees & attendance", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -23,6 +25,10 @@ export default async function ChildPage({ params }: { params: Promise<{ studentI
   const result = await getOwnStudent(studentId);
   if (!result) notFound();
   const { student, payments } = result;
+
+  // Only after the line above, which is what proves this parent may see this
+  // child at all. listDocuments deliberately does no authorisation of its own.
+  const documents = await listDocuments(studentId);
 
   return (
     <div className="min-h-[100dvh] bg-cream-deep/40">
@@ -90,6 +96,8 @@ export default async function ChildPage({ params }: { params: Promise<{ studentI
             For a stamped receipt or any question about fees, please contact the school office.
           </p>
         </section>
+
+        <PortalDocuments studentId={student.id} documents={documents} />
       </main>
     </div>
   );

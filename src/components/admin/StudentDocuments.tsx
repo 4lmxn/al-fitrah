@@ -1,0 +1,154 @@
+import { Icon } from "@/components/ui/Icon";
+import { ActionForm } from "@/components/admin/ActionForm";
+import {
+  deleteStudentDocumentAction,
+  uploadStudentDocumentAction,
+} from "@/app/admin/(dash)/students/actions";
+import { MAX_DOCUMENTS, type StudentDocument } from "@/lib/studentDocuments";
+
+const ICON_FOR: Record<string, string> = {
+  "application/pdf": "picture_as_pdf",
+  "image/jpeg": "image",
+  "image/png": "image",
+  "image/webp": "image",
+};
+
+function size(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function when(ms: number | null): string {
+  return ms ? new Date(ms).toLocaleDateString("en-IN", { dateStyle: "medium" }) : "—";
+}
+
+/**
+ * A child's documents, in the console.
+ *
+ * The staff-side view of what guardians upload through the portal, plus the
+ * office's own additions. Deletion lives here and only here: a guardian can add
+ * but not remove, because a school may be required to keep what it was given.
+ *
+ * Who uploaded each file is shown rather than hidden. When the office is
+ * deciding whether to remove something, "the parent sent this" and "we added
+ * this ourselves" are different situations.
+ */
+export function StudentDocuments({
+  studentId,
+  documents,
+  canDelete,
+}: {
+  studentId: string;
+  documents: StudentDocument[];
+  /** Owners only — removing a child's document is a destructive action. */
+  canDelete: boolean;
+}) {
+  const full = documents.length >= MAX_DOCUMENTS;
+
+  return (
+    <div className="mt-7 space-y-3">
+      <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
+        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+          <Icon name="folder" className="text-[18px] text-gold" /> Documents
+          <span className="ml-auto text-xs font-normal normal-case text-ink/40">
+            {documents.length} of {MAX_DOCUMENTS}
+          </span>
+        </h2>
+
+        {documents.length === 0 ? (
+          <p className="mt-4 text-sm text-ink/50">
+            Nothing on file. Guardians can add documents from the parent portal, or you can add
+            them here.
+          </p>
+        ) : (
+          <ul className="mt-4 divide-y divide-emerald/5">
+            {documents.map((d) => (
+              <li key={d.id} className="flex flex-wrap items-center gap-3 py-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald/8 text-emerald-deep">
+                  <Icon name={ICON_FOR[d.contentType] ?? "description"} className="text-[18px]" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold text-emerald-deep">
+                    {d.label}
+                  </span>
+                  <span className="block text-[11px] text-ink/45">
+                    {size(d.sizeBytes)} · {when(d.atMs)} ·{" "}
+                    {d.uploadedByRole === "parent" ? "from a guardian" : "added by the school"}
+                    <span className="ml-1 text-ink/35">({d.uploadedBy})</span>
+                  </span>
+                </span>
+                <span className="flex shrink-0 items-center gap-1.5">
+                  <a
+                    href={`/admin/students/${studentId}/documents/${d.id}`}
+                    className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-emerald/8 px-3 text-xs font-semibold text-emerald-deep transition hover:bg-emerald/15"
+                  >
+                    <Icon name="download" className="text-[16px]" />
+                    Open
+                  </a>
+                  {canDelete && (
+                    <ActionForm action={deleteStudentDocumentAction} errorClassName="sr-only">
+                      <input type="hidden" name="id" value={studentId} />
+                      <input type="hidden" name="docId" value={d.id} />
+                      <button
+                        type="submit"
+                        aria-label={`Remove ${d.label}`}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-full text-ink/35 transition hover:bg-red-50 hover:text-red-700"
+                      >
+                        <Icon name="delete" className="text-[17px]" />
+                      </button>
+                    </ActionForm>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {!full && (
+        <ActionForm
+          action={uploadStudentDocumentAction}
+          className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft"
+        >
+          <input type="hidden" name="id" value={studentId} />
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Add a document</h3>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/45">
+                What is it?
+              </span>
+              <input
+                name="label"
+                required
+                maxLength={80}
+                placeholder="e.g. Birth certificate"
+                className="w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2.5 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/45">
+                File
+              </span>
+              <input
+                type="file"
+                name="file"
+                required
+                accept="application/pdf,image/jpeg,image/png,image/webp"
+                className="w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-xs text-ink/70 outline-none file:mr-3 file:rounded-md file:border-0 file:bg-emerald/10 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-emerald-deep"
+              />
+            </label>
+          </div>
+          <button
+            type="submit"
+            className="mt-3 inline-flex min-h-10 items-center gap-2 rounded-full bg-emerald px-5 text-sm font-semibold text-cream transition hover:bg-emerald-deep"
+          >
+            <Icon name="upload" className="text-[18px]" />
+            Add document
+          </button>
+          <p className="mt-2 text-[11px] text-ink/45">PDF, JPG, PNG or WebP, up to 8 MB.</p>
+        </ActionForm>
+      )}
+    </div>
+  );
+}

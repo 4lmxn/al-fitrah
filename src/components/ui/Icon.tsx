@@ -14,7 +14,7 @@ export const ICON_NAMES = [
   "assignment", "auto_awesome", "auto_stories", "badge", "beach_access", "bolt",
   "calculate", "calendar_month", "call", "campaign", "celebration", "chat",
   "check", "check_circle", "child_care", "close", "cloud", "contact_support",
-  "content_copy", "conversion_path", "description", "directions", "diversity_3",
+  "content_copy", "conversion_path", "delete", "description", "directions", "diversity_3",
   "download", "edit", "edit_note", "emergency", "error", "event",
   "event_available", "event_busy", "expand_more", "explore", "explore_off",
   "fact_check", "family_restroom", "favorite", "filter_alt", "first_page", "folder",

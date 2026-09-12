@@ -9,6 +9,9 @@ import { FeesPanel } from "@/components/admin/FeesPanel";
 import { listPayments } from "@/lib/fees";
 import { dateKey, listRegisters, monthBounds, summarise } from "@/lib/attendance";
 import { StudentPhoto } from "@/components/admin/StudentPhoto";
+import { StudentDocuments } from "@/components/admin/StudentDocuments";
+import { listDocuments } from "@/lib/studentDocuments";
+import { requireAdmin } from "@/lib/adminAuth";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +30,7 @@ const TABS = [
   { id: "overview", label: "Overview", icon: "person" },
   { id: "attendance", label: "Attendance", icon: "fact_check" },
   { id: "fees", label: "Fees", icon: "payments" },
+  { id: "documents", label: "Documents", icon: "folder" },
   { id: "guardians", label: "Guardians", icon: "family_restroom" },
 ] as const;
 
@@ -50,9 +54,9 @@ export default async function StudentDetail({
   // Independent reads — the payment ledger is keyed by student id, not by
   // anything on the student document, so waiting for one before the other only
   // added a round trip.
-  const [student, payments, programs, sections, methods, statuses] = await Promise.all([
+  const [student, payments, programs, sections, methods, statuses, admin] = await Promise.all([
     getStudent(id), listPayments(id), getPrograms(), getClassSections(), getPaymentMethods(),
-    getAttendanceStatuses(),
+    getAttendanceStatuses(), requireAdmin(),
   ]);
   if (!student) notFound();
 
@@ -65,6 +69,10 @@ export default async function StudentDetail({
       ? await listRegisters(student.academicYear, student.classSection, from, to)
       : [];
   const attendance = summarise(registers, student.id, statuses);
+
+  // Only when the tab is open. These are a child's identity documents; there
+  // is no reason to read them to render the fees screen.
+  const documents = tab === "documents" ? await listDocuments(id) : [];
 
   const tabHref = (t: TabId) => `/admin/students/${student.id}${t === "overview" ? "" : `?tab=${t}`}`;
 
@@ -180,6 +188,14 @@ export default async function StudentDetail({
             </>
           )}
         </section>
+      )}
+
+      {tab === "documents" && (
+        <StudentDocuments
+          studentId={student.id}
+          documents={documents}
+          canDelete={admin.role === "owner"}
+        />
       )}
 
       {/* Guardians — read-only here. They come from the enquiry, and editing

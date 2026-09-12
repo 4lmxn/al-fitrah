@@ -7,7 +7,23 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { getClassSections, getPrograms, pickFrom } from "@/lib/taxonomy";
 import { guardianEmailsFrom, guardianPhonesFrom } from "@/lib/students";
-import { MAX_PHOTO_BYTES, detectImageType, uploadStudentPhoto } from "@/lib/storage";
+import {
+  MAX_PHOTO_BYTES,
+  deleteObject,
+  detectImageType,
+  uploadStudentDocument,
+  uploadStudentPhoto,
+} from "@/lib/storage";
+import {
+  DOCUMENT_TYPES,
+  MAX_DOCUMENTS,
+  MAX_DOCUMENT_BYTES,
+  addDocument,
+  countDocuments,
+  detectDocumentType,
+  getDocument,
+  removeDocument,
+} from "@/lib/studentDocuments";
 import { queueNote } from "@/lib/notes";
 import { queueAudit, recordAudit } from "@/lib/audit";
 import {
@@ -252,6 +268,104 @@ export async function uploadStudentPhotoAction(formData: FormData): Promise<Acti
       summary: "Photo updated",
     });
     await batch.commit();
+
+    revalidatePath(`/admin/students/${id}`);
+    return { ok: true };
+  });
+}
+
+/**
+ * The office adds a document to a child's record.
+ *
+ * Same checks as the guardian path in src/app/portal/[studentId]/actions.ts,
+ * minus the rate limit — this side is already behind an allowlisted sign-in, so
+ * the threat the limiter answers (an open form and a script) does not exist
+ * here. Everything else stays: the caps, the sniffed type, the audit entry.
+ */
+export async function uploadStudentDocumentAction(formData: FormData): Promise<ActionResult> {
+  return attempt("uploadStudentDocument", async () => {
+    const admin = await requireAdmin();
+    const id = String(formData.get("id") ?? "");
+    if (!id) return fail("Missing student id");
+
+    const file = formData.get("file");
+    if (!(file instanceof File) || file.size === 0) return fail("Choose a file first.");
+    if (file.size > MAX_DOCUMENT_BYTES) return fail("Files must be 8 MB or smaller.");
+
+    const label = String(formData.get("label") ?? "").trim().slice(0, 80);
+    if (!label) return fail("Give the document a name.");
+
+    if ((await countDocuments(id)) >= MAX_DOCUMENTS) {
+      return fail(`There are already ${MAX_DOCUMENTS} documents on this record. Remove one first.`);
+    }
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const sniffed = detectDocumentType(buffer);
+    if (!sniffed) return fail("That file isn't a PDF, JPG, PNG or WebP.");
+
+    const docId = crypto.randomUUID();
+    const { path } = await uploadStudentDocument(id, docId, {
+      buffer,
+      contentType: sniffed,
+      ext: DOCUMENT_TYPES[sniffed] ?? "bin",
+    });
+
+    await addDocument(id, {
+      label,
+      path,
+      contentType: sniffed,
+      sizeBytes: file.size,
+      uploadedBy: admin.email,
+      uploadedByRole: "staff",
+    });
+
+    await recordAudit({
+      actor: admin.email,
+      action: "student.document_added",
+      entity: { type: "student", id },
+      summary: `Added "${label}"`,
+      meta: { sizeBytes: file.size, contentType: sniffed },
+    });
+
+    revalidatePath(`/admin/students/${id}`);
+    return { ok: true };
+  });
+}
+
+/**
+ * Remove a document from a child's record. Office only, by design — guardians
+ * can add but not delete, because a school may be required to keep what it was
+ * given.
+ *
+ * The index entry goes first and the object second, on purpose. If the object
+ * delete fails afterwards, the result is a stored file nobody can reach, which
+ * costs a little storage and nothing else. The other order risks a record
+ * pointing at a file that is gone — a download that breaks with no explanation.
+ */
+export async function deleteStudentDocumentAction(formData: FormData): Promise<ActionResult> {
+  return attempt("deleteStudentDocument", async () => {
+    const admin = await requireAdmin();
+    const id = String(formData.get("id") ?? "");
+    const docId = String(formData.get("docId") ?? "");
+    if (!id || !docId) return fail("Missing document");
+
+    const doc = await getDocument(id, docId);
+    if (!doc) return fail("That document is already gone.");
+
+    await removeDocument(id, docId);
+    await deleteObject(doc.path).catch((err) =>
+      console.error("document object cleanup failed", doc.path, err),
+    );
+
+    // Deleting a child's document is exactly the action worth being able to
+    // account for later.
+    await recordAudit({
+      actor: admin.email,
+      action: "student.document_removed",
+      entity: { type: "student", id },
+      summary: `Removed "${doc.label}"`,
+      meta: { uploadedBy: doc.uploadedBy, uploadedByRole: doc.uploadedByRole },
+    });
 
     revalidatePath(`/admin/students/${id}`);
     return { ok: true };

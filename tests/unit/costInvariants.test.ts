@@ -151,6 +151,25 @@ describe("privacy invariant: children's files never reach a shared cache", () =>
   });
 });
 
+describe("privacy invariant: the staff document path", () => {
+  const route = files.find((f) =>
+    f.path.endsWith(join("admin", "(dash)", "students", "[id]", "documents", "[docId]", "route.ts")),
+  );
+
+  it("exists — parents can upload, so the office must be able to look", () => {
+    // Shipping the guardian upload without this left a birth certificate that
+    // the school could not open. Half a feature is its own kind of bug.
+    expect(route).toBeDefined();
+  });
+
+  it("requires an admin, is private, attaches rather than renders inline", () => {
+    expect(route!.text).toMatch(/requireAdmin\(\)/);
+    expect(route!.text).toMatch(/Cache-Control["']?\s*:\s*["'][^"']*private/);
+    expect(route!.text).not.toMatch(/Cache-Control["']?\s*:\s*["'][^"']*public/);
+    expect(route!.text).toMatch(/attachment;/);
+  });
+});
+
 describe("privacy invariant: a guardian's document path", () => {
   // The only write path in the system a member of the public can reach, and it
   // accepts files against a child's record. Each rule below is the difference

@@ -228,14 +228,13 @@ gcloud run deploy al-fitrah \
   --cpu=1 \
   --port=3000 \
   --allow-unauthenticated \
-  --set-env-vars=NEXT_PUBLIC_SITE_URL=https://www.alfitrahsarjapura.in,TRUST_CLOUDFLARE_IP=0,FIREBASE_PROJECT_ID=al-fitrah,INQUIRY_FROM_EMAIL=onboarding@resend.dev,INQUIRY_ADMIN_EMAIL=alfitrah.sompura@gmail.com \
-  --set-secrets=ADMIN_EMAILS=ADMIN_EMAILS:latest,RESEND_API_KEY=RESEND_API_KEY:latest,CRON_SECRET=CRON_SECRET:latest \
+  --set-env-vars=NEXT_PUBLIC_SITE_URL=https://www.alfitrahsarjapura.in,FIREBASE_PROJECT_ID=al-fitrah,INQUIRY_FROM_EMAIL=onboarding@resend.dev,INQUIRY_ADMIN_EMAIL=alfitrah.sompura@gmail.com \
+  --set-secrets=ADMIN_EMAILS=ADMIN_EMAILS:latest,ADMIN_OWNERS=ADMIN_OWNERS:latest,RESEND_API_KEY=RESEND_API_KEY:latest,CRON_SECRET=CRON_SECRET:latest,EDGE_TOKEN=EDGE_TOKEN:latest \
   --project=al-fitrah
 ```
 
-`TRUST_CLOUDFLARE_IP=0` is correct at this point and only at this point: the
-service is reachable directly on its `run.app` hostname, with no Cloudflare in
-front. It flips to `1` in the same deploy that first sits behind the edge — §6.
+`EDGE_TOKEN` can be wired in from the first deploy. It is inert until Cloudflare
+actually sends the header — see §6.
 
 `--min-instances=0` is deliberate and is what keeps the bill at zero — §7
 handles warmth instead. `--max-instances=2` is safe because rate-limit counters
@@ -248,42 +247,88 @@ Default Credentials, which resolve to the service account above.
 
 ## 6. Cloudflare
 
-⚠️ **Order matters. Steps 2–4 are a security gate, not formalities.**
+### 6.0 The origin lock, and why it is a token
+
+An earlier revision of this document said: lock the origin so it cannot be
+reached except through Cloudflare, then trust `CF-Connecting-IP`. That advice
+was written without pricing it.
+
+On Cloud Run, a network-level origin lock means a **Global External Load
+Balancer with Cloud Armor** allowing only Cloudflare's published ranges. That is
+roughly **₹1,500–2,000/month** — several times this project's entire hosting
+budget, and more than the App Hosting bill the move was meant to avoid. Cloud
+Run's own `ingress` settings do not help: they understand `internal` and
+`internal-and-cloud-load-balancing`, and Cloudflare is neither.
+
+So trust is **proved per request** instead of assumed per deployment.
+Cloudflare attaches a shared secret to everything it forwards; a request
+carrying it demonstrably came through our zone. One arriving straight at the
+`run.app` hostname cannot produce it, so its `CF-Connecting-IP` is ignored.
+
+This closes both failure modes of the old boolean at once, and — the part that
+matters operationally — **there is no window during cutover where some setting
+is temporarily wrong.** Before Cloudflare exists, `EDGE_TOKEN` is unset and
+nothing trusts the header. After, only edge traffic does.
+
+⚠️ Be clear about what this is not. It is an application-layer check: the
+request still reaches the app and costs an invocation before being judged. That
+is fine at this scale. It is **not** a network-level lock, and if the origin
+ever needs to be genuinely unreachable, that is the load balancer and it costs
+money. Logic and tests: `src/lib/clientIp.ts`, `tests/unit/clientIp.test.ts`.
+
+### 6.1 Setup
 
 1. **DNS.** Add `alfitrahsarjapura.in` to Cloudflare, move nameservers from
-   GoDaddy. Do **not** repoint the live hostname at Cloud Run yet — bring up a
-   temporary proxied hostname first.
+   GoDaddy. Leave records **DNS-only (grey cloud)** for now.
 
-2. **SSL/TLS mode: Full (strict).** Anything less lets Cloudflare reach the
-   origin unencrypted or without verifying it.
-
-3. **Lock the origin to Cloudflare**, while the live domain still resolves to
-   App Hosting. On Cloud Run the clean way is Cloudflare Tunnel, or an ingress
-   restriction plus a load balancer fronted by Cloud Armor allowing only
-   Cloudflare's published ranges. Verify both directions before continuing:
+2. **Cloud Run domain mapping**, so Cloud Run answers to the real hostname
+   rather than only `run.app`. Verified available in `asia-south1`:
 
    ```bash
-   curl -I https://al-fitrah-xxxxx.asia-south1.run.app   # must refuse
-   curl -I https://temp.alfitrahsarjapura.in             # must 200
+   gcloud beta run domain-mappings create \
+     --service=al-fitrah --domain=www.alfitrahsarjapura.in \
+     --region=asia-south1 --project=al-fitrah
    ```
 
-4. **Only then** redeploy with `TRUST_CLOUDFLARE_IP=1` — in the **same deploy**
-   that first receives Cloudflare traffic.
+   It prints DNS records; add them in Cloudflare grey-cloud so Google can
+   verify. Requires the domain verified to this account in Search Console.
 
-   ⚠️ Setting it while the origin is still directly reachable **removes rate
-   limiting entirely**: `CF-Connecting-IP` becomes attacker-settable, and
-   rotating it per request walks past every limit on sign-in, enquiry,
-   application and capture.
+3. **SSL/TLS mode: Full (strict).** Anything less lets Cloudflare reach the
+   origin unencrypted or without verifying its certificate.
 
-   ⚠️ But leaving it at `"0"` once traffic flows through Cloudflare is **also**
-   broken, in the opposite direction. With the flag off, `getClientIp` takes the
-   last `x-forwarded-for` entry — behind Cloudflare that is the *edge*, not the
-   visitor. Every visitor collapses onto a handful of counters, and the first
-   person to submit the enquiry form five times trips the limit **for everyone**.
-   That is a self-inflicted outage with no attacker involved.
+4. **Transform Rule — this is the security step.** Rules → Transform Rules →
+   Modify Request Header → Add, on all incoming requests:
 
-   Both failure modes are avoided by the ordering above: lock the origin before
-   any traffic moves, so neither window ever opens. See `src/lib/clientIp.ts`.
+   ```
+   Header name:  x-edge-token
+   Value:        <the EDGE_TOKEN secret value>
+   ```
+
+   Read the value with:
+
+   ```bash
+   gcloud secrets versions access latest --secret=EDGE_TOKEN --project=al-fitrah
+   ```
+
+   ⚠️ **Set it to "Add", not "Set if not present".** Add overwrites any value the
+   client supplied, which is the whole point — otherwise a visitor can present
+   their own token header and Cloudflare will pass it through untouched.
+
+5. **Turn the proxy on (orange cloud)** for `www` and the apex.
+
+6. **Verify both directions** before trusting anything:
+
+   ```bash
+   # Through the edge: real visitor IP is used.
+   curl -sI https://www.alfitrahsarjapura.in/admin/login
+
+   # Direct to origin with a forged header: must be IGNORED, not trusted.
+   curl -sI https://al-fitrah-360754505866.asia-south1.run.app/admin/login \
+     -H 'cf-connecting-ip: 9.9.9.9' -H 'x-edge-token: wrong'
+   ```
+
+   The second must still rate-limit on the real forwarded address. The unit
+   tests assert exactly this; the curl confirms it in production.
 
 5. **Cache rules.** Bypass cache for `/admin/*`, `/portal/*` and `/api/*` —
    authenticated and per-user. Cache everything else; the prerendered marketing
@@ -356,8 +401,10 @@ serve it from cache and the origin will go to sleep anyway.
    returning 200 with the right header and 401 without it.
 3. Confirm the scheduler jobs fire against the new hostname. This is the only
    external caller the app has.
-4. Move DNS in Cloudflare with proxy on, TTL low. The origin lock and
-   `TRUST_CLOUDFLARE_IP=1` must already be in place — §6.
+4. Move DNS in Cloudflare with proxy on, TTL low. The domain mapping and the
+   `x-edge-token` Transform Rule must already be in place — §6.1. Unlike the old
+   boolean, nothing here is dangerous if done out of order: an unset or unsent
+   token just means `CF-Connecting-IP` is ignored, which is the safe direction.
 5. Watch for one week with the App Hosting backend still deployed and paid for.
 6. Only then delete it.
 

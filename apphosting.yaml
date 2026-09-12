@@ -27,13 +27,21 @@ env:
     value: "https://www.alfitrahsarjapura.in"
     availability: [BUILD, RUNTIME]
 
-  # ⚠️ Set to "1" ONLY once the origin cannot be reached except through
-  # Cloudflare (Authenticated Origin Pulls, or a firewall allowing only
-  # Cloudflare's published IP ranges). Until then CF-Connecting-IP is
-  # attacker-settable and trusting it removes rate limiting entirely.
-  # See src/lib/clientIp.ts and docs/deploy-cloudrun-cloudflare.md.
-  - variable: TRUST_CLOUDFLARE_IP
-    value: "0"
+  # Shared secret Cloudflare attaches to every request it forwards, so the app
+  # can tell edge traffic from someone hitting the origin directly and decide
+  # whether CF-Connecting-IP is worth believing.
+  #
+  # Replaces a TRUST_CLOUDFLARE_IP boolean that was wrong in both positions:
+  # "1" let anyone reaching the origin spoof their address and walk past every
+  # rate limit; "0" collapsed every visitor behind Cloudflare onto the edge's
+  # address, so one person tripping a limit locked out the school. The flag was
+  # only safe behind a network-level origin lock, which on Cloud Run means a
+  # load balancer costing several times this project's hosting budget.
+  #
+  # Safe while unset — nothing trusts the header until Cloudflare is actually
+  # in front and configured to send the token. See src/lib/clientIp.ts.
+  - variable: EDGE_TOKEN
+    secret: EDGE_TOKEN
     availability: [RUNTIME]
 
   # Coming-soon holding page. "1" rewrites every public route to /coming-soon

@@ -72,11 +72,36 @@ header is being trusted and rate limiting is effectively off.
 
 ## Caching
 
-Cache rules live in `src/index.js`, not in the Cloudflare dashboard, so the
-policy is reviewable in git alongside the routes it protects.
+Cache policy lives in `src/index.js`, not in the Cloudflare dashboard, so it is
+reviewable in git alongside the routes it protects.
 
-`/admin/*`, `/portal/*` and `/api/*` are never cached — authenticated and
-per-user. A cached admin page would serve one member of staff's view to the next
-visitor. Everything else is prerendered marketing content and is cached for an
-hour at the edge; error responses are cached briefly or not at all, so a bad
-deploy cannot pin a 500 at the edge.
+| | |
+|---|---|
+| `/admin/*`, `/portal/*`, `/api/*` | never cached |
+| RSC navigations | never cached — see below |
+| `/_next/static/*` | 1 year (content-hashed, immutable) |
+| everything else | 1 hour, matching the app's own revalidation |
+| any response setting a cookie | never cached, whatever the path |
+
+### Why it uses the Cache API and not `cacheEverything`
+
+The obvious implementation — `fetch(req, { cf: { cacheEverything: true } })` —
+was tried and **cached nothing**. Every response came back
+`cf-cache-status: MISS`, static assets included. Two reasons:
+
+1. Next's App Router sends `Vary: rsc, next-router-state-tree,
+   next-router-prefetch, …` on every response. Cloudflare only understands
+   `Vary: Accept-Encoding`; anything else makes a response uncacheable to it.
+2. The origin is `run.app`, outside this zone, where the `cf` fetch options are
+   not dependable.
+
+The Cache API sidesteps both: the Worker picks the key and stores a copy with
+`Vary` normalised.
+
+⚠️ **That `Vary` is not noise.** The same URL genuinely returns a different body
+for an RSC navigation than for a full page load. Stripping the header and
+caching one body under a key the other also matches would serve React payloads
+to browsers asking for HTML. So RSC requests — identified by the `RSC` or
+`Next-Router-Prefetch` header — bypass the cache entirely rather than sharing a
+key. They are client-side navigations, already fast, and a small share of
+traffic.

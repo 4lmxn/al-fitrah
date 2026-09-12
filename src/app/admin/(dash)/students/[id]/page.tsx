@@ -118,12 +118,28 @@ export default async function StudentDetail({ params }: { params: Promise<{ id: 
               <span className={label}>Class / section</span>
               {/* A fixed list, not free text: attendance groups by this value,
                   and "Rose" vs "rose" would silently split the register. */}
-              <select name="classSection" defaultValue={student.classSection ?? ""} className={field}>
+              <select
+                name="classSection"
+                defaultValue={student.classSection ?? ""}
+                disabled={sections.length === 0}
+                className={`${field} disabled:cursor-not-allowed disabled:opacity-60`}
+              >
                 <option value="">Not assigned</option>
                 {sections.map((c: string) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
+              {sections.length === 0 && (
+                // An empty dropdown reads as a broken form. Say what is missing
+                // and where to fix it instead.
+                <span className="mt-1 block text-xs text-ink/50">
+                  No class sections yet —{" "}
+                  <Link href="/admin/settings" className="font-semibold text-emerald hover:underline">
+                    add them in Settings
+                  </Link>
+                  .
+                </span>
+              )}
             </label>
             <label className="block">
               <span className={label}>Status</span>

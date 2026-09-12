@@ -38,6 +38,24 @@ the site.
 - Maximum class size?
 - Is there a helper or assistant in the room as well?
 
+## 2b. What you call your classes — needed before attendance can be taken
+
+Unlike the rest of this list, this one blocks the admin console rather than the
+website. Attendance is taken one class at a time, so the register cannot open
+until the classes have names.
+
+- **What are your class or section names, exactly as staff say them?**
+  Whether that is "Pre-KG A" and "Pre-KG B", or one section per level with no
+  letter at all, or something else entirely.
+
+Type them into **Settings → Class sections** in the admin console. Nothing needs
+a developer.
+
+> This section exists because the console used to ship six invented names —
+> Rose, Tulip, Jasmine, Lily, Iris, Orchid — and the register opened on a class
+> that does not exist. Those are gone. The screens that need class names now say
+> they are missing instead of inventing them.
+
 ## 3. Safety, hygiene and pickup
 
 The campus is on a third floor. That makes these questions more pressing to a

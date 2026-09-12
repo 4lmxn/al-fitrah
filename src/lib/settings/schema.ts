@@ -191,8 +191,22 @@ export const DEFAULT_SETTINGS: Settings = {
     },
   },
   taxonomy: {
+    // Real: the three levels are described across the public site — one entry
+    // point at Pre-KG, no lateral entry. Confirmed by the school, not assumed.
     programs: ["Pre-KG", "Junior KG", "Senior KG"],
-    classSections: ["Rose", "Tulip", "Jasmine", "Lily", "Iris", "Orchid"],
+    // Deliberately EMPTY. This used to ship six invented section names —
+    // Rose, Tulip, Jasmine, Lily, Iris, Orchid — which appear nowhere in the
+    // school's own content and were never asked for in
+    // docs/school-facts-needed.md. With no settings document saved, those
+    // defaults were what the console actually displayed: the attendance
+    // register opened on "Rose", a class that does not exist, and the student
+    // form offered five more.
+    //
+    // src/content/facts.ts states the rule the public site is held to — it
+    // "can never show a placeholder, a TBD, or an invented number". The admin
+    // console was not held to it. It is now: with no sections configured, the
+    // screens that need them say so and link to Settings.
+    classSections: [],
     leadSources: ["website", "waitlist", "prospectus", "walk-in", "phone", "referral", "whatsapp"],
     manualLeadSources: ["walk-in", "phone", "whatsapp", "referral"],
     employmentTypes: ["Full-time", "Part-time", "Contract", "Volunteer"],

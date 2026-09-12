@@ -66,3 +66,35 @@ describe("shipped defaults mirror the previously hardcoded constants", () => {
     expect(DEFAULT_SETTINGS.school.grievanceOfficerName).toBe("");
   });
 });
+
+describe("the defaults must not invent the school's own data", () => {
+  // No settings document existed in production, so DEFAULT_SETTINGS was what
+  // the admin console actually displayed. It shipped six invented class
+  // sections — Rose, Tulip, Jasmine, Lily, Iris, Orchid — and the attendance
+  // register opened on "Rose", a class the school does not have.
+  //
+  // src/content/facts.ts states the rule the public site is held to: it "can
+  // never show a placeholder, a TBD, or an invented number". This is that rule,
+  // enforced for the console.
+
+  it("ships no class sections at all", () => {
+    // Only the school can name its own classes. An empty list makes the screens
+    // that need them say so; a populated one puts fiction in front of staff.
+    expect(DEFAULT_SETTINGS.taxonomy.classSections).toEqual([]);
+  });
+
+  it("keeps the programmes, which are real", () => {
+    // Not the same case: the three levels are described across the public site
+    // — one entry point at Pre-KG, no lateral entry — so they are the school's
+    // own confirmed structure, not an assumption.
+    expect(DEFAULT_SETTINGS.taxonomy.programs).toEqual(["Pre-KG", "Junior KG", "Senior KG"]);
+  });
+
+  it("has no plausible-looking student or guardian names anywhere in the defaults", () => {
+    // A defaults file is exactly where a "temporary" sample record survives to
+    // production. Catch it here rather than on a parent's screen.
+    const invented = /rose|tulip|jasmine|lily|iris|orchid|ayesha|yusuf|ibrahim|john doe|jane/i;
+    const offenders = JSON.stringify(DEFAULT_SETTINGS).match(invented);
+    expect(offenders).toBeNull();
+  });
+});

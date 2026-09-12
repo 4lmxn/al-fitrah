@@ -68,6 +68,35 @@ export default async function AttendancePage({
   const marked = register !== null;
   const fallback = defaultStatusFor(key, statuses, nonSchoolDays);
 
+  // Nothing to register against until the school names its classes. Said
+  // plainly, with the way to fix it, rather than rendering an empty picker over
+  // an empty roll and leaving staff to guess what is broken.
+  if (sections.length === 0) {
+    return (
+      <div className="mx-auto max-w-2xl">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Daily register</p>
+        <h1 className="mt-1 font-display text-3xl text-emerald-deep">Attendance</h1>
+        <div className="mt-7 rounded-xl3 border border-emerald/10 bg-white/90 p-8 text-center shadow-soft">
+          <span className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gold-soft text-ink">
+            <Icon name="groups" className="text-[24px]" />
+          </span>
+          <h2 className="text-lg font-semibold text-emerald-deep">No classes set up yet</h2>
+          <p className="mx-auto mt-2 max-w-sm text-sm text-ink/60">
+            Attendance is taken one class at a time, so the register needs your class or
+            section names first — whatever you actually call them.
+          </p>
+          <Link
+            href="/admin/settings"
+            className="mt-5 inline-flex items-center gap-2 rounded-full bg-emerald px-5 py-2.5 text-sm font-semibold text-cream transition hover:bg-emerald-deep"
+          >
+            <Icon name="settings" className="text-[18px]" />
+            Add class sections
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-5xl">
       <div className="flex flex-wrap items-end justify-between gap-4">

@@ -16,6 +16,22 @@ zone_name = "alfitrahsarjapura.in"
 pattern = "alfitrahsarjapura.in/*"
 zone_name = "alfitrahsarjapura.in"
 
+# Audience shortcuts — see SHORTCUTS in src/index.js. Each needs a proxied DNS
+# record to exist before its route fires; the Worker answers before any origin
+# is reached, so the record's target is irrelevant. Cloudflare's convention for
+# a Worker-only hostname is a proxied AAAA to 100:: (the discard prefix).
+[[routes]]
+pattern = "admin.alfitrahsarjapura.in/*"
+zone_name = "alfitrahsarjapura.in"
+
+[[routes]]
+pattern = "attendance.alfitrahsarjapura.in/*"
+zone_name = "alfitrahsarjapura.in"
+
+[[routes]]
+pattern = "mychild.alfitrahsarjapura.in/*"
+zone_name = "alfitrahsarjapura.in"
+
 # EDGE_TOKEN is NOT set here. It is a secret:
 #
 #   gcloud secrets versions access latest --secret=EDGE_TOKEN --project=al-fitrah \

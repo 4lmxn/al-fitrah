@@ -24,6 +24,25 @@ const ORIGIN = "al-fitrah-360754505866.asia-south1.run.app";
 const CANONICAL_HOST = "www.alfitrahsarjapura.in";
 
 /**
+ * Memorable addresses, one per audience. Each is a shortcut to a page on the
+ * canonical host, not a separate application.
+ *
+ * These are a CONVENIENCE, not a permission boundary. A teacher who opens
+ * admin.* still gets exactly what roleFor() allows them, no more and no less —
+ * the host enforces nothing. Separating what teachers may see from what the
+ * principal may see is the staff-roles work, not DNS.
+ *
+ * attendance.* earns its place by landing on the register itself rather than
+ * the console home, which is a different destination and the one teachers
+ * actually want.
+ */
+const SHORTCUTS = {
+  "admin.alfitrahsarjapura.in": "/admin",
+  "attendance.alfitrahsarjapura.in": "/admin/attendance",
+  "mychild.alfitrahsarjapura.in": "/portal",
+};
+
+/**
  * Paths that must never be cached at the edge: authenticated, per-user, or
  * side-effecting.
  *
@@ -68,8 +87,26 @@ const worker = {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
+    // Audience shortcuts. The whole host maps to one destination regardless of
+    // path: after the first hop the visitor is on the canonical host and every
+    // link works normally, so a deeper path here is only ever a stale bookmark
+    // and is better sent somewhere sane than prefixed into a 404.
+    //
+    // 302, deliberately. These become rewrites later — serving each audience on
+    // its own host so a parent's session cookie is never sent to the admin host
+    // — and a 301 cached in every browser and phone on the roll would make that
+    // change very hard to undo.
+    const shortcut = SHORTCUTS[url.hostname];
+    if (shortcut) {
+      const target = new URL(url);
+      target.hostname = CANONICAL_HOST;
+      target.pathname = shortcut;
+      return Response.redirect(target.toString(), 302);
+    }
+
     // Apex to www, permanently. The app's canonical URLs, sitemap and JSON-LD
-    // all use the www form; serving both would split them.
+    // all use the www form; serving both would split them. Permanent here
+    // because, unlike the shortcuts above, it is not going to change.
     if (url.hostname !== CANONICAL_HOST && url.hostname.endsWith("alfitrahsarjapura.in")) {
       url.hostname = CANONICAL_HOST;
       return Response.redirect(url.toString(), 301);

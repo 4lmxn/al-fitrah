@@ -25,6 +25,29 @@ The supported alternatives both cost something real:
 | Move Cloud Run to `asia-southeast1` | ₹0 | Firestore goes from ~2 ms to ~55 ms — undoes most of the move |
 | **This Worker** | ₹0 | One more moving part; 100k req/day free tier |
 
+## Audience shortcuts
+
+| Address | Goes to | For |
+|---|---|---|
+| `admin.alfitrahsarjapura.in` | `/admin` | Office and principal |
+| `attendance.alfitrahsarjapura.in` | `/admin/attendance` | Teachers, straight to the register |
+| `mychild.alfitrahsarjapura.in` | `/portal` | Parents |
+
+⚠️ **These are convenience, not permission.** A teacher who opens `admin.*`
+gets exactly what `roleFor()` allows them — the host enforces nothing.
+Separating what a teacher may see from what the principal may see is the
+staff-roles work, not DNS. Nobody should read these names as a security
+boundary.
+
+They redirect with **302, not 301**, on purpose. The plan is to turn them into
+rewrites later — serving each audience on its own host, so a parent's session
+cookie is never sent to the admin host, which is a real isolation gain. A 301
+cached in every parent's phone would make that change very hard to undo.
+
+Each needs a **proxied DNS record** to exist before its route fires. The Worker
+answers before any origin is reached, so the target is irrelevant; Cloudflare's
+convention for a Worker-only hostname is a proxied `AAAA` to `100::`.
+
 ## Deploy
 
 ```bash

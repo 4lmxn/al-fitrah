@@ -129,12 +129,20 @@ separates the two; keep it that way.
 
 **1. Build and push.**
 
+⚠️ **`--platform linux/amd64` is not optional on an Apple Silicon Mac.** The
+default build produces `linux/arm64`, which pushes and deploys without
+complaint and then fails to start on Cloud Run. Verify before pushing:
+
+```bash
+docker image inspect <tag> --format '{{.Os}}/{{.Architecture}}'
+```
+
 ```bash
 gcloud auth configure-docker asia-south1-docker.pkg.dev
 gcloud artifacts repositories create al-fitrah \
   --repository-format=docker --location=asia-south1 --project=al-fitrah
 
-docker build \
+docker build --platform linux/amd64 \
   --build-arg NEXT_PUBLIC_SITE_URL=https://www.alfitrahsarjapura.in \
   --build-arg NEXT_PUBLIC_COMING_SOON=0 \
   --build-arg NEXT_PUBLIC_FIREBASE_PROJECT_ID=al-fitrah \
@@ -152,31 +160,60 @@ docker push asia-south1-docker.pkg.dev/al-fitrah/al-fitrah/web:v1
 
 A dedicated identity with only what the app needs. No key is created, ever.
 
-```bash
-gcloud iam service-accounts create al-fitrah-run \
-  --display-name="Al Fitrah Cloud Run" --project=al-fitrah
+⚠️ This project's IAM policy contains conditional bindings, so every
+`add-iam-policy-binding` needs an explicit `--condition=None` or it fails in
+non-interactive mode.
 
-for ROLE in roles/datastore.user roles/storage.objectAdmin roles/firebaseauth.admin; do
+```bash
+SA=al-fitrah-run@al-fitrah.iam.gserviceaccount.com
+
+gcloud iam service-accounts create al-fitrah-run \
+  --display-name="Al Fitrah Cloud Run runtime" --project=al-fitrah
+
+# Project-wide: Firestore documents and Auth only.
+for ROLE in roles/datastore.user roles/firebaseauth.admin; do
   gcloud projects add-iam-policy-binding al-fitrah \
-    --member=serviceAccount:al-fitrah-run@al-fitrah.iam.gserviceaccount.com \
-    --role=$ROLE
+    --member="serviceAccount:$SA" --role="$ROLE" --condition=None
 done
+
+# Storage is granted on the ONE bucket, not project-wide.
+gcloud storage buckets add-iam-policy-binding gs://al-fitrah-files \
+  --member="serviceAccount:$SA" --role=roles/storage.objectAdmin
 ```
 
 `roles/datastore.user` is read/write on Firestore documents but **not** schema,
 indexes or deletion of the database. Do not substitute `roles/datastore.owner`.
+Storage is deliberately bucket-scoped rather than `roles/storage.objectAdmin` at
+project level — the runtime has no reason to reach any other bucket.
 
 **3. Secrets in Secret Manager**, not env literals.
 
+`ADMIN_EMAILS`, `RESEND_API_KEY` and `CRON_SECRET` already exist in Secret
+Manager from the App Hosting setup — they only need the new identity granted
+access, not recreating:
+
 ```bash
-for S in ADMIN_EMAILS ADMIN_OWNERS RESEND_API_KEY CRON_SECRET \
-         INQUIRY_FROM_EMAIL INQUIRY_ADMIN_EMAIL; do
-  printf '%s' "$VALUE" | gcloud secrets create "$S" --data-file=- --project=al-fitrah
+for S in ADMIN_EMAILS RESEND_API_KEY CRON_SECRET; do
   gcloud secrets add-iam-policy-binding "$S" \
-    --member=serviceAccount:al-fitrah-run@al-fitrah.iam.gserviceaccount.com \
-    --role=roles/secretmanager.secretAccessor
+    --member="serviceAccount:$SA" \
+    --role=roles/secretmanager.secretAccessor --project=al-fitrah
 done
 ```
+
+`INQUIRY_FROM_EMAIL` and `INQUIRY_ADMIN_EMAIL` are plain values, not secrets,
+and stay as `--set-env-vars`.
+
+⚠️ **`ADMIN_OWNERS` does not exist yet** — it is still commented out in
+`apphosting.yaml`. Until it is set, `roleFor()` returns `owner` for every
+allowed address, so the owner/staff split does nothing and any signed-in
+account can delete. That default is deliberate (it stops the deploy that
+introduced roles from locking the school out), but it was meant to be
+temporary. Create it and wire it in as a separate, deliberate change.
+
+⚠️ **`INQUIRY_FROM_EMAIL` is `onboarding@resend.dev`** — Resend's shared
+sandbox sender. Enquiry mail is going out from a domain the school does not
+own, which hurts deliverability and may restrict delivery to verified
+addresses. Verify the school's own domain in Resend before launch.
 
 **4. Deploy.**
 
@@ -191,10 +228,14 @@ gcloud run deploy al-fitrah \
   --cpu=1 \
   --port=3000 \
   --allow-unauthenticated \
-  --set-env-vars=NEXT_PUBLIC_SITE_URL=https://www.alfitrahsarjapura.in,TRUST_CLOUDFLARE_IP=0 \
-  --set-secrets=ADMIN_EMAILS=ADMIN_EMAILS:latest,ADMIN_OWNERS=ADMIN_OWNERS:latest,RESEND_API_KEY=RESEND_API_KEY:latest,CRON_SECRET=CRON_SECRET:latest,INQUIRY_FROM_EMAIL=INQUIRY_FROM_EMAIL:latest,INQUIRY_ADMIN_EMAIL=INQUIRY_ADMIN_EMAIL:latest \
+  --set-env-vars=NEXT_PUBLIC_SITE_URL=https://www.alfitrahsarjapura.in,TRUST_CLOUDFLARE_IP=0,FIREBASE_PROJECT_ID=al-fitrah,INQUIRY_FROM_EMAIL=onboarding@resend.dev,INQUIRY_ADMIN_EMAIL=alfitrah.sompura@gmail.com \
+  --set-secrets=ADMIN_EMAILS=ADMIN_EMAILS:latest,RESEND_API_KEY=RESEND_API_KEY:latest,CRON_SECRET=CRON_SECRET:latest \
   --project=al-fitrah
 ```
+
+`TRUST_CLOUDFLARE_IP=0` is correct at this point and only at this point: the
+service is reachable directly on its `run.app` hostname, with no Cloudflare in
+front. It flips to `1` in the same deploy that first sits behind the edge — §6.
 
 `--min-instances=0` is deliberate and is what keeps the bill at zero — §7
 handles warmth instead. `--max-instances=2` is safe because rate-limit counters

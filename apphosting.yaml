@@ -101,13 +101,19 @@ env:
     availability: [RUNTIME]
 
   # Subset of ADMIN_EMAILS allowed to delete things. Everyone else is "staff":
-  # full access to leads and the pipeline, no destructive actions. Blank (or
-  # absent) means every admin is an owner — today's behaviour — so this can be
-  # rolled out without locking anyone out. Create with:
-  #   firebase apphosting:secrets:set ADMIN_OWNERS
-  # - variable: ADMIN_OWNERS
-  #   secret: ADMIN_OWNERS
-  #   availability: [RUNTIME]
+  # full access to leads and the pipeline, no destructive actions.
+  #
+  # Now set. While unset, roleFor() returned "owner" for every allowed address —
+  # a deliberate default so introducing roles could not lock the school out of
+  # its own console, but one that quietly disabled the split it was added for.
+  #
+  # It matters from the next person onward, not today: there is currently one
+  # admin. Adding the office staff to ADMIN_EMAILS would, under the old default,
+  # have made them owners able to delete job openings and read every applicant's
+  # CV. They now land as "staff" unless deliberately listed here.
+  - variable: ADMIN_OWNERS
+    secret: ADMIN_OWNERS
+    availability: [RUNTIME]
 
   # Resend — transactional email for inquiry + application notifications.
   # REQUIRED before deploy: create the secret with the API key, or the deploy

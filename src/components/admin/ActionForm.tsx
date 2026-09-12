@@ -17,11 +17,14 @@ export function ActionForm({
   children,
   className,
   errorClassName,
+  id,
 }: {
   action: (formData: FormData) => Promise<ActionResult>;
   children: ReactNode;
   className?: string;
   errorClassName?: string;
+  /** Lets a sibling read the form's live state — see RegisterSummary. */
+  id?: string;
 }) {
   const [state, formAction] = useActionState(
     async (_prev: ActionResult | null, formData: FormData) => action(formData),
@@ -29,7 +32,7 @@ export function ActionForm({
   );
 
   return (
-    <form action={formAction} className={className}>
+    <form id={id} action={formAction} className={className}>
       {children}
       {state && !state.ok && (
         <p

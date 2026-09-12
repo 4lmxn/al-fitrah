@@ -17,10 +17,14 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { saveRegister } from "./actions";
 import { Icon } from "@/components/ui/Icon";
 import { ActionForm } from "@/components/admin/ActionForm";
+import { RegisterSummary } from "@/components/admin/RegisterSummary";
 import { CheckInCard } from "@/components/admin/CheckInCard";
 import { LocationFields } from "@/components/admin/LocationFields";
 
 export const dynamic = "force-dynamic";
+
+// Shared so the live counter can read the register form it sits above.
+const REGISTER_FORM_ID = "attendance-register";
 
 const STATUS_STYLE: Record<string, string> = {
   present: "peer-checked:bg-emerald peer-checked:text-cream peer-checked:ring-emerald",
@@ -174,87 +178,117 @@ export default async function AttendancePage({
           </Link>
         </div>
       ) : (
-        <ActionForm action={saveRegister} className="mt-6">
+        <ActionForm id={REGISTER_FORM_ID} action={saveRegister} className="mt-6 pb-28 sm:pb-0">
           <input type="hidden" name="classSection" value={classSection} />
           <input type="hidden" name="dateKey" value={key} />
 
-          <div className="overflow-hidden rounded-2xl border border-emerald/10 bg-white/90 shadow-soft">
-            <div className="-mx-2 overflow-x-auto px-2">
-            <table className="w-full min-w-[20rem] text-left text-sm">
-              <thead className="border-b border-emerald/10 bg-cream/40 text-[11px] uppercase tracking-wide text-ink/45">
-                <tr>
-                  <th className="px-5 py-3 font-semibold">Child</th>
-                  <th className="px-5 py-3 font-semibold">Status</th>
-                  <th className="hidden px-5 py-3 text-right font-semibold sm:table-cell">This month</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-emerald/5">
-                {roster.map((s) => {
-                  const current = register?.entries[s.id] ?? fallback ?? "present";
-                  const stats = summarise(month, s.id, statuses);
-                  return (
-                    <tr key={s.id}>
-                      <td className="px-5 py-3">
-                        <Link href={`/admin/students/${s.id}`} className="font-semibold text-emerald-deep hover:text-emerald">
-                          {s.fullName}
-                        </Link>
-                        <span className="ml-2 text-xs tabular-nums text-ink/40">{s.admissionNumber}</span>
-                      </td>
-                      <td className="px-5 py-3">
-                        <div className="flex flex-wrap gap-1.5">
-                          {statuses.map(({ id: status, label: statusLabel }) => (
-                            <label key={status} className="cursor-pointer">
-                              <input
-                                type="radio"
-                                name={`s:${s.id}`}
-                                value={status}
-                                defaultChecked={current === status}
-                                className="peer sr-only"
-                              />
-                              <span
-                                className={`inline-block rounded-full px-3 py-1 text-xs font-semibold text-ink/60 ring-1 ring-inset ring-emerald/15 transition peer-focus-visible:ring-2 peer-focus-visible:ring-emerald ${STATUS_STYLE[status]}`}
-                              >
-                                {statusLabel}
-                              </span>
-                            </label>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="hidden px-5 py-3 text-right sm:table-cell">
-                        {stats.percent === null ? (
-                          <span className="text-xs text-ink/35">—</span>
-                        ) : (
-                          <span className={`text-sm font-semibold tabular-nums ${stats.percent < lowThreshold ? "text-red-700" : "text-ink/60"}`}>
-                            {stats.percent}%
-                            <span className="ml-1 text-[11px] font-normal text-ink/40">
-                              {stats.present}/{stats.counted}
-                            </span>
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            </div>
+          {/* How many are here, right now, before saving. The register defaults
+              everyone to present, so the number a teacher is actually producing
+              is the one they cannot see until it is too late to check. */}
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-emerald/10 bg-white/90 px-5 py-4 shadow-soft">
+            <RegisterSummary
+              formId={REGISTER_FORM_ID}
+              presentIds={statuses.filter((s) => s.present).map((s) => s.id)}
+              total={roster.length}
+            />
+            <p className="text-xs text-ink/45">
+              {classSection} ·{" "}
+              {new Date(`${key}T00:00:00`).toLocaleDateString("en-IN", { dateStyle: "medium" })}
+            </p>
           </div>
 
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            {/* Same fence as staff check-in — a register marked from off-campus
-                is the thing the feature exists to stop. */}
-            <LocationFields />
-            <button
-              type="submit"
-              className="inline-flex items-center gap-2 rounded-full bg-emerald px-6 py-2.5 text-sm font-semibold text-cream transition hover:bg-emerald-deep"
-            >
-              <Icon name="check" className="text-[18px]" />
-              {marked ? "Update register" : "Save register"}
-            </button>
-            <p className="text-xs text-ink/45">
-              {roster.length} {roster.length === 1 ? "child" : "children"} in {classSection} ·{" "}
-              {new Date(`${key}T00:00:00`).toLocaleDateString("en-IN", { dateStyle: "full" })}
-            </p>
+          {/* A list of cards, not a table. Registers are marked on a phone, and
+              a table there means a horizontal scroll with the month column —
+              the one signal worth glancing at — pushed off screen entirely. */}
+          <ul className="space-y-2">
+            {roster.map((s) => {
+              const current = register?.entries[s.id] ?? fallback ?? "present";
+              const stats = summarise(month, s.id, statuses);
+              const low = stats.percent !== null && stats.percent < lowThreshold;
+              return (
+                <li
+                  key={s.id}
+                  className="rounded-2xl border border-emerald/10 bg-white/90 p-4 shadow-soft transition hover:border-emerald/20"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+                    <div className="min-w-0">
+                      <Link
+                        href={`/admin/students/${s.id}`}
+                        className="font-semibold text-emerald-deep hover:text-emerald"
+                      >
+                        {s.fullName}
+                      </Link>
+                      <p className="mt-0.5 text-xs tabular-nums text-ink/40">{s.admissionNumber}</p>
+                    </div>
+
+                    {/* This month, kept visible at every width rather than
+                        hidden on the screen where the teacher is standing. */}
+                    {stats.percent !== null && (
+                      <div className="shrink-0 text-right">
+                        <span
+                          className={`text-sm font-semibold tabular-nums ${low ? "text-red-700" : "text-ink/55"}`}
+                        >
+                          {stats.percent}%
+                        </span>
+                        <span className="ml-1 text-[11px] text-ink/40">
+                          {stats.present}/{stats.counted}
+                        </span>
+                        <span
+                          className="mt-1 block h-1.5 w-20 overflow-hidden rounded-full bg-emerald/10"
+                          aria-hidden="true"
+                        >
+                          <span
+                            className={`block h-full rounded-full ${low ? "bg-red-600" : "bg-emerald"}`}
+                            style={{ width: `${stats.percent}%` }}
+                          />
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Tap targets sized for a thumb, not a cursor. */}
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {statuses.map(({ id: status, label: statusLabel }) => (
+                      <label key={status} className="cursor-pointer">
+                        <input
+                          type="radio"
+                          name={`s:${s.id}`}
+                          value={status}
+                          defaultChecked={current === status}
+                          className="peer sr-only"
+                        />
+                        <span
+                          className={`inline-flex min-h-11 items-center rounded-xl px-4 text-sm font-semibold text-ink/60 ring-1 ring-inset ring-emerald/15 transition peer-focus-visible:ring-2 peer-focus-visible:ring-emerald sm:min-h-9 sm:rounded-full sm:px-3.5 sm:text-xs ${STATUS_STYLE[status]}`}
+                        >
+                          {statusLabel}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* Pinned on a phone: with twenty children the save button is
+              otherwise a full scroll away from the last child marked. */}
+          <div className="fixed inset-x-0 bottom-0 z-20 border-t border-emerald/10 bg-cream-deep/95 px-4 py-3 backdrop-blur sm:static sm:mt-4 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none">
+            <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-3">
+              {/* Same fence as staff check-in — a register marked from off-campus
+                  is the thing the feature exists to stop. */}
+              <LocationFields />
+              <button
+                type="submit"
+                className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full bg-emerald px-6 text-sm font-semibold text-cream transition hover:bg-emerald-deep sm:flex-none"
+              >
+                <Icon name="check" className="text-[18px]" />
+                {marked ? "Update register" : "Save register"}
+              </button>
+              <p className="hidden text-xs text-ink/45 sm:block">
+                {roster.length} {roster.length === 1 ? "child" : "children"} in {classSection} ·{" "}
+                {new Date(`${key}T00:00:00`).toLocaleDateString("en-IN", { dateStyle: "full" })}
+              </p>
+            </div>
           </div>
         </ActionForm>
       )}

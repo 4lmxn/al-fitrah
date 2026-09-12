@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { getInbox, SEARCH_SCAN_LIMIT } from "@/lib/leadQueries";
+import { getInbox, getBoard, SEARCH_SCAN_LIMIT } from "@/lib/leadQueries";
 import { getAllowlist } from "@/lib/roles";
 import { requireAdmin } from "@/lib/adminAuth";
 import { LEAD_TYPE_LABEL, type LeadType } from "@/lib/leads";
 import { Icon } from "@/components/ui/Icon";
 import { InboxBoard } from "@/components/admin/InboxBoard";
+import { LeadBoard } from "@/components/admin/LeadBoard";
 
 export const dynamic = "force-dynamic";
 
@@ -23,18 +24,36 @@ export default async function AdminInbox({
   const { role } = await requireAdmin();
   const type: LeadType = TYPES.includes(sp.type as LeadType) ? (sp.type as LeadType) : "admission_inquiry";
   const attention = sp.view === "attention";
+  // The pipeline as columns. Not compatible with a stage filter (a board IS
+  // the stage filter), with search (matches span stages), or with the
+  // attention view (a to-do list, not a pipeline) — so those win.
+  const board = sp.view === "board" && !attention && !sp.q?.trim();
   // Validated against the configured pipeline below, once it is resolved.
   const requestedStage = !attention ? sp.stage : undefined;
   const q = sp.q?.trim() || "";
 
-  const { rows, counts, kpis, attentionCount, nextCursor, searchTruncated, pipeline } = await getInbox(type, {
-    stage: requestedStage,
-    q,
-    attention,
-    cursor: sp.after,
-    assignee: sp.assignee,
-    tag: sp.tag,
-  });
+  // One of the two, never both — the board and the list answer the same
+  // question differently and fetching both would double the reads to render one.
+  const inbox = board
+    ? null
+    : await getInbox(type, {
+        stage: requestedStage,
+        q,
+        attention,
+        cursor: sp.after,
+        assignee: sp.assignee,
+        tag: sp.tag,
+      });
+  const boardData = board ? await getBoard(type) : null;
+
+  const pipeline = inbox?.pipeline ?? boardData!.pipeline;
+  const attentionCount = inbox?.attentionCount ?? boardData!.attentionCount;
+  const rows = inbox?.rows ?? [];
+  const counts = inbox?.counts ?? {};
+  const kpis = inbox?.kpis ?? { total: 0, new: 0, active: 0, won: 0, lost: 0 };
+  const nextCursor = inbox?.nextCursor ?? null;
+  const searchTruncated = inbox?.searchTruncated ?? false;
+
   const wonLabel = type === "staff_application" ? "Hired" : "Admitted";
 
   // Ignore a stage in the URL that the configured pipeline no longer contains,
@@ -92,20 +111,50 @@ export default async function AdminInbox({
         </div>
       </div>
 
-      {/* Interactive board: KPIs, filters, and the leads table. Keyed on the
-          active filter so a navigation remounts it with fresh server data;
-          between navigations it updates optimistically without re-reading. */}
-      <InboxBoard
-        key={`${type}|${stage ?? ""}|${attention ? "attn" : ""}|${q}|${sp.after ?? ""}`}
-        type={type}
-        activeStage={stage}
-        attention={attention}
-        q={q}
-        wonLabel={wonLabel}
-        stages={pipeline}
-        admins={getAllowlist()}
-        initial={{ rows, counts, kpis, attentionCount }}
-      />
+      {/* List or board. Both are kept: the list carries search, bulk actions
+          and the attention to-do view, none of which a pipeline board does
+          well; the board answers "where is everyone" at a glance, which a
+          paged list cannot. */}
+      <div className="mt-7 inline-flex rounded-full bg-white p-1 shadow-soft ring-1 ring-emerald/10">
+        {[
+          { id: "", label: "List", icon: "view_list" },
+          { id: "board", label: "Board", icon: "view_kanban" },
+        ].map((v) => {
+          const active = board ? v.id === "board" : v.id === "";
+          return (
+            <Link
+              key={v.id || "list"}
+              href={`/admin?${new URLSearchParams({ type, ...(v.id ? { view: v.id } : {}) })}`}
+              aria-current={active ? "page" : undefined}
+              className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                active ? "bg-emerald text-cream shadow-sm" : "text-emerald-deep hover:bg-emerald/5"
+              }`}
+            >
+              <Icon name={v.icon} className="text-[17px]" />
+              {v.label}
+            </Link>
+          );
+        })}
+      </div>
+
+      {board && boardData ? (
+        <LeadBoard type={type} columns={boardData.columns} stages={pipeline} q={q} />
+      ) : (
+        /* Interactive board: KPIs, filters, and the leads table. Keyed on the
+           active filter so a navigation remounts it with fresh server data;
+           between navigations it updates optimistically without re-reading. */
+        <InboxBoard
+          key={`${type}|${stage ?? ""}|${attention ? "attn" : ""}|${q}|${sp.after ?? ""}`}
+          type={type}
+          activeStage={stage}
+          attention={attention}
+          q={q}
+          wonLabel={wonLabel}
+          stages={pipeline}
+          admins={getAllowlist()}
+          initial={{ rows, counts, kpis, attentionCount }}
+        />
+      )}
 
       {/* Search scans a bounded window rather than the whole collection, so say
           so instead of quietly implying these are all the matches there are. */}

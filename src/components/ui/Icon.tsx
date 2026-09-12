@@ -29,7 +29,7 @@ export const ICON_NAMES = [
   "school", "search", "search_off", "self_improvement", "settings", "snooze",
   "south", "staff_application", "styler", "task_alt", "tour", "translate",
   "trending_flat", "trending_up", "tune", "upload", "upload_file", "verified",
-  "volunteer_activism", "wb_sunny", "work", "work_off",
+  "view_kanban", "view_list", "volunteer_activism", "wb_sunny", "work", "work_off",
 ] as const;
 
 export function Icon({ name, className }: { name: string; className?: string }) {

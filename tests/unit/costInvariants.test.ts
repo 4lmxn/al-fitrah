@@ -78,6 +78,33 @@ describe("cost invariant: no unbounded fetch of the leads collection", () => {
   });
 });
 
+describe("cost invariant: the pipeline board is bounded per column", () => {
+  const queries = files.find((f) => f.path.endsWith(join("lib", "leadQueries.ts")))!;
+
+  // A board invites "just show every card in every column", which is the same
+  // linear-in-collection-size read the paged list exists to avoid — six times
+  // over. Columns show a bounded slice and take their header number from an
+  // aggregation, so the count stays exact while the reads stay flat.
+  it("declares a column size", () => {
+    expect(queries.text).toMatch(/export const BOARD_COLUMN_SIZE\s*=\s*\d+/);
+  });
+
+  it("keeps that size small enough to be a slice, not a fetch-all", () => {
+    const size = Number(queries.text.match(/BOARD_COLUMN_SIZE\s*=\s*(\d+)/)![1]);
+    expect(size).toBeGreaterThan(0);
+    expect(size).toBeLessThanOrEqual(25);
+  });
+
+  it("applies the limit to the column query", () => {
+    expect(queries.text).toMatch(/\.limit\(BOARD_COLUMN_SIZE\)/);
+  });
+
+  it("takes the column total from a count, not from the rows it fetched", () => {
+    // rows.length would silently cap every column header at the slice size.
+    expect(queries.text).toMatch(/total:\s*agg\.data\(\)\.count/);
+  });
+});
+
 describe("cost invariant: the follow-up digest query is bounded at both ends", () => {
   const cron = files.find((f) => f.path.endsWith(join("api", "cron", "followups", "route.ts")));
 

@@ -282,6 +282,62 @@ export async function getInbox(
   return { ...page, counts, kpis, attentionCount, pipeline };
 }
 
+// ── Pipeline board ──────────────────────────────────────────────────────────
+
+/**
+ * Cards shown per column. The count in the header is exact; the column shows
+ * the newest few and says how many more there are.
+ *
+ * Bounded per column on purpose. The natural instinct for a board is "show
+ * every card", which is precisely the read pattern the rest of this file exists
+ * to remove — it would make a page load linear in collection size again, and
+ * `tests/unit/costInvariants.test.ts` guards against exactly that.
+ */
+export const BOARD_COLUMN_SIZE = 10;
+
+export type BoardColumn = {
+  stage: string;
+  /** Exact, from an aggregation — not the length of `rows`. */
+  total: number;
+  rows: LeadRow[];
+};
+
+export type Board = { columns: BoardColumn[]; pipeline: StageView[]; attentionCount: number };
+
+/**
+ * The pipeline as columns.
+ *
+ * Costs one bounded read plus one count per stage — around 66 reads for a
+ * six-stage pipeline, against roughly 33 for the paged list. Higher, and flat
+ * in collection size either way, which is the property that matters: a school
+ * with 200 leads and one with 200,000 pay the same.
+ */
+export async function getBoard(type: LeadType): Promise<Board> {
+  await requireAdmin();
+  const pipeline = await getPipeline(type);
+  const now = Date.now();
+
+  const [columns, attentionCount] = await Promise.all([
+    Promise.all(
+      pipeline.map(async (s): Promise<BoardColumn> => {
+        const [snap, agg] = await Promise.all([
+          baseQuery(type, s.id).limit(BOARD_COLUMN_SIZE).get(),
+          getDb()
+            .collection("leads")
+            .where("type", "==", type)
+            .where("stage", "==", s.id)
+            .count()
+            .get(),
+        ]);
+        return { stage: s.id, total: agg.data().count, rows: snap.docs.map(toRow) };
+      }),
+    ),
+    attentionCountOf(type, now),
+  ]);
+
+  return { columns, pipeline, attentionCount };
+}
+
 // ── Marketing insights ──────────────────────────────────────────────────────
 
 export type SourceCount = { source: string; total: number; thisMonth: number };

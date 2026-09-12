@@ -84,6 +84,16 @@ export type Student = {
   guardianEmails: string[];
   emergencyContact: { name: string; phone: string; relationship: string } | null;
   medical: Medical | null;
+  /**
+   * Object path of the child's photo, or null.
+   *
+   * A path, never a URL. The file store is private with public access
+   * prevention enforced, so there is no address this could be turned into that
+   * would work without a session — which is the point. A photograph of a child
+   * is not something that should be reachable by anyone holding a link.
+   * Served by /admin/students/[id]/photo, behind the same gate as the record.
+   */
+  photoPath: string | null;
   /** The enquiry this student came from, when there was one. */
   leadId: string | null;
   fees: StudentFees;
@@ -118,6 +128,7 @@ export function toStudent(d: FirebaseFirestore.QueryDocumentSnapshot | FirebaseF
     guardianEmails: Array.isArray(x.guardianEmails) ? x.guardianEmails : [],
     emergencyContact: x.emergencyContact ?? null,
     medical: x.medical ?? null,
+    photoPath: x.photoPath ?? null,
     leadId: x.leadId ?? null,
     fees: feesOf(x),
     createdAtMs: x.createdAt?.toMillis?.() ?? null,

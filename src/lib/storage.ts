@@ -51,6 +51,41 @@ export async function deleteObject(path: string): Promise<void> {
   await getBucket().file(path).delete({ ignoreNotFound: true });
 }
 
+// ── Student photos ──────────────────────────────────────────────────────────
+
+/**
+ * A child's photograph is the most identifying thing this system stores, so it
+ * gets a tighter cap than a news image: enough for a clear headshot, not enough
+ * to be a route to filling the bucket from the admin console.
+ */
+export const MAX_PHOTO_BYTES = 2 * 1024 * 1024;
+
+/**
+ * Store a student's photo and return its path.
+ *
+ * A path, never a URL, and deliberately not in a public prefix. There is no
+ * address for this file that works without a session — see the note on
+ * Student.photoPath. Content type comes from the sniffed bytes, so a file
+ * claiming to be a PNG can never be served as something the browser executes.
+ *
+ * The name is derived from the student id, not random, so replacing a photo
+ * overwrites rather than accumulating one orphan per upload. Cache-busting is
+ * the serving route's problem, not the object's.
+ */
+export async function uploadStudentPhoto(
+  studentId: string,
+  file: { buffer: Buffer; contentType: string },
+): Promise<{ path: string }> {
+  const ext = IMAGE_TYPES[file.contentType] ?? "bin";
+  const path = `students/${studentId}/photo.${ext}`;
+  await getBucket().file(path).save(file.buffer, {
+    contentType: file.contentType,
+    resumable: false,
+    metadata: { cacheControl: "private, max-age=0" },
+  });
+  return { path };
+}
+
 // ── Public content images (news / events) ───────────────────────────────────
 
 export const MAX_IMAGE_BYTES = 4 * 1024 * 1024;

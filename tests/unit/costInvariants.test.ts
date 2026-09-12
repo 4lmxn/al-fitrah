@@ -121,6 +121,36 @@ describe("cost invariant: the follow-up digest query is bounded at both ends", (
   });
 });
 
+describe("privacy invariant: children's files never reach a shared cache", () => {
+  // The photo route is authenticated, but a Cache-Control of "public" would let
+  // Cloudflare — or any proxy between the school and the origin — keep a copy
+  // of a child's face and hand it to whoever asks next. The session check would
+  // never run again. `private` is the whole defence, and it is one word.
+  const photo = files.find((f) =>
+    f.path.endsWith(join("students", "[id]", "photo", "route.ts")),
+  );
+
+  it("the photo route exists", () => {
+    expect(photo).toBeDefined();
+  });
+
+  it("is marked private, never public", () => {
+    expect(photo!.text).toMatch(/Cache-Control["']?\s*:\s*["'][^"']*private/);
+    expect(photo!.text).not.toMatch(/Cache-Control["']?\s*:\s*["'][^"']*public/);
+  });
+
+  it("requires an admin before reading anything", () => {
+    expect(photo!.text).toMatch(/requireAdmin\(\)/);
+  });
+
+  it("serves a stream, not a signed URL", () => {
+    // A signed URL is a bearer token: it survives in history and needs no
+    // session. Same reasoning as the CV route.
+    expect(photo!.text).toMatch(/streamObject\(/);
+    expect(photo!.text).not.toMatch(/getSignedUrl/);
+  });
+});
+
 describe("money invariant: the fee ledger is append-only", () => {
   // A mutable "amount paid" field loses money silently: two staff recording
   // payments at once both read 5000, both write 7000, and one parent's ₹2,000

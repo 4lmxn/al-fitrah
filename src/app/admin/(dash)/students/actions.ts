@@ -7,8 +7,9 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { getClassSections, getPrograms, pickFrom } from "@/lib/taxonomy";
 import { guardianEmailsFrom, guardianPhonesFrom } from "@/lib/students";
+import { MAX_PHOTO_BYTES, detectImageType, uploadStudentPhoto } from "@/lib/storage";
 import { queueNote } from "@/lib/notes";
-import { recordAudit } from "@/lib/audit";
+import { queueAudit, recordAudit } from "@/lib/audit";
 import {
   COLLECTION,
   STUDENT_STATUSES,
@@ -205,5 +206,54 @@ export async function updateStudent(formData: FormData): Promise<ActionResult> {
     });
     revalidatePath(`/admin/students/${id}`);
     revalidatePath("/admin/students");
+  });
+}
+
+/**
+ * Replace a student's photograph.
+ *
+ * Its own action rather than a field on updateStudent: a file upload and a form
+ * of text inputs fail in different ways and at different sizes, and folding
+ * them together means a rejected 3 MB photo also throws away the medical notes
+ * someone just typed.
+ *
+ * The bytes decide the type, not the browser's claim. An uploaded file that
+ * says it is a PNG but is not gets refused here rather than stored and served
+ * back to an admin's browser to interpret.
+ */
+export async function uploadStudentPhotoAction(formData: FormData): Promise<ActionResult> {
+  return attempt("uploadStudentPhoto", async () => {
+    const admin = await requireAdmin();
+    const id = String(formData.get("id") ?? "");
+    if (!id) return fail("Missing student id");
+
+    const file = formData.get("photo");
+    if (!(file instanceof File) || file.size === 0) return fail("Choose a photo first.");
+    if (file.size > MAX_PHOTO_BYTES) return fail("Photos must be 2 MB or smaller.");
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const sniffed = detectImageType(buffer);
+    if (!sniffed) return fail("That file isn't a JPG, PNG or WebP image.");
+
+    const { path } = await uploadStudentPhoto(id, { buffer, contentType: sniffed });
+
+    const db = getDb();
+    const batch = db.batch();
+    batch.update(db.collection(COLLECTION).doc(id), {
+      photoPath: path,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    // A child's photograph is personal data. Who attached one, and when, is
+    // worth being able to answer later.
+    queueAudit(db, batch, {
+      actor: admin.email,
+      action: "student.photo_set",
+      entity: { type: "student", id },
+      summary: "Photo updated",
+    });
+    await batch.commit();
+
+    revalidatePath(`/admin/students/${id}`);
+    return { ok: true };
   });
 }

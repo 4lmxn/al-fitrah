@@ -115,13 +115,29 @@ const worker = {
 
     const ttl = url.pathname.startsWith("/_next/static/") ? TTL_STATIC : TTL_PAGE;
 
-    const toStore = new Response(response.clone().body, response);
-    // Normalised so Cloudflare will store it at all — safe only because RSC
-    // requests never reach this branch.
-    toStore.headers.set("vary", "Accept-Encoding");
-    toStore.headers.set("cache-control", `public, max-age=${ttl}`);
+    // Headers are rebuilt rather than inherited from the origin Response.
+    // Copying a Response and then mutating its headers did not reliably take
+    // effect — HTML kept reaching the origin on every request while static
+    // assets cached — and an explicit Headers object removes the doubt.
+    const headers = new Headers(response.headers);
+    // Normalised so Cloudflare will store it at all. Safe only because RSC
+    // requests never reach this branch; see isRscRequest above.
+    headers.set("vary", "Accept-Encoding");
+    headers.set("cache-control", `public, max-age=${ttl}`);
 
-    ctx.waitUntil(cache.put(cacheKey, toStore.clone()));
+    const toStore = new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    });
+
+    // A rejected put is swallowed by waitUntil, which is how this failed
+    // silently the first time. Log it so `wrangler tail` shows the reason.
+    ctx.waitUntil(
+      cache.put(cacheKey, toStore.clone()).catch((err) => {
+        console.error("edge cache put failed", url.pathname, String(err));
+      }),
+    );
     return toStore;
   },
 };

@@ -48,6 +48,29 @@ it never fires.
    origin is reached) and switch them to **orange cloud**
 5. Verify, then lower TTLs and let it settle
 
+## Verified live, 2026-09-13
+
+| Check | Result |
+|---|---|
+| Domain served by Cloud Run Mumbai | probe traced to `asia-south1`; App Hosting saw nothing |
+| `/` and `/about` cached at the edge | 1 origin hit per 6 requests once the entry settles |
+| Page TTFB through the edge | 232 ms cold colo → 75–101 ms warm |
+| `/_next/static/*` cached | `MISS, MISS, HIT` |
+| `/admin/login` never cached | 5 origin hits for 5 requests |
+| `/portal`, `/api/*` never cached | `DYNAMIC`, always to origin |
+| Apex → www | 301 |
+| Security headers through the edge | all 6 present |
+| Edge token, real | request via domain shares a rate-limit key with a direct one (429) |
+| Edge token, forged | forged `CF-Connecting-IP` ignored, keys on the real address (429) |
+
+⚠️ **`cf-cache-status` is not a usable signal here.** It reports `DYNAMIC` for
+anything a Worker constructs, cached or not — every row above was confirmed by
+counting requests that actually reached Cloud Run, not by reading that header.
+
+The first request to a given Cloudflare PoP always reaches the origin, and rapid
+consecutive requests can beat the `cache.put` and reach it too. That is normal;
+measure after the entry has settled, not in a tight loop.
+
 ## Verify
 
 ```bash

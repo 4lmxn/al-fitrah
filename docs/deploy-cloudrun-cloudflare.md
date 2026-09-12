@@ -281,58 +281,69 @@ money. Logic and tests: `src/lib/clientIp.ts`, `tests/unit/clientIp.test.ts`.
 1. **DNS.** Add `alfitrahsarjapura.in` to Cloudflare, move nameservers from
    GoDaddy. Leave records **DNS-only (grey cloud)** for now.
 
-2. **Cloud Run domain mapping**, so Cloud Run answers to the real hostname
-   rather than only `run.app`. Verified available in `asia-south1`:
+2. **Deploy the edge Worker.** ⚠️ Cloud Run in `asia-south1` **cannot serve a
+   custom domain** — domain mappings are not offered in that region:
 
-   ```bash
-   gcloud beta run domain-mappings create \
-     --service=al-fitrah --domain=www.alfitrahsarjapura.in \
-     --region=asia-south1 --project=al-fitrah
+   ```
+   ERROR: Creating domain mappings is not allowed in asia-south1.  (501)
    ```
 
-   It prints DNS records; add them in Cloudflare grey-cloud so Google can
-   verify. Requires the domain verified to this account in Search Console.
+   Nor does a plain proxied CNAME work: Cloudflare forwards the original `Host`,
+   Cloud Run routes on `Host`, and an unrecognised one 404s. The paid way out is
+   a Global External Load Balancer (~₹1,500–2,000/month); the free way is a
+   Worker that rewrites the Host and carries the token.
+
+   ```bash
+   cd cloudflare && npx wrangler deploy
+   gcloud secrets versions access latest --secret=EDGE_TOKEN --project=al-fitrah \
+     | npx wrangler secret put EDGE_TOKEN
+   ```
+
+   Safe to deploy before DNS moves: a route with no proxied record behind it
+   never fires. Source and cache policy: `cloudflare/`.
 
 3. **SSL/TLS mode: Full (strict).** Anything less lets Cloudflare reach the
    origin unencrypted or without verifying its certificate.
 
-4. **Transform Rule — this is the security step.** Rules → Transform Rules →
-   Modify Request Header → Add, on all incoming requests:
+4. **Turn the proxy on (orange cloud)** for `www` and the apex. The Worker
+   intercepts before any origin is reached, so the records' targets barely
+   matter — but keep them pointing somewhere real so a Worker failure degrades
+   to an error rather than a DNS hole.
 
-   ```
-   Header name:  x-edge-token
-   Value:        <the EDGE_TOKEN secret value>
-   ```
-
-   Read the value with:
-
-   ```bash
-   gcloud secrets versions access latest --secret=EDGE_TOKEN --project=al-fitrah
-   ```
-
-   ⚠️ **Set it to "Add", not "Set if not present".** Add overwrites any value the
-   client supplied, which is the whole point — otherwise a visitor can present
-   their own token header and Cloudflare will pass it through untouched.
-
-5. **Turn the proxy on (orange cloud)** for `www` and the apex.
+5. **Cache policy lives in the Worker**, not in dashboard rules, so it is
+   reviewable in git next to the routes it protects. `/admin/*`, `/portal/*` and
+   `/api/*` are never cached — a cached admin page would serve one member of
+   staff's session-rendered view to the next visitor. Everything else is
+   prerendered marketing content, cached an hour at the edge, with error
+   responses cached briefly or not at all so a bad deploy cannot pin a 500.
 
 6. **Verify both directions** before trusting anything:
 
    ```bash
-   # Through the edge: real visitor IP is used.
-   curl -sI https://www.alfitrahsarjapura.in/admin/login
+   # Through the edge: should now be served by Cloud Run, not App Hosting.
+   curl -sI https://www.alfitrahsarjapura.in/ | grep -i 'x-nextjs\|server'
 
-   # Direct to origin with a forged header: must be IGNORED, not trusted.
-   curl -sI https://al-fitrah-360754505866.asia-south1.run.app/admin/login \
-     -H 'cf-connecting-ip: 9.9.9.9' -H 'x-edge-token: wrong'
+   # Straight at the origin with a forged token and a rotating fake address:
+   # every request must still key off the REAL address, so the limit trips.
+   for i in $(seq 1 7); do
+     curl -s -o /dev/null -X POST \
+       https://al-fitrah-360754505866.asia-south1.run.app/api/inquiry \
+       -H 'content-type: application/json' \
+       -H "cf-connecting-ip: 9.9.9.$i" -H 'x-edge-token: wrong' \
+       -d '{"invalid":"payload"}' -w '%{http_code}\n'
+   done
+   # Expect: 422 422 422 422 422 429 429
    ```
 
-   The second must still rate-limit on the real forwarded address. The unit
-   tests assert exactly this; the curl confirms it in production.
+   That second check is the one that matters, and it has already been run
+   against the live service — see the note below. If every response is 422, the
+   forged header is being trusted and rate limiting is effectively off.
 
-5. **Cache rules.** Bypass cache for `/admin/*`, `/portal/*` and `/api/*` —
-   authenticated and per-user. Cache everything else; the prerendered marketing
-   pages already ship a one-year `Cache-Control`.
+   > **Verified 2026-09-12** on revision `al-fitrah-00003-84t`: seven POSTs, each
+   > with a different forged `cf-connecting-ip` and a wrong token, returned
+   > `422 422 422 422 422 429 429`. The forged addresses were ignored and all
+   > seven keyed off the real one. This is precisely the attack the old
+   > `TRUST_CLOUDFLARE_IP=1` would have allowed.
 
    ⚠️ `/api/cron/followups` is covered by that bypass and must also **not** be
    rate-limited on client IP. The caller is a scheduler, not a visitor, and every

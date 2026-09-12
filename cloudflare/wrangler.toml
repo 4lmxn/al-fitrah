@@ -1,0 +1,26 @@
+name = "al-fitrah-edge"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+# Both hostnames are bound: the apex is claimed only so the Worker can redirect
+# it to www, which is the canonical form everywhere else in the app.
+#
+# Binding a route does nothing until the DNS record for that hostname exists and
+# is proxied (orange cloud). Until then this Worker is deployed and idle, which
+# is a safe state to leave it in while DNS is still pointed at App Hosting.
+[[routes]]
+pattern = "www.alfitrahsarjapura.in/*"
+zone_name = "alfitrahsarjapura.in"
+
+[[routes]]
+pattern = "alfitrahsarjapura.in/*"
+zone_name = "alfitrahsarjapura.in"
+
+# EDGE_TOKEN is NOT set here. It is a secret:
+#
+#   gcloud secrets versions access latest --secret=EDGE_TOKEN --project=al-fitrah \
+#     | npx wrangler secret put EDGE_TOKEN
+#
+# Committing it as a var would put the value in git, which is the one thing that
+# would make the whole mechanism pointless — the token is what distinguishes
+# traffic that came through this Worker from traffic that did not.

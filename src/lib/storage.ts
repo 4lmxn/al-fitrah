@@ -95,10 +95,35 @@ export function validateImage(
 }
 
 /**
+ * Can post images be published to the configured bucket?
+ *
+ * Post images are the one thing here served straight from the bucket by URL,
+ * rather than streamed through an authenticated route. That only works on a
+ * Firebase-registered bucket with public reads — the `?alt=media` download
+ * endpoint serves nothing else.
+ *
+ * The bucket holding CVs and student documents is deliberately not that: it
+ * sits in asia-south1 with public access prevention enforced, because those are
+ * children's records and an applicant's CV, and nothing about them should be
+ * reachable by URL. See docs/deploy-cloudrun-cloudflare.md §9.
+ *
+ * So the two uses want opposite buckets, and this reports which one is
+ * configured. Callers refuse the upload rather than storing an object and
+ * handing back a URL that 404s — a broken image on the public news page with
+ * no error anywhere is exactly the silent failure this codebase keeps removing.
+ */
+export function publicImagesSupported(): boolean {
+  const name = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ?? "";
+  return /\.(firebasestorage\.app|appspot\.com)$/.test(name);
+}
+
+/**
  * Store a post image and return its public URL.
  *
  * Content-Type comes from the sniffed bytes, not the upload, so a file claiming
  * to be a PNG can never be served as something the browser will execute.
+ *
+ * Guarded by publicImagesSupported() at the call site — see above.
  */
 export async function uploadPostImage(
   postId: string,

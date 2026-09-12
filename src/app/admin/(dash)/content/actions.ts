@@ -6,7 +6,7 @@ import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { COLLECTION, POST_TYPES, slugTaken, slugify, type PostType } from "@/lib/posts";
-import { detectImageType, deleteObject, uploadPostImage, validateImage } from "@/lib/storage";
+import { detectImageType, deleteObject, publicImagesSupported, uploadPostImage, validateImage } from "@/lib/storage";
 import { recordAudit } from "@/lib/audit";
 
 const clean = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
@@ -66,6 +66,19 @@ async function handleImage(
 ): Promise<{ ok: true; image: { path: string; url: string } | null } | { ok: false; error: string }> {
   const file = formData.get("image");
   if (!(file instanceof File) || file.size === 0) return { ok: true, image: null };
+
+  // Refused before the upload, not after. The configured bucket is private by
+  // design (children's records, applicants' CVs), and a public image URL into
+  // it would 404 — so storing the object first would leave an orphan and put a
+  // broken image on the news page with nothing in the logs.
+  if (!publicImagesSupported()) {
+    return {
+      ok: false,
+      error:
+        "Images can't be published yet — the file store is private and has no public address. " +
+        "Save the post without an image, or ask the developer to set up image hosting.",
+    };
+  }
 
   const check = validateImage({ type: file.type, size: file.size });
   if (!check.ok) return check;

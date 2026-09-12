@@ -9,7 +9,7 @@ runConfig:
   # 💰 This is what ends the ₹0 free tier: an always-on instance bills around
   # the clock, roughly ₹900-1,500/month. Set back to 0 to return to ₹0/month
   # and 2.7s cold starts. That trade is the whole Firebase-vs-AWS question in
-  # one line — see docs/aws-cloudflare.md.
+  # one line — see docs/deploy-cloudrun-cloudflare.md.
   minInstances: 1
 
   # Safe to raise now: rate-limit counters moved to Firestore, so limits are
@@ -31,7 +31,7 @@ env:
   # Cloudflare (Authenticated Origin Pulls, or a firewall allowing only
   # Cloudflare's published IP ranges). Until then CF-Connecting-IP is
   # attacker-settable and trusting it removes rate limiting entirely.
-  # See src/lib/clientIp.ts and docs/aws-cloudflare.md.
+  # See src/lib/clientIp.ts and docs/deploy-cloudrun-cloudflare.md.
   - variable: TRUST_CLOUDFLARE_IP
     value: "0"
     availability: [RUNTIME]
@@ -69,8 +69,20 @@ env:
   - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
     value: "al-fitrah"
     availability: [BUILD, RUNTIME]
+  # Private file store: CVs today, students' documents next.
+  #
+  # Moved off the Firebase default bucket, which resolves to us-east1 — South
+  # Carolina. These are an applicant's CV and, shortly, a child's records; under
+  # DPDP "where does this file physically live" has a wrong answer and that was
+  # it. This bucket is asia-south1, alongside Firestore, with uniform access and
+  # public access prevention enforced.
+  #
+  # Everything reaching it is streamed through an authenticated route, so it
+  # needs no public read path — see src/lib/storage.ts. Public post images are a
+  # separate problem with a separate answer; publicImagesSupported() refuses
+  # them here rather than writing a URL that 404s.
   - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    value: "al-fitrah.firebasestorage.app"
+    value: "al-fitrah-files"
     availability: [BUILD, RUNTIME]
   - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
     value: "360754505866"

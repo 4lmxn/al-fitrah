@@ -35,7 +35,12 @@ export function proxy(request: NextRequest) {
 export const config = {
   // Run on everything except Next internals and the metadata/icon routes, so
   // the holding page never blocks its own CSS, fonts, or share image.
+  //
+  // Search Console's verification file is excluded for a subtler reason: Google
+  // re-checks it long after the first verification, and a rewrite would serve
+  // it the holding page instead of the token. The site would quietly lose its
+  // verified status the next time anyone flipped COMING_SOON on.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|apple-icon|opengraph-image|robots.txt|sitemap.xml).*)",
+    "/((?!_next/static|_next/image|favicon.ico|apple-icon|opengraph-image|robots.txt|sitemap.xml|google[0-9a-f]+.html).*)",
   ],
 };

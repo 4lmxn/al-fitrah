@@ -8,6 +8,7 @@ import { COLLECTION, isAudience, toResource, type Audience } from "@/lib/resourc
 import {
   deleteObject,
   moveObject,
+  publicImagesSupported,
   publicUrlFor,
   resourceStoragePath,
   uploadResource,
@@ -18,6 +19,21 @@ import { getClassSections, pickFrom } from "@/lib/taxonomy";
 import { queueAudit, recordAudit } from "@/lib/audit";
 
 const clean = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
+
+/**
+ * Does a file shared with anyone belong at a world-readable path?
+ *
+ * Who may see a file is the school's decision; whether the bucket can serve it
+ * without this app is the bucket's. The Mumbai files bucket has no public read
+ * endpoint (docs/deploy-cloudrun-cloudflare.md §9), so a `content/` object
+ * there would be unreachable at the URL we stored — the same silent failure
+ * publicImagesSupported() already stops for post images.
+ *
+ * When it cannot, the file stays at the closed prefix and gets no publicUrl,
+ * and every surface falls back to the download route, which already serves a
+ * public file to an anonymous viewer. The audience is unchanged either way.
+ */
+const servedStraightFromStorage = (isPublic: boolean) => isPublic && publicImagesSupported();
 
 type ParsedMeta = {
   title: string;
@@ -76,7 +92,8 @@ export async function createResource(formData: FormData): Promise<ActionResult> 
     const db = getDb();
     const ref = db.collection(COLLECTION).doc();
     const isPublic = parsed.data.audience.includes("public");
-    const storagePath = resourceStoragePath(ref.id, file.name, isPublic);
+    const atPublicPath = servedStraightFromStorage(isPublic);
+    const storagePath = resourceStoragePath(ref.id, file.name, atPublicPath);
 
     // Bytes first. A document pointing at an object that failed to upload is a
     // broken row in every list; an orphaned object is invisible and cheap.
@@ -93,9 +110,10 @@ export async function createResource(formData: FormData): Promise<ActionResult> 
       contentType: file.type,
       sizeBytes: file.size,
       storagePath,
-      // Written only for public files. A null here would be a placeholder in an
-      // indexed field, which is the pattern this codebase keeps removing.
-      ...(isPublic ? { publicUrl: publicUrlFor(storagePath) } : {}),
+      // Written only for files the bucket itself can serve. A null here would
+      // be a placeholder in an indexed field, which is the pattern this
+      // codebase keeps removing.
+      ...(atPublicPath ? { publicUrl: publicUrlFor(storagePath) } : {}),
       // Nothing scans uploads yet, so nothing can mark them clean; see
       // lib/resources for what wiring a scanner changes.
       scanStatus: "clean",
@@ -139,11 +157,12 @@ export async function updateResource(formData: FormData): Promise<ActionResult> 
     const current = toResource(doc);
 
     const isPublic = parsed.data.audience.includes("public");
+    const atPublicPath = servedStraightFromStorage(isPublic);
     const wasPublic = current.storagePath.startsWith("content/");
     let storagePath = current.storagePath;
 
-    if (isPublic !== wasPublic) {
-      storagePath = resourceStoragePath(id, current.fileName, isPublic);
+    if (atPublicPath !== wasPublic) {
+      storagePath = resourceStoragePath(id, current.fileName, atPublicPath);
       // Before the document, so a failed move leaves the record honest about
       // where the bytes are rather than pointing at a path that does not exist.
       await moveObject(current.storagePath, storagePath);
@@ -153,7 +172,7 @@ export async function updateResource(formData: FormData): Promise<ActionResult> 
     batch.update(doc.ref, {
       ...parsed.data,
       storagePath,
-      ...(isPublic
+      ...(atPublicPath
         ? { publicUrl: publicUrlFor(storagePath) }
         : { publicUrl: FieldValue.delete() }),
       updatedAt: FieldValue.serverTimestamp(),

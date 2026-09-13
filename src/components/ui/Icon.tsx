@@ -18,7 +18,7 @@ export const ICON_NAMES = [
   "download", "edit", "edit_note", "emergency", "error", "event",
   "event_available", "event_busy", "expand_more", "explore", "explore_off",
   "fact_check", "family_restroom", "favorite", "filter_alt", "first_page", "folder",
-  "format_quote", "gavel", "group", "groups", "handshake", "history",
+  "folder_open", "folder_shared", "format_quote", "gavel", "group", "groups", "handshake", "history",
   "how_to_reg", "image", "inbox", "info", "insights", "label", "language", "link",
   "list", "list_alt", "location_off", "location_on", "login", "logout", "mail",
   "map", "mark_email_unread", "medical_information", "menu_book", "mosque",

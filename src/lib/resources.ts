@@ -19,6 +19,12 @@ import { requireAdmin } from "@/lib/adminAuth";
  *                                 only by streaming through an authenticated
  *                                 route.
  *
+ * The public path is available only on a bucket that has a public read
+ * endpoint. The Mumbai files bucket does not, so a public file there takes the
+ * closed path and the download route serves it to anonymous viewers instead —
+ * slower and billed to this app, but never a URL that 404s. See
+ * `servedStraightFromStorage` in the resources actions.
+ *
  * The split matters because the alternative — one private location plus a
  * boolean — makes a public prospectus cost a server request and a Firestore
  * read per download, and makes the visibility of a leaked file depend on a

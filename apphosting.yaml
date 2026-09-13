@@ -19,6 +19,15 @@ runConfig:
   maxInstances: 2
 
 env:
+  # The server's clock is the school's clock. "Today" is decided with
+  # setHours(0,0,0,0) throughout — attendance date keys, follow-up dates, fee
+  # buckets — which reads the process timezone. Left at UTC, the day rolls over
+  # at 05:30 IST: a fee due today reads overdue, and the register opens on
+  # yesterday, for the first five and a half hours of every morning.
+  - variable: TZ
+    value: "Asia/Kolkata"
+    availability: [RUNTIME]
+
   # Canonical origin for metadataBase, canonicals, sitemap.xml and JSON-LD.
   # Set to the GoDaddy custom domain (www form, matching what was purchased).
   # Only takes effect once the domain is connected + verified in Firebase App

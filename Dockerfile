@@ -37,6 +37,17 @@ FROM node:22-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
 
+# The server's clock has to be the school's clock. This codebase decides what
+# "today" means with setHours(0,0,0,0) — attendance date keys, follow-up due
+# dates, fee buckets — which reads the process timezone. On a UTC container the
+# day rolls over at 05:30 IST, so between midnight and half five a fee due today
+# reads as overdue and the register opens on yesterday.
+#
+# tzdata is required: alpine ships no zoneinfo, and TZ pointing at a zone that
+# does not exist silently falls back to UTC.
+RUN apk add --no-cache tzdata
+ENV TZ=Asia/Kolkata
+
 # Run as a non-root user: a process that never needs to write to its own image
 # should not be able to.
 RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001

@@ -5,6 +5,11 @@ export default defineConfig({
   test: {
     include: ["tests/unit/**/*.test.ts"],
     environment: "node",
+    // Run as the server runs (see Dockerfile). "Today" is computed from the
+    // process timezone throughout, so tests left on the runner's zone pass in
+    // Bangalore and fail in CI's UTC — which is exactly the production bug,
+    // discovered in the wrong place.
+    env: { TZ: "Asia/Kolkata" },
   },
   resolve: {
     alias: {

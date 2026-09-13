@@ -55,7 +55,8 @@ export async function updateStage(formData: FormData): Promise<ActionResult> {
   await batch.commit();
   // Only the detail page is revalidated. The inbox list updates itself
   // optimistically (InboxBoard), so we deliberately DON'T revalidate "/admin" —
-  // that would force a full listLeads() re-read (N docs) on every stage click.
+  // that would force a full getInbox() re-read (a page of docs plus its counts)
+  // on every stage click.
   revalidatePath(`/admin/leads/${id}`);
   });
 }

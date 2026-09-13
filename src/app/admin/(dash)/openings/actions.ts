@@ -74,7 +74,12 @@ export async function createOpening(formData: FormData): Promise<ActionResult> {
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
   });
-  console.log(`opening created id=${ref.id} by=${admin.email}`);
+  await recordAudit({
+    actor: admin.email,
+    action: "opening.created",
+    entity: { type: "opening", id: ref.id },
+    summary: `Created opening "${data.title}"`,
+  });
   revalidateAll();
   redirect("/admin/openings");
   });
@@ -92,7 +97,12 @@ export async function updateOpening(formData: FormData): Promise<ActionResult> {
     ...data,
     updatedAt: FieldValue.serverTimestamp(),
   });
-  console.log(`opening updated id=${id} by=${admin.email}`);
+  await recordAudit({
+    actor: admin.email,
+    action: "opening.updated",
+    entity: { type: "opening", id },
+    summary: `Updated opening "${data.title}"`,
+  });
   revalidateAll(id);
   redirect("/admin/openings");
   });

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
 import { streamObject } from "@/lib/storage";
+import { recordAudit } from "@/lib/audit";
 
 export const runtime = "nodejs";
 
@@ -32,7 +33,12 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   }
 
   // CVs are personal data. Who opened whose, and when, should be answerable.
-  console.log(`cv accessed lead=${id} by=${admin.email}`);
+  await recordAudit({
+    actor: admin.email,
+    action: "lead.cv_accessed",
+    entity: { type: "lead", id },
+    summary: "Downloaded the CV on file",
+  });
 
   let body: ReadableStream<Uint8Array>;
   try {

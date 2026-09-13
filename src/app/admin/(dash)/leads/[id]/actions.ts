@@ -53,7 +53,6 @@ export async function updateStage(formData: FormData): Promise<ActionResult> {
     meta: { from: normalizeStage(data.stage ?? "new"), to: stage },
   });
   await batch.commit();
-  console.log(`stage updated id=${id} stage=${stage} by=${admin.email}`);
   // Only the detail page is revalidated. The inbox list updates itself
   // optimistically (InboxBoard), so we deliberately DON'T revalidate "/admin" —
   // that would force a full listLeads() re-read (N docs) on every stage click.
@@ -80,11 +79,19 @@ export async function setFollowUp(formData: FormData): Promise<ActionResult> {
     followUpDate = d;
   }
 
-  await getDb().collection("leads").doc(id).update({
+  const db = getDb();
+  const batch = db.batch();
+  batch.update(db.collection("leads").doc(id), {
     followUpDate,
     updatedAt: FieldValue.serverTimestamp(),
   });
-  console.log(`follow-up set id=${id} date=${raw || "cleared"} by=${admin.email}`);
+  queueAudit(db, batch, {
+    actor: admin.email,
+    action: raw ? "lead.followup_set" : "lead.followup_cleared",
+    entity: { type: "lead", id },
+    summary: raw ? `Set follow-up for ${raw}` : "Cleared the follow-up date",
+  });
+  await batch.commit();
   revalidatePath(`/admin/leads/${id}`);
   });
 }
@@ -103,11 +110,20 @@ export async function snoozeFollowUp(formData: FormData): Promise<ActionResult> 
   target.setHours(0, 0, 0, 0);
   target.setDate(target.getDate() + days);
 
-  await getDb().collection("leads").doc(id).update({
+  const db = getDb();
+  const batch = db.batch();
+  batch.update(db.collection("leads").doc(id), {
     followUpDate: target,
     updatedAt: FieldValue.serverTimestamp(),
   });
-  console.log(`follow-up snoozed id=${id} +${days}d by=${admin.email}`);
+  queueAudit(db, batch, {
+    actor: admin.email,
+    action: "lead.followup_snoozed",
+    entity: { type: "lead", id },
+    summary: `Snoozed the follow-up by ${days} day${days === 1 ? "" : "s"}`,
+    meta: { days },
+  });
+  await batch.commit();
   revalidatePath(`/admin/leads/${id}`);
   });
 }
@@ -142,8 +158,14 @@ export async function logContact(formData: FormData): Promise<ActionResult> {
   const batch = db.batch();
   batch.update(db.collection("leads").doc(id), update);
   if (text) queueNote(db, batch, id, { text, author: admin.email, kind: "note" });
+  queueAudit(db, batch, {
+    actor: admin.email,
+    action: "lead.contact_logged",
+    entity: { type: "lead", id },
+    summary: text ? "Logged a contact note" : "Updated the follow-up",
+    meta: { hasNote: !!text },
+  });
   await batch.commit();
-  console.log(`contact logged id=${id} note=${text ? "y" : "n"} by=${admin.email}`);
   revalidatePath(`/admin/leads/${id}`);
   });
 }

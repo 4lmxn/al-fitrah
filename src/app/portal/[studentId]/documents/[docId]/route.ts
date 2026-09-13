@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { assertOwnStudent } from "@/lib/parentAuth";
+import { assertOwnStudent, getParentSession } from "@/lib/parentAuth";
 import { getDocument } from "@/lib/studentDocuments";
 import { streamObject } from "@/lib/storage";
+import { recordAudit } from "@/lib/audit";
 
 export const runtime = "nodejs";
 
@@ -43,7 +44,18 @@ export async function GET(
 
   // Who opened what, and when. These are a child's identity documents; the
   // school should be able to answer that question later.
-  console.log(`portal document accessed student=${studentId} doc=${docId}`);
+  //
+  // The actor is the guardian's own credential, read from the session rather
+  // than the URL — the same rule the gate above follows. A second cookie read
+  // costs nothing and keeps one definition of who may see this child.
+  const parent = await getParentSession();
+  await recordAudit({
+    actor: parent?.phone ?? "parent",
+    action: "portal.document_accessed",
+    entity: { type: "student", id: studentId },
+    summary: `A guardian downloaded “${doc.label}”`,
+    meta: { docId },
+  });
 
   return new NextResponse(body, {
     headers: {

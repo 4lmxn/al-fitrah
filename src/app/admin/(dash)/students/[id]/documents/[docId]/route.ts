@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/adminAuth";
 import { getDocument } from "@/lib/studentDocuments";
 import { streamObject } from "@/lib/storage";
+import { recordAudit } from "@/lib/audit";
 
 export const runtime = "nodejs";
 
@@ -40,7 +41,13 @@ export async function GET(
 
   // A child's identity documents. Who opened which, and when, should be
   // answerable — same reasoning as the CV route.
-  console.log(`student document accessed id=${id} doc=${docId} by=${admin.email}`);
+  await recordAudit({
+    actor: admin.email,
+    action: "student.document_accessed",
+    entity: { type: "student", id },
+    summary: `Downloaded “${doc.label}”`,
+    meta: { docId },
+  });
 
   return new NextResponse(body, {
     headers: {

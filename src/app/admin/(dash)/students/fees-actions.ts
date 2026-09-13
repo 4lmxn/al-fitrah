@@ -46,7 +46,6 @@ export async function setFeeTotal(formData: FormData): Promise<ActionResult> {
     });
     await batch.commit();
 
-    console.log(`fee total set student=${id} paise=${totalPaise} by=${admin.email}`);
     revalidatePath(`/admin/students/${id}`);
     revalidatePath("/admin/fees");
   });
@@ -108,7 +107,6 @@ export async function assignStructure(formData: FormData): Promise<ActionResult>
     });
     await batch.commit();
 
-    console.log(`fee structure assigned student=${id} structure=${structureId} by=${admin.email}`);
     revalidatePath(`/admin/students/${id}`);
     revalidatePath("/admin/fees");
   });
@@ -206,7 +204,6 @@ export async function recordPayment(formData: FormData): Promise<ActionResult> {
 
     if (missing) return fail("That student no longer exists.");
 
-    console.log(`payment recorded student=${studentId} paise=${amountPaise} by=${admin.email}`);
     revalidatePath(`/admin/students/${studentId}`);
     revalidatePath("/admin/fees");
   });

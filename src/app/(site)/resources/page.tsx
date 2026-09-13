@@ -61,9 +61,13 @@ export default async function ResourcesPage() {
                 <Reveal key={r.id} delay={i * 0.05}>
                   <li>
                     <a
-                      // Straight to Cloud Storage: a public file costs this site
-                      // nothing to serve and is cached at the edge.
-                      href={r.publicUrl ?? "#"}
+                      // Straight to Cloud Storage when the bucket can serve a
+                      // public URL: that costs this site nothing and caches at
+                      // the edge. The Mumbai files bucket cannot (no public
+                      // access, see docs/deploy-cloudrun-cloudflare.md §9), so
+                      // the download route streams it instead — it already
+                      // allows an anonymous viewer for a public file.
+                      href={r.publicUrl ?? `/api/resources/${r.id}`}
                       className="flex items-center gap-4 rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft transition hover:shadow-lift"
                     >
                       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald/8 text-emerald-deep">

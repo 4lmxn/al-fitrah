@@ -62,6 +62,37 @@ gcloud secrets versions access latest --secret=EDGE_TOKEN --project=al-fitrah \
 Deploying before DNS moves is safe — a route with no proxied DNS record behind
 it never fires.
 
+### The red "Workers Builds" check on every PR
+
+Cloudflare's Git integration is connected to this repository and runs a build
+per commit. It fails every time, and has since it was connected. **Nothing in
+this repository is wrong** — the build runs from the repository root, where
+there is no Worker config, so wrangler finds none, decides it is looking at the
+Next.js app, and tries to onboard that as a Worker:
+
+```
+$ npx wrangler deploy --dry-run        # from the repo root
+Detected Project Settings:
+ - Worker Name: al-fitrah
+ - Framework: Next.js
+ - Build Command: npm run build
+📝 Update package.json scripts: ...
+```
+
+From this directory the same command is clean (2.82 KiB uploaded, dry-run
+verified). So the fix is a **dashboard setting, not a commit** — Workers &
+Pages → al-fitrah-edge → Settings → Builds:
+
+- set the build **root directory** to `cloudflare`, or
+- **disconnect the Git integration** entirely, which is the honest option while
+  the deploy above is run by hand. A build that has never once succeeded is a
+  check everyone learns to ignore, and the next genuinely broken thing hides
+  behind it.
+
+Resist the temptation to fix it by adding a `wrangler.toml` at the repository
+root pointing back into this directory. Two configs for one Worker drift, and
+the one that loses is the one nobody reads.
+
 ## Cutover
 
 1. Nameservers moved to Cloudflare, records **grey cloud**

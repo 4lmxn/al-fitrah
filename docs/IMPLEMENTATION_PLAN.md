@@ -3,6 +3,10 @@
 Derived from the architecture review of `main` @ `e426f4c` (Aug 2026).
 Target: production CRM + public site, thousands of users, **Firebase spend under ₹1,000/month**.
 
+*Status reconciled against `main` on 13 Sep 2026. The hardening plan below is
+finished; §6 records what was built on top of it, because a plan that stops
+describing the system is worse than no plan — it is a wrong map someone trusts.*
+
 ## Status
 
 | Phase | State | Shipped in |
@@ -16,7 +20,7 @@ Target: production CRM + public site, thousands of users, **Firebase spend under
 | 3a — DPDP compliance | ✅ done, **needs a named grievance officer** | #19 |
 | 3b — Typed server-action errors | ✅ done | #21 |
 | 4 — Students collection | ✅ foundation done | #22 |
-| 3c — Small cleanups | ⬜ not started | |
+| 3c — Small cleanups | ✅ resolved — see below | #17, #33, and obsolescence |
 | 4b — Attendance, fees | ✅ done | #25, #26 |
 | 5 — Website CMS (news & events) | ✅ done | #29 |
 
@@ -26,9 +30,38 @@ one read per 1000 index entries. Same flat cost profile, minus the backfill,
 minus counter write-amplification, minus a document that can silently drift from
 the data it summarises.
 
-Two open items needing the school, not code: the **notes backfill**
-(`node scripts/migrate-notes.mjs --commit`) and a **named grievance officer** in
-`src/content/site.ts`.
+**Phase 3c closed without its own PR**, which is why it sat marked "not started"
+long after it was true. Each item was overtaken:
+
+- *Dead `stage` branch in `listLeads`* — obsolete. `listLeads` no longer exists;
+  the unbounded fetch it described was replaced by the paginated `getInbox` in
+  #17, and `stage` is a real filter there now, not a dead parameter.
+- *Thrice-duplicated `+91` normaliser* — done. `src/lib/phone.ts` is the single
+  source, and its header records the three copies it replaced. A fourth copy was
+  found in the parent sign-in component and removed in #48.
+- *Two competing stage-label sources* — done by #33. Stages are configuration;
+  `pipelines.stageLabelFor` reads the configured label and `stageMeta` derives
+  presentation from the stage's group. Neither hardcodes a stage list, which is
+  what made them able to disagree.
+
+### Open items that need the school, not code
+
+- **Notes backfill** — `node scripts/migrate-notes.mjs --commit`.
+- **Named grievance officer** in `src/content/site.ts` (DPDP requirement).
+- **`ADMIN_OWNERS` is not set.** Until it is, `roleFor()` returns `owner` for
+  every allowed address, so the owner/staff split does nothing and any signed-in
+  account can delete. The permissive default was deliberate — it stopped the
+  deploy that introduced roles from locking the school out — and was meant to be
+  temporary.
+- **`INQUIRY_FROM_EMAIL` is `onboarding@resend.dev`**, Resend's shared sandbox
+  sender. Enquiry mail leaves from a domain the school does not own. Verify the
+  school's domain in Resend before launch.
+- **Cloudflare "Workers Builds" fails on every commit.** Not a code fault: the
+  build integration runs from the repository root, where there is no Worker
+  config, so `wrangler deploy` tries to onboard the Next.js app as a Worker and
+  fails. From `cloudflare/` it builds clean. Fix is a dashboard setting — set the
+  build root to `cloudflare`, or disconnect the integration, since
+  `cloudflare/README.md` documents deploying the Worker by hand anyway.
 
 ---
 
@@ -272,6 +305,77 @@ mutable "amount paid" field — money that can be overwritten by a concurrent
 write is the one place where losing a race is unrecoverable.
 
 ---
+
+## 6. Built on top of this plan
+
+The hardening plan ends at Phase 5. Everything below was built after it and is
+in `main`; it is recorded here only so this document stops being a wrong map.
+Each line is the shape of the thing, not its design — the reasoning lives in the
+commit that shipped it.
+
+**Configuration as data** (#32–#36). Pipelines, taxonomy, attendance statuses
+and school identity are Firestore configuration with an admin UI, not constants.
+A stage or a class section is added without a deploy. This is the seam every
+later module plugs into, and the reason nothing above hardcodes a stage list.
+
+**Platform services.** Append-only audit log (#37) with a two-year TTL; the
+notification engine (#38), events in and channels out.
+
+**CRM depth.** Duplicate detection and lead assignment (#39), CSV export and
+bulk actions (#40), tags and recruitment fields (#41), and a pipeline board
+beside the list.
+
+**Parent identity and the portal** (#42, #43). Parents sign in by email link
+where the school has an email, by phone code where it does not. Student ids are
+re-resolved per request rather than stored in the cookie, so access ends when the
+school says it does. Guardians can upload and download their child's documents;
+the office sees the same files in a Documents tab.
+
+**Students, deepened.** Tabbed profile with photographs, and an attendance
+register rebuilt for the phone it is actually marked on.
+
+**Fee structures** (#44). A price list, so a fee is defined once and applied to a
+class. The amount is *copied* onto the child, not referenced, which keeps the
+portal and the dues list at one read per child and stops a correction silently
+restating what last year's families were charged.
+
+**Resource centre** (#45). The school's files, where **the storage prefix is the
+permission**: a public file lives under `content/` and is served by the bucket,
+everything else under `resources/` and streamed through a session check.
+Changing the audience moves the object. Where the bucket has no public read
+endpoint — which is the case for the Mumbai files bucket — a public file takes
+the closed path instead, rather than being recorded at a URL that 404s.
+
+**Running outside App Hosting.** The app serves from Cloud Run in `asia-south1`
+behind a Cloudflare Worker, because Cloud Run there cannot take a custom domain
+and the alternatives cost several times the hosting budget. See
+`docs/deploy-cloudrun-cloudflare.md`; the Worker lives in `cloudflare/`.
+
+### Correctness fixes worth remembering
+
+These were each found by something failing that looked unrelated, and each one
+is a pattern to watch for rather than a one-off:
+
+- **The server's clock is the school's clock.** Every "is it today" decision is
+  made with `setHours(0, 0, 0, 0)`, which reads the *process* timezone. On a UTC
+  container the day rolled over at 05:30 IST: a fee due today read as overdue,
+  and the register opened on yesterday, for the first five and a half hours of
+  every morning. Fixed by telling the runtime which timezone it is in (`TZ` plus
+  `tzdata`, which alpine does not ship), not by teaching eleven call sites about
+  timezones. Unit tests pin the same zone so a pass here and a pass in CI mean
+  the same thing.
+- **The audit log replaced `console.log`, eventually** (#47). Twenty call sites
+  were still logging staff emails and record ids into Cloud Logging, where
+  nothing can be queried and retention is whatever the default is. Both
+  document-download routes had no audit entry at all. `tests/unit/noPiiLogs.test.ts`
+  rescans the source so it cannot come back one action at a time.
+- **A guardian whose number was stored with its trunk zero could never sign in**
+  (#48). `normalizeIndianPhone` qualified only exactly-ten-digit numbers, and the
+  same function is both what writes `guardianPhones` and what matches the
+  verified `+91…` claim against it. The parent was told, correctly typed, that
+  their number was not on record — and nothing logged it, because the lookup
+  simply found no children. `scripts/fix-guardian-phones.mjs` repairs rows
+  written before the fix.
 
 ## Deliberately out of scope
 

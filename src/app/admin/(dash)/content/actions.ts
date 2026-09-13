@@ -123,7 +123,13 @@ export async function createPost(formData: FormData): Promise<ActionResult> {
       updatedAt: FieldValue.serverTimestamp(),
     });
 
-    console.log(`post created id=${ref.id} type=${data.type} published=${data.published} by=${admin.email}`);
+    await recordAudit({
+      actor: admin.email,
+      action: "post.created",
+      entity: { type: "post", id: ref.id },
+      summary: `Created ${data.published ? "and published " : ""}"${data.title}"`,
+      meta: { type: data.type, published: data.published },
+    });
     revalidatePublic(slug);
     redirect("/admin/content");
   });
@@ -173,7 +179,13 @@ export async function updatePost(formData: FormData): Promise<ActionResult> {
       await deleteObject(prev.imagePath).catch((err) => console.error("old post image cleanup failed", err));
     }
 
-    console.log(`post updated id=${id} published=${data.published} by=${admin.email}`);
+    await recordAudit({
+      actor: admin.email,
+      action: "post.updated",
+      entity: { type: "post", id },
+      summary: `Updated "${data.title}"`,
+      meta: { published: data.published },
+    });
     revalidatePublic(prev.slug);
     redirect("/admin/content");
   });

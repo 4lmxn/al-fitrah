@@ -116,7 +116,6 @@ export async function checkIn(formData: FormData): Promise<ActionResult> {
       meta: { distanceM: verdict.distanceM, withinFence: verdict.withinFence, advisory: verdict.advisory },
     });
 
-    console.log(`staff check-in ${admin.email} ${key} distance=${verdict.distanceM}m`);
     revalidatePath("/admin/attendance");
   });
 }
@@ -209,7 +208,6 @@ export async function saveRegister(formData: FormData): Promise<ActionResult> {
     });
     await batch.commit();
 
-    console.log(`register saved ${id} n=${Object.keys(entries).length} by=${admin.email}`);
     revalidatePath("/admin/attendance");
     return { ok: true as const };
   });

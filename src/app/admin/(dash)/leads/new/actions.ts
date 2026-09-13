@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { getManualLeadSources, getPrograms, pickFrom } from "@/lib/taxonomy";
 import { AGE_BANDS } from "@/lib/leadSchema";
 import { queueNote } from "@/lib/notes";
+import { queueAudit } from "@/lib/audit";
 import { findDuplicate, leadDefaults } from "@/lib/leadOps";
 
 const clean = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
@@ -61,8 +62,15 @@ export async function createLead(formData: FormData) {
   // up as an "untouched new enquiry" needing attention.
   if (firstNote) queueNote(db, batch, ref.id, { text: firstNote, author: admin.email, kind: "note" });
 
+  queueAudit(db, batch, {
+    actor: admin.email,
+    action: "lead.created",
+    entity: { type: "lead", id: ref.id },
+    summary: `Logged ${parentName} as a lead`,
+    meta: { source },
+  });
+
   await batch.commit();
 
-  console.log(`lead created id=${ref.id} source=${source} by=${admin.email}`);
   redirect(`/admin/leads/${ref.id}`);
 }

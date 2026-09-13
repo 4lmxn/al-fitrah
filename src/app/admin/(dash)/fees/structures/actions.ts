@@ -200,9 +200,6 @@ export async function applyToClass(formData: FormData): Promise<ActionResult> {
     });
     await batch.commit();
 
-    console.log(
-      `fee structure applied id=${structureId} class=${classSection} applied=${targets.length} skipped=${skipped} by=${admin.email}`,
-    );
     revalidateAll();
     for (const s of targets) revalidatePath(`/admin/students/${s.id}`);
   });

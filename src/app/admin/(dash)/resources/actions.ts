@@ -131,7 +131,6 @@ export async function createResource(formData: FormData): Promise<ActionResult> 
     });
     await batch.commit();
 
-    console.log(`resource uploaded id=${ref.id} public=${isPublic} by=${admin.email}`);
     revalidateAll();
   });
 }

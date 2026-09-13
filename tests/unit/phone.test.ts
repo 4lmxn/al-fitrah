@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeIndianPhone, waLink } from "@/lib/phone";
+import { indianMobileE164, normalizeIndianPhone, waLink } from "@/lib/phone";
 
 describe("normalizeIndianPhone", () => {
   it("adds 91 to a bare 10-digit number", () => {
@@ -22,10 +22,43 @@ describe("normalizeIndianPhone", () => {
     expect(normalizeIndianPhone("+1 415 555 0123")).toBe("14155550123");
   });
 
+  it("drops the trunk zero people write in front of a mobile number", () => {
+    // The number stored for a guardian is matched against the verified claim
+    // from Firebase, which is always +91… — so an eleven-digit "098765 43210"
+    // kept verbatim is a guardian who can never sign in, and nothing says so.
+    expect(normalizeIndianPhone("098765 43210")).toBe("919876543210");
+    expect(normalizeIndianPhone("0 98765 43210")).toBe("919876543210");
+    expect(normalizeIndianPhone("00919876543210")).toBe("919876543210");
+  });
+
   it("returns null when there is nothing to dial", () => {
     expect(normalizeIndianPhone("—")).toBeNull();
     expect(normalizeIndianPhone("")).toBeNull();
     expect(normalizeIndianPhone("   ")).toBeNull();
+    expect(normalizeIndianPhone("0")).toBeNull();
+  });
+});
+
+describe("indianMobileE164", () => {
+  it("accepts an Indian mobile however it was written", () => {
+    expect(indianMobileE164("9876543210")).toBe("+919876543210");
+    expect(indianMobileE164("098765 43210")).toBe("+919876543210");
+    expect(indianMobileE164("+91 98765 43210")).toBe("+919876543210");
+  });
+
+  it("refuses a mistyped number rather than trimming it to fit", () => {
+    // The bug this exists to stop: slicing the last ten digits off an
+    // eleven-digit typo yields a different, entirely valid number — and the
+    // sign-in code goes to whoever owns it.
+    expect(indianMobileE164("98765432101")).toBeNull();
+    expect(indianMobileE164("98765")).toBeNull();
+  });
+
+  it("refuses what is not a mobile", () => {
+    // Indian mobile numbers start 6-9; a landline cannot receive the code.
+    expect(indianMobileE164("0801234567")).toBeNull();
+    expect(indianMobileE164("+1 415 555 0123")).toBeNull();
+    expect(indianMobileE164("—")).toBeNull();
   });
 });
 

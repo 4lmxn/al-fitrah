@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { completeParentEmailLink, sendParentEmailLink, sendParentOtp } from "@/lib/firebaseClient";
 import type { ConfirmationResult } from "firebase/auth";
+import { indianMobileE164 } from "@/lib/phone";
 
 const field =
   "w-full rounded-xl border border-emerald/15 bg-cream/40 px-4 py-3 text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20";
@@ -74,9 +75,12 @@ export function ParentSignIn() {
     setBusy(true);
     setError("");
     try {
-      const digits = phone.replace(/\D/g, "");
-      if (digits.length < 10) throw new Error("Enter your 10-digit mobile number.");
-      setConfirmation(await sendParentOtp(`+91${digits.slice(-10)}`, "recaptcha"));
+      // The shared rule, not a local slice: taking the last ten digits of a
+      // mistyped eleven-digit number silently produces a different, valid
+      // number and sends the code there.
+      const mobile = indianMobileE164(phone);
+      if (!mobile) throw new Error("Enter your 10-digit mobile number.");
+      setConfirmation(await sendParentOtp(mobile, "recaptcha"));
       setMode("phone-code");
     } catch (err) {
       setError(err instanceof Error ? err.message : "We couldn't send a code. Please try again.");

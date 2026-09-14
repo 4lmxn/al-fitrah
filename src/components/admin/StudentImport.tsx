@@ -79,6 +79,13 @@ export function StudentImport() {
               skipped, so re-running the same file is safe.
             </p>
             <pre className="overflow-x-auto rounded-lg bg-cream/60 p-3 text-[11px] leading-relaxed">{SAMPLE}</pre>
+            <a
+              href={`data:text/csv;charset=utf-8,${encodeURIComponent(`${SAMPLE}\n`)}`}
+              download="al-fitrah-students-template.csv"
+              className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-emerald-deep ring-1 ring-emerald/15 transition hover:bg-emerald/5"
+            >
+              <Icon name="download" className="text-[16px]" /> Download this as a CSV
+            </a>
           </div>
         </details>
       </div>

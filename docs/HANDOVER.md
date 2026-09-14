@@ -68,7 +68,7 @@ Checks, all of which must pass before you push:
 ```bash
 npx tsc --noEmit          # types
 npm run lint              # eslint, zero warnings tolerated
-npm run test:unit         # 304 tests, ~2s
+npm run test:unit         # 383 tests, ~2s
 npm run build             # catches what the others miss
 ```
 
@@ -115,11 +115,22 @@ still be caught.
 
 This is the part people get wrong.
 
-**Admin** (`src/lib/adminAuth.ts`, `src/lib/roles.ts`)
-Firebase session cookie, but authorisation comes from the `ADMIN_EMAILS` env
-allowlist — not from custom claims. Two roles: `owner` (can delete) and `staff`.
-`ADMIN_OWNERS` is the owner subset; **blank means everyone is an owner**, which
-is deliberate so introducing roles could not lock the school out.
+**Admin** (`src/lib/adminAuth.ts`, `src/lib/roles.ts`, `src/lib/staff.ts`)
+Firebase session cookie, but authorisation is **`ADMIN_EMAILS` UNION a Firestore
+roster** at `access/roster`, which the `/admin/staff` page maintains. Not custom
+claims: a claim outlives the decision, and revoking access has to bite on the
+next request rather than when a five-day cookie expires.
+
+The env list is a **floor Firestore cannot lower** — a bad roster write must not
+be able to lock the school out, and the way back in must not live in the
+database that went wrong. `getRoster()` returns `null` when the read fails,
+which is deliberately distinct from `[]` (a roster with nobody in it): an
+unknown roster never promotes anyone.
+
+Two roles: `owner` (can delete) and `staff`. Owners come from `ADMIN_OWNERS` or
+from the roster. While **neither** names an owner, everyone allowed is an owner
+— deliberate, so introducing roles could not lock the school out — and that
+stops the moment the first owner exists anywhere.
 
 **Parent** (`src/lib/parentAuth.ts`)
 Firebase email-link sign-in, falling back to phone OTP. Email is the default

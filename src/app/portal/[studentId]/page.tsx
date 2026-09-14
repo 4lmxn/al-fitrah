@@ -75,7 +75,7 @@ export default async function ChildPage({ params }: { params: Promise<{ studentI
             <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
               <Icon name="fact_check" className="text-[18px] text-gold" /> Attendance
             </h2>
-            <span className="text-xs text-ink/45">{monthLabel}</span>
+            <span className="text-xs text-ink/70">{monthLabel}</span>
           </div>
 
           {!attendance || attendance.summary.counted === 0 ? (
@@ -90,7 +90,7 @@ export default async function ChildPage({ params }: { params: Promise<{ studentI
                   <p className="font-display text-3xl tabular-nums text-emerald-deep">
                     {attendance.summary.percent}%
                   </p>
-                  <p className="text-[11px] uppercase tracking-wide text-ink/45">This month</p>
+                  <p className="text-[11px] uppercase tracking-wide text-ink/70">This month</p>
                 </div>
                 <div className="text-sm text-ink/70">
                   <span className="font-semibold text-emerald-deep tabular-nums">
@@ -121,15 +121,26 @@ export default async function ChildPage({ params }: { params: Promise<{ studentI
                     key={d.dateKey}
                     title={`${fmt(new Date(`${d.dateKey}T00:00:00`).getTime())} — ${d.status}`}
                     className={`rounded-md px-2 py-1 text-[11px] font-semibold tabular-nums ${
-                      d.present ? "bg-emerald/10 text-emerald-deep" : "bg-red-50 text-red-700"
+                      d.present
+                        ? "bg-emerald/10 text-emerald-deep"
+                        : "bg-red-50 text-red-700 ring-1 ring-red-300"
                     }`}
                   >
-                    {d.dateKey.slice(-2)}
+                    <span aria-hidden>{d.dateKey.slice(-2)}</span>
+                    <span className="sr-only">
+                      {fmt(new Date(`${d.dateKey}T00:00:00`).getTime())} — {d.status}
+                    </span>
                   </li>
                 ))}
               </ul>
-              <p className="mt-3 text-[11px] text-ink/45">
-                Days the register was marked. If something looks wrong, please tell the school office.
+              <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-ink/70">
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-sm bg-emerald/20" /> Present
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-sm bg-red-50 ring-1 ring-red-300" /> Away
+                </span>
+                <span>If something looks wrong, please tell the school office.</span>
               </p>
             </>
           )}

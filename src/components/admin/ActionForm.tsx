@@ -10,12 +10,14 @@ export function ActionForm({
   className,
   errorClassName,
   id,
+  confirm,
 }: {
   action: (formData: FormData) => Promise<ActionResult>;
   children: ReactNode;
   className?: string;
   errorClassName?: string;
   id?: string;
+  confirm?: string;
 }) {
   const [state, formAction] = useActionState(
     async (_prev: ActionResult | null, formData: FormData) => action(formData),
@@ -23,7 +25,12 @@ export function ActionForm({
   );
 
   return (
-    <form id={id} action={formAction} className={className}>
+    <form
+      id={id}
+      action={formAction}
+      className={className}
+      onSubmit={confirm ? (e) => { if (!window.confirm(confirm)) e.preventDefault(); } : undefined}
+    >
       {children}
       {state && !state.ok && (
         <p

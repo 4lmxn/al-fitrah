@@ -48,7 +48,7 @@ export function StudentImport() {
     <form action={formAction} className="space-y-5">
       <div className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
         <label className="block">
-          <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/45">CSV file</span>
+          <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/70">CSV file</span>
           <input
             type="file"
             name="file"
@@ -57,7 +57,7 @@ export function StudentImport() {
           />
         </label>
 
-        <p className="mt-4 text-[11px] font-semibold uppercase tracking-wide text-ink/45">or paste it</p>
+        <p className="mt-4 text-[11px] font-semibold uppercase tracking-wide text-ink/70">or paste it</p>
         <textarea
           name="csv"
           rows={6}
@@ -82,7 +82,7 @@ export function StudentImport() {
             <a
               href={`data:text/csv;charset=utf-8,${encodeURIComponent(`${SAMPLE}\n`)}`}
               download="al-fitrah-students-template.csv"
-              className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-emerald-deep ring-1 ring-emerald/15 transition hover:bg-emerald/5"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-white px-4 py-2.5 text-xs font-semibold text-emerald-deep ring-1 ring-emerald/15 transition hover:bg-emerald/5"
             >
               <Icon name="download" className="text-[16px]" /> Download this as a CSV
             </a>

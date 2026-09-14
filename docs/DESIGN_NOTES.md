@@ -1806,6 +1806,37 @@ One child, only if the signed-in parent is a guardian of them.
 Returns null rather than throwing on a mismatch, and the page renders a
 not-found — a parent probing ids should not be able to learn which exist.
 
+**`export function ownDays(...)`**
+
+The register is stored per class-day, so one document holds every child in the
+class. `ownDays` reduces it to one child's rows before anything reaches a page.
+
+That reduction is the whole reason this exists rather than the page reading
+registers directly. Handing a server component the raw register would put the
+attendance of twenty other families into the props of a page rendered for one
+of them — not displayed, but present, and one `JSON.stringify` away from being
+readable. A test asserts no other child's id survives the call.
+
+Days whose status is not counted (holidays, non-school days) are dropped rather
+than shown as absences, using the same `counted` flag the admin summary uses, so
+the two cannot disagree about what a school day is.
+
+**`export async function getOwnAttendance(...)`**
+
+One child's month, for the parent portal.
+
+Ownership is proved first, then a single bounded query — the same
+`academicYear + classSection + dateKey` composite the admin register uses, so it
+needs no new index — capped at 31 documents, which is a month.
+
+`listRegisters` in lib/attendance could not be reused: it calls `requireAdmin()`,
+which is correct for the console and wrong here. Relaxing that gate to share the
+function would have widened admin-only access to make a parent page work, which
+is the wrong direction for the one invariant this system cares most about.
+
+A child with no class section returns an empty month rather than an error. That
+is the normal state before the school names its classes, not a fault.
+
 ---
 
 ## `src/lib/postMeta.ts`

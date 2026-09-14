@@ -37,6 +37,7 @@ export default async function AdminDashLayout({ children }: { children: React.Re
           <NavLink href="/admin/students" icon="school" label="Students" />
           <NavLink href="/admin/attendance" icon="fact_check" label="Attendance" />
           <NavLink href="/admin/fees" icon="payments" label="Fees" />
+          <NavLink href="/admin/staff" icon="badge" label="Staff" />
           <NavLink href="/admin/content" icon="article" label="Website" />
           <NavLink href="/admin/resources" icon="folder_shared" label="Resources" />
           <NavLink href="/admin/insights" icon="insights" label="Insights" />
@@ -69,6 +70,7 @@ export default async function AdminDashLayout({ children }: { children: React.Re
           <NavLink href="/admin/students" icon="school" label="Students" variant="topbar" />
           <NavLink href="/admin/attendance" icon="fact_check" label="Attendance" variant="topbar" />
           <NavLink href="/admin/fees" icon="payments" label="Fees" variant="topbar" />
+          <NavLink href="/admin/staff" icon="badge" label="Staff" variant="topbar" />
           <NavLink href="/admin/content" icon="article" label="Website" variant="topbar" />
           <NavLink href="/admin/resources" icon="folder_shared" label="Resources" variant="topbar" />
           <NavLink href="/admin/insights" icon="insights" label="Insights" variant="topbar" />

@@ -6,7 +6,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { queueAudit } from "@/lib/audit";
 import { queueNote } from "@/lib/notes";
-import { getAllowlist } from "@/lib/roles";
+import { listAdminEmails } from "@/lib/roles";
 import { isValidStage, stageLabelFor, terminalStages } from "@/lib/pipelines";
 import type { LeadType } from "@/lib/leads";
 
@@ -64,7 +64,7 @@ export async function bulkAssign(formData: FormData): Promise<ActionResult> {
 
     const raw = String(formData.get("assignedTo") ?? "").trim().toLowerCase();
     const assignedTo = raw || null;
-    if (assignedTo && !getAllowlist().includes(assignedTo)) {
+    if (assignedTo && !(await listAdminEmails()).includes(assignedTo)) {
       return fail("That address cannot sign in, so it cannot own a lead.");
     }
 

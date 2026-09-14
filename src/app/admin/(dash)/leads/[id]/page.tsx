@@ -18,7 +18,7 @@ import { EditContact } from "@/components/admin/EditContact";
 import { sourceLabel } from "@/lib/leads";
 import { referralCode, referralLink, referralShareLink } from "@/lib/referral";
 import { updateStage, logContact, setFollowUp, snoozeFollowUp, assignLead, setTags, scheduleInterview } from "./actions";
-import { getAllowlist } from "@/lib/roles";
+import { listAdminEmails } from "@/lib/roles";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +50,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
   if (!lead) notFound();
 
   const [pipeline, programs, tagVocabulary] = await Promise.all([getPipeline(lead.type), getPrograms(), getLeadTags()]);
-  const admins = getAllowlist();
+  const admins = await listAdminEmails();
   const currentIdx = pipeline.findIndex((s) => s.id === lead.stage);
   const wa = waLink(lead.phone);
   const notes = [...lead.notes].sort((a, b) => (b.atMs ?? 0) - (a.atMs ?? 0));

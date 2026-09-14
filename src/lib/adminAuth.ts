@@ -8,7 +8,7 @@ import { isAllowed, roleFor, type Role } from "@/lib/roles";
 export const SESSION_COOKIE = "__session";
 export const SESSION_MAX_AGE_MS = 60 * 60 * 24 * 5 * 1000;
 
-export { getAllowlist, isAllowed } from "@/lib/roles";
+export { getAllowlist, isAllowed, listAdminEmails } from "@/lib/roles";
 
 export async function createSession(
   idToken: string,
@@ -20,7 +20,7 @@ export async function createSession(
   } catch {
     return { ok: false, status: 401, error: "Invalid sign-in. Please try again." };
   }
-  if (!isAllowed(decoded.email)) {
+  if (!(await isAllowed(decoded.email))) {
     return { ok: false, status: 403, error: "This account is not authorized for admin access." };
   }
   const cookie = await auth.createSessionCookie(idToken, { expiresIn: SESSION_MAX_AGE_MS });
@@ -33,8 +33,8 @@ export const getAdmin = cache(async (): Promise<{ email: string; role: Role } | 
   if (!value) return null;
   try {
     const decoded = await getAuthAdmin().verifySessionCookie(value, true);
-    if (!isAllowed(decoded.email)) return null;
-    return { email: decoded.email!, role: roleFor(decoded.email) };
+    if (!(await isAllowed(decoded.email))) return null;
+    return { email: decoded.email!, role: await roleFor(decoded.email) };
   } catch {
     return null;
   }

@@ -1,18 +1,15 @@
 import { waLink } from "@/lib/phone";
 import { formatPaise } from "@/lib/money";
 
-export const FEE_BUCKETS = [
-  "broken",
-  "overdue",
-  "dueSoon",
-  "promised",
-  "upcoming",
-  "undated",
-  "settled",
-  "unset",
-] as const;
-
-export type FeeBucket = (typeof FEE_BUCKETS)[number];
+export type FeeBucket =
+  | "broken"
+  | "overdue"
+  | "dueSoon"
+  | "promised"
+  | "upcoming"
+  | "undated"
+  | "settled"
+  | "unset";
 
 export const FEE_BUCKET_LABEL: Record<FeeBucket, string> = {
   broken: "Promise broken",

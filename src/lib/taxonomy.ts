@@ -9,10 +9,6 @@ export async function getClassSections(): Promise<string[]> {
   return (await getSettings()).taxonomy.classSections;
 }
 
-export async function getLeadSources(): Promise<string[]> {
-  return (await getSettings()).taxonomy.leadSources;
-}
-
 export async function getManualLeadSources(): Promise<string[]> {
   return (await getSettings()).taxonomy.manualLeadSources;
 }

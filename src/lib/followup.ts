@@ -1,5 +1,5 @@
 import { waLink } from "@/lib/phone";
-export const FOLLOW_UP_TEMPLATE =
+const FOLLOW_UP_TEMPLATE =
   "Assalamu alaikum {first}, this is Al Fitrah Pre School, Sarjapura. " +
   "Thank you for your interest in admissions for 2026–27. We'd love to help " +
   "you take the next step — would you like to visit the campus or ask us anything? " +

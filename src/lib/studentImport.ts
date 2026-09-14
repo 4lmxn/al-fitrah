@@ -25,9 +25,9 @@ export type ParseResult = {
   unknownColumns: string[];
 };
 
-export const REQUIRED_COLUMNS = ["firstname", "guardianname", "guardianphone"] as const;
+const REQUIRED_COLUMNS = ["firstname", "guardianname", "guardianphone"] as const;
 
-export const KNOWN_COLUMNS = [
+const KNOWN_COLUMNS = [
   "admissionnumber",
   "firstname",
   "lastname",
@@ -192,7 +192,3 @@ export function parseStudentCsv(text: string, lists: ImportLists): ParseResult {
 
   return { rows, errors, unknownColumns };
 }
-
-export const SAMPLE_CSV = `admissionNumber,firstName,lastName,dob,program,classSection,status,guardianName,guardianPhone,guardianEmail,feeTotal
-AF-2025-0001,Yusuf,Khan,03/08/2022,Pre-KG,Rose,enrolled,Ayesha Khan,9876543210,ayesha@example.com,25000
-,Maryam,Ahmed,2022-11-14,Junior KG,Tulip,enrolled,Bilal Ahmed,9876543211,,30000`;

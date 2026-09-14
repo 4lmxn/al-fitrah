@@ -1,6 +1,6 @@
 export type LeadType = "admission_inquiry" | "staff_application";
 
-export const STAGE_ALIASES: Record<string, string> = {
+const STAGE_ALIASES: Record<string, string> = {
   toured: "visited",
   enrolled: "admitted",
   closed: "lost",

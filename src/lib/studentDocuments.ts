@@ -3,7 +3,7 @@ import { FieldValue, type Firestore } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebaseAdmin";
 import { COLLECTION as STUDENTS } from "@/lib/students";
 
-export const DOCUMENTS = "documents";
+const DOCUMENTS = "documents";
 
 export const MAX_DOCUMENTS = 25;
 

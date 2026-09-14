@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 
 export const COLLECTION = "feeStructures";
 
-export const MAX_STRUCTURES = 100;
+const MAX_STRUCTURES = 100;
 
 export type FeeStructure = {
   id: string;
@@ -49,10 +49,4 @@ export async function listStructures(opts: { activeOnly?: boolean } = {}): Promi
   if (opts.activeOnly) q = q.where("active", "==", true);
   const snap = await q.limit(MAX_STRUCTURES).get();
   return snap.docs.map(toStructure).sort(sortStructures);
-}
-
-export async function getStructure(id: string): Promise<FeeStructure | null> {
-  await requireAdmin();
-  const doc = await getDb().collection(COLLECTION).doc(id).get();
-  return doc.exists ? toStructure(doc) : null;
 }

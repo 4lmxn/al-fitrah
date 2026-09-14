@@ -70,7 +70,7 @@ function toPayment(d: FirebaseFirestore.QueryDocumentSnapshot): Payment {
   };
 }
 
-export const PAYMENTS_PAGE_SIZE = 50;
+const PAYMENTS_PAGE_SIZE = 50;
 
 export async function listPayments(studentId: string): Promise<Payment[]> {
   await requireAdmin();

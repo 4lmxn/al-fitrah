@@ -154,7 +154,7 @@ export async function listStudents(
   };
 }
 
-export const MAX_CLASS_SIZE = 60;
+const MAX_CLASS_SIZE = 60;
 
 export async function listClassRoster(classSection: string): Promise<Student[]> {
   await requireAdmin();

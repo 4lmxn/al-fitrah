@@ -48,11 +48,13 @@ long after it was true. Each item was overtaken:
 
 - **Notes backfill** — `node scripts/migrate-notes.mjs --commit`.
 - **Named grievance officer** in `src/content/site.ts` (DPDP requirement).
-- **`ADMIN_OWNERS` is not set.** Until it is, `roleFor()` returns `owner` for
-  every allowed address, so the owner/staff split does nothing and any signed-in
-  account can delete. The permissive default was deliberate — it stopped the
-  deploy that introduced roles from locking the school out — and was meant to be
-  temporary.
+- **No owner is named yet.** While neither `ADMIN_OWNERS` nor the staff roster
+  names one, every allowed address resolves to `owner`, so the split does
+  nothing and any signed-in account can delete. The permissive default was
+  deliberate — it stopped the deploy that introduced roles from locking the
+  school out — and it ends the moment the first owner exists. Since Sep 2026
+  this no longer needs a deploy: **Staff → set a person to owner**, which is
+  what `docs/SCHOOL_GUIDE.md` tells the school to do on day one.
 - **`INQUIRY_FROM_EMAIL` is `onboarding@resend.dev`**, Resend's shared sandbox
   sender. Enquiry mail leaves from a domain the school does not own. Verify the
   school's domain in Resend before launch.
@@ -223,7 +225,7 @@ and would need a separate service).
 
 ## Phase 2 — Security hardening
 
-**2a. RBAC via Firebase Auth custom claims** (`owner` / `admin` / `staff`). Today
+**2a. RBAC** (`owner` / `staff`). *Shipped without custom claims — see `src/lib/roles.ts` and the note in DESIGN_NOTES for why a claim that outlives the decision was rejected.* Originally written as: Today
 `ADMIN_EMAILS` is flat — the receptionist logging a phone call has identical rights to
 the owner: every CV, every child's DOB, and delete on any record with no audit trail.
 Claims are read from the already-decoded session cookie in `requireAdmin()`; no new

@@ -1202,7 +1202,7 @@ receipt number.
 
 ## `src/lib/feeStatus.ts`
 
-**`export const FEE_BUCKETS = [`**
+**`export type FeeBucket`** (was `FEE_BUCKETS`, a runtime array, until nothing used it)
 
 Which families to chase, and in what order.
 
@@ -1982,9 +1982,13 @@ removing the wrong row must not be able to lock the school out of its own
 console, and the way back in must not itself live in the database that went
 wrong. The staff page shows those configured addresses and says exactly that.
 
-`getRoster` swallows its own errors and returns an empty roster. That is
-deliberate: if Firestore is unreachable, access falls back to the env floor
-rather than failing open to everyone or closed to everyone.
+`getRoster` returns `null` when the read fails, which is deliberately NOT the
+same as `[]`. An empty roster means "nobody has been given access here yet",
+and that is what triggers the everyone-is-an-owner bootstrap. A failed read
+means "we do not know", and must not trigger it — otherwise a Firestore hiccup
+hands owner rights to every allowed account until it recovers. Access itself
+still degrades to the env floor, so an outage narrows what people can do rather
+than locking them out.
 
 **`export function resolveRole(...)`**
 
@@ -2134,6 +2138,38 @@ Build the stored entry from a verdict.
 The position is recorded whether or not it passed — a refused attempt is the
 interesting one, and a register that only keeps successes cannot show the
 office that someone tried to mark in from two suburbs away.
+
+---
+
+## `src/lib/staff.ts`
+
+**`export function needsOwnerToEdit(before, nextEmail)`**
+
+Which staff edits an owner has to make.
+
+An edit needs an owner when the record already grants console access, or when it
+changes the address the record signs in with. Everything else — a phone number,
+a designation — stays open to staff, which is the point of having a staff list
+at all.
+
+This exists because of a real hole, not a theory. `updateStaff` rebuilds the
+access roster from the record it writes, and it carried `role` and `access`
+forward from the existing record while taking the email from the form. A staff
+account could therefore edit the owner's row, point it at an address it
+controlled, and be an owner on the next sign-in — without ever passing
+`requireOwner`. The form was rendered on every row, so it needed no crafted
+request.
+
+The rule is a pure function so it is tested rather than asserted, and the server
+enforces it: the page hiding the form is a courtesy, not the gate.
+
+**`export function rosterFrom(members)`**
+
+The access roster, derived from the staff list.
+
+Only active records that hold access and have an email reach it. An inactive
+owner grants nothing — otherwise marking someone inactive would read as removing
+their access in the list while leaving them able to delete records.
 
 ---
 

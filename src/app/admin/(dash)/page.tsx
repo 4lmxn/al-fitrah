@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getInbox, getBoard, SEARCH_SCAN_LIMIT } from "@/lib/leadQueries";
-import { getAllowlist } from "@/lib/roles";
+import { listAdminEmails } from "@/lib/roles";
 import { requireAdmin } from "@/lib/adminAuth";
 import { LEAD_TYPE_LABEL, type LeadType } from "@/lib/leads";
 import { Icon } from "@/components/ui/Icon";
@@ -136,7 +136,7 @@ export default async function AdminInbox({
           q={q}
           wonLabel={wonLabel}
           stages={pipeline}
-          admins={getAllowlist()}
+          admins={await listAdminEmails()}
           initial={{ rows, counts, kpis, attentionCount }}
         />
       )}

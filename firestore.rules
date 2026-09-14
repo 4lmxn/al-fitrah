@@ -42,6 +42,16 @@ service cloud.firestore {
     match /feeStructures/{doc=**} {
       allow read, write: if false;
     }
+    // Staff records. Server-only: they carry personal contact details, and the
+    // access flag on them decides who may sign in to the console.
+    match /staff/{doc=**} {
+      allow read, write: if false;
+    }
+    // The access roster — the derived list of who may sign in, and as what.
+    // A client able to write here could grant itself the console.
+    match /access/{doc=**} {
+      allow read, write: if false;
+    }
     // The audit log. Server-only, and append-only in application code — a
     // client able to write here could forge or erase the record of a change.
     match /auditLog/{doc=**} {

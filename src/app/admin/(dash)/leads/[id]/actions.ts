@@ -10,7 +10,7 @@ import { resolveFollowUp } from "@/lib/followup";
 import { queueNote } from "@/lib/notes";
 import { queueAudit } from "@/lib/audit";
 import { notify } from "@/lib/notify";
-import { getAllowlist } from "@/lib/roles";
+import { listAdminEmails } from "@/lib/roles";
 import { SITE_URL } from "@/lib/seo";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 
@@ -190,7 +190,7 @@ export async function assignLead(formData: FormData): Promise<ActionResult> {
 
     const raw = String(formData.get("assignedTo") ?? "").trim().toLowerCase();
     const assignedTo = raw || null;
-    if (assignedTo && !getAllowlist().includes(assignedTo)) {
+    if (assignedTo && !(await listAdminEmails()).includes(assignedTo)) {
       return fail("That address cannot sign in, so it cannot own a lead.");
     }
 

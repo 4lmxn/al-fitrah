@@ -1966,23 +1966,40 @@ logging a phone call could delete a job opening or read any applicant's CV,
 with no audit trail. Two roles is the smallest split that fixes the part
 that actually matters — who can destroy things.
 
-Roles come from env, not Firebase custom claims. Claims are the right answer
-when roles are assigned through a UI by people who can't redeploy; here the
-admin list is three or four addresses that change once a year, and env
-variables need no migration, no claim-setting script, and no risk of a user
-whose token predates their role change.
+Roles started in env alone. The note here used to say "move to custom claims if
+staff ever need to manage roles themselves" — that moment arrived with the staff
+list, and the answer was a Firestore roster rather than claims.
 
-ponytail: move to custom claims if staff ever need to manage roles themselves,
-or if the list outgrows an env var.
+Claims were rejected for one reason: a token outlives the decision. Revoking
+someone's access has to take effect on their next request, not when their
+session cookie happens to expire, and a claim baked into a five-day cookie
+cannot do that. The roster is read per request (cached within the request), so
+removing access in the console removes it immediately.
 
-**`export function roleFor(email: string | null | undefined): Role`**
+**Access is env OR roster, never roster alone.** `ADMIN_EMAILS` is a floor that
+Firestore cannot lower. A bad write, a failed roster update, or someone
+removing the wrong row must not be able to lock the school out of its own
+console, and the way back in must not itself live in the database that went
+wrong. The staff page shows those configured addresses and says exactly that.
 
-An allowed address is `owner` when it is listed in ADMIN_OWNERS.
+`getRoster` swallows its own errors and returns an empty roster. That is
+deliberate: if Firestore is unreachable, access falls back to the env floor
+rather than failing open to everyone or closed to everyone.
 
-If ADMIN_OWNERS is unset, every allowed address is an owner. That keeps the
-deploy that introduces roles from locking the school out of its own console
-before anyone has set the new variable — the failure mode of a too-clever
-default here is "nobody can delete anything and nobody knows why".
+**`export function resolveRole(...)`**
+
+An allowed address is `owner` when env or the roster says so.
+
+If neither names an owner, every allowed address is an owner. That keeps the
+deploy that introduces roles from locking the school out before anyone has set
+the variable — the failure mode of a too-clever default here is "nobody can
+delete anything and nobody knows why". The permissiveness ends the moment one
+owner exists anywhere, which is what makes the staff page's first owner
+meaningful rather than cosmetic.
+
+Both resolvers are pure and take their inputs, so the whole access rule is
+unit-tested without a database — including the property that matters most, that
+no combination of inputs locks out a configured address.
 
 ---
 

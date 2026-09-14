@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { getAllowlist, isAllowed } from "@/lib/adminAuth";
+import { getAllowlist, resolveAllowlist } from "@/lib/roles";
+
+// The env list is the floor: whatever the staff roster in Firestore says, these
+// addresses keep access. The roster half is covered in staffAccess.test.ts,
+// which is where it can be supplied without reaching a database.
+const admits = (email: string | null | undefined) =>
+  Boolean(email) && resolveAllowlist(getAllowlist(), []).includes(String(email).toLowerCase());
 
 describe("admin allowlist", () => {
   const original = process.env.ADMIN_EMAILS;
@@ -11,20 +17,20 @@ describe("admin allowlist", () => {
   });
 
   it("matches case-insensitively", () => {
-    expect(isAllowed("ADMIN@alfitrah.COM")).toBe(true);
-    expect(isAllowed("second@x.com")).toBe(true);
+    expect(admits("ADMIN@alfitrah.COM")).toBe(true);
+    expect(admits("second@x.com")).toBe(true);
   });
 
   it("rejects non-members and empty input", () => {
-    expect(isAllowed("nobody@x.com")).toBe(false);
-    expect(isAllowed("")).toBe(false);
-    expect(isAllowed(null)).toBe(false);
-    expect(isAllowed(undefined)).toBe(false);
+    expect(admits("nobody@x.com")).toBe(false);
+    expect(admits("")).toBe(false);
+    expect(admits(null)).toBe(false);
+    expect(admits(undefined)).toBe(false);
   });
 
   it("returns an empty allowlist when env is unset", () => {
     delete process.env.ADMIN_EMAILS;
     expect(getAllowlist()).toEqual([]);
-    expect(isAllowed("admin@alfitrah.com")).toBe(false);
+    expect(admits("admin@alfitrah.com")).toBe(false);
   });
 });

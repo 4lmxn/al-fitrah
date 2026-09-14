@@ -95,6 +95,7 @@ cloudflare/          the edge Worker that fronts Cloud Run
 scripts/             one-off migrations and repairs, all dry-run by default
 docs/
   HANDOVER.md          this file — start here
+  SCHOOL_GUIDE.md      for the office, not for you: how the school runs the console
   DESIGN_NOTES.md      why each file is the way it is, keyed by declaration
   ARCHITECTURE.md      how the modules fit, and what the ERP brief still wants
   IMPLEMENTATION_PLAN.md  what was hardened, and what is still open

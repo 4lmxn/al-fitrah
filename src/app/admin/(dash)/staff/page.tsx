@@ -109,6 +109,13 @@ export default async function StaffAdmin() {
                 </span>
               </div>
 
+              {!isOwner && (s.access || s.email) ? (
+                <p className="mt-4 border-t border-emerald/10 pt-4 text-xs text-ink/45">
+                  {s.access
+                    ? "This record grants console access, so only an owner can edit it."
+                    : "Only an owner can change the email a record signs in with."}
+                </p>
+              ) : (
               <ActionForm action={updateStaff} className="mt-4 grid gap-3 sm:grid-cols-2">
                 <input type="hidden" name="id" value={s.id} />
                 <label className="block">
@@ -147,6 +154,7 @@ export default async function StaffAdmin() {
                   </button>
                 </div>
               </ActionForm>
+              )}
 
               {isOwner ? (
                 <div className="mt-4 flex flex-wrap items-end gap-2 border-t border-emerald/10 pt-4">

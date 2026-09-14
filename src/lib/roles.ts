@@ -24,24 +24,26 @@ export function getOwners(): string[] {
   return parseList(process.env.ADMIN_OWNERS);
 }
 
-export function resolveAllowlist(envAllow: string[], roster: RosterEntry[]): string[] {
-  const emails = [...envAllow, ...roster.map((r) => r.email.trim().toLowerCase())];
+export function resolveAllowlist(envAllow: string[], roster: RosterEntry[] | null): string[] {
+  const emails = [...envAllow, ...(roster ?? []).map((r) => r.email.trim().toLowerCase())];
   return [...new Set(emails.filter(Boolean))].sort();
 }
 
 export function resolveRole(
   email: string | null | undefined,
   envOwners: string[],
-  roster: RosterEntry[],
+  roster: RosterEntry[] | null,
 ): Role {
   if (!email) return "staff";
   const key = email.trim().toLowerCase();
+  if (envOwners.includes(key)) return "owner";
+  if (roster === null) return "staff";
   const rosterOwners = roster.filter((r) => r.role === "owner").map((r) => r.email.trim().toLowerCase());
   if (envOwners.length === 0 && rosterOwners.length === 0) return "owner";
-  return envOwners.includes(key) || rosterOwners.includes(key) ? "owner" : "staff";
+  return rosterOwners.includes(key) ? "owner" : "staff";
 }
 
-export const getRoster = cache(async (): Promise<RosterEntry[]> => {
+export const getRoster = cache(async (): Promise<RosterEntry[] | null> => {
   try {
     const doc = await getDb().collection(ROSTER_COLLECTION).doc(ROSTER_DOC).get();
     const members = doc.exists ? doc.data()?.members : null;
@@ -51,7 +53,7 @@ export const getRoster = cache(async (): Promise<RosterEntry[]> => {
       .map((m) => ({ email: String(m.email).toLowerCase(), role: m.role === "owner" ? "owner" : "staff" }));
   } catch (err) {
     console.error("roster read failed", err);
-    return [];
+    return null;
   }
 });
 

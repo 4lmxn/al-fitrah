@@ -1,5 +1,3 @@
-// Compact relative time, e.g. "just now", "5m ago", "3h ago", "2d ago",
-// then falls back to an absolute date for anything older than a week.
 export function relativeTime(ms: number | null): string {
   if (!ms) return "—";
   const diff = Date.now() - ms;

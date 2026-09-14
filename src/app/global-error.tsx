@@ -1,8 +1,6 @@
 "use client";
 import { useEffect } from "react";
 
-// Last-resort boundary: replaces the root layout, so it must ship its own
-// <html>/<body> and cannot rely on the app's fonts or Tailwind theme vars.
 export default function GlobalError({
   error,
   unstable_retry,

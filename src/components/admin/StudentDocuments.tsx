@@ -23,17 +23,6 @@ function when(ms: number | null): string {
   return ms ? new Date(ms).toLocaleDateString("en-IN", { dateStyle: "medium" }) : "—";
 }
 
-/**
- * A child's documents, in the console.
- *
- * The staff-side view of what guardians upload through the portal, plus the
- * office's own additions. Deletion lives here and only here: a guardian can add
- * but not remove, because a school may be required to keep what it was given.
- *
- * Who uploaded each file is shown rather than hidden. When the office is
- * deciding whether to remove something, "the parent sent this" and "we added
- * this ourselves" are different situations.
- */
 export function StudentDocuments({
   studentId,
   documents,
@@ -41,7 +30,6 @@ export function StudentDocuments({
 }: {
   studentId: string;
   documents: StudentDocument[];
-  /** Owners only — removing a child's document is a destructive action. */
   canDelete: boolean;
 }) {
   const full = documents.length >= MAX_DOCUMENTS;

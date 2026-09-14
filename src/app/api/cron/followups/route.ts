@@ -11,16 +11,8 @@ import { waLink } from "@/lib/phone";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Leads in these stages are done — never chase them.
-
-
-// Lower bound for the follow-up range query. Any real timestamp sorts above it;
-// null and absent fields sort below or aren't indexed. See the query comment.
 const EPOCH = new Date(0);
 
-// Constant-time secret check. Hashing both sides to a fixed 32 bytes lets us
-// use timingSafeEqual (which throws on length mismatch) without leaking the
-// secret's length or short-circuiting on the first differing byte.
 function secretMatches(provided: string | null, expected: string): boolean {
   if (!provided) return false;
   const a = createHash("sha256").update(provided).digest();
@@ -28,17 +20,6 @@ function secretMatches(provided: string | null, expected: string): boolean {
   return timingSafeEqual(a, b);
 }
 
-// Daily follow-up digest. Triggered by Cloud Scheduler (see apphosting notes),
-// authenticated with a shared secret header rather than an admin session.
-//
-// The query is bounded at BOTH ends on purpose. An upper bound alone
-// (followUpDate <= today) matches every lead in the collection: Firestore
-// orders null before timestamps, so a lead written with `followUpDate: null`
-// — which is how every lead was written until now — satisfies "<= today" and
-// comes back. The lower bound excludes them, because `null >= epoch` is false,
-// and it excludes documents missing the field entirely, because a field that
-// isn't present isn't in the index. Reads are now proportional to the number of
-// leads that actually have a follow-up scheduled, not to collection size.
 export async function GET(req: Request) {
   const secret = process.env.CRON_SECRET;
   if (!secret || !secretMatches(req.headers.get("x-cron-secret"), secret)) {
@@ -62,15 +43,11 @@ export async function GET(req: Request) {
     return NextResponse.json({ ok: false, error: "Query failed" }, { status: 500 });
   }
 
-  // Terminal stages come from configuration now, so a school that renames
-  // "Lost" or adds a terminal stage stops chasing those leads without a deploy.
   const [admissionStages, terminal] = await Promise.all([
     getPipeline("admission_inquiry"),
     allTerminalStages(),
   ]);
 
-  // Shaped here rather than imported from the mail module: the digest is now an
-  // event payload, not an email-specific type.
   type DueLead = { id: string; name: string; phone: string; stage: string; overdue: boolean; waLink: string | null };
   const leads: DueLead[] = snap.docs
     .map((d) => {
@@ -97,8 +74,6 @@ export async function GET(req: Request) {
       waLink: waLink(l.phone),
     }));
 
-  // Nothing due is not a failure — sending "0 leads need follow-up" every
-  // morning trains people to ignore the digest.
   let sent = false;
   if (leads.length > 0) {
     const list = leads

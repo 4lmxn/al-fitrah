@@ -1,4 +1,3 @@
-// src/components/layout/Footer.tsx
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Icon } from "@/components/ui/Icon";

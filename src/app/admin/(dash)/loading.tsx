@@ -1,6 +1,3 @@
-// Every dashboard route is force-dynamic and reads Firestore, so navigation
-// otherwise sits on the previous screen with no feedback. Shared skeleton for
-// the whole (dash) segment.
 export default function AdminLoading() {
   return (
     <div className="mx-auto max-w-6xl animate-pulse" role="status" aria-label="Loading">

@@ -21,9 +21,6 @@ type ParsedStructure = {
   active: boolean;
 };
 
-// Returns a result rather than throwing so the message survives to the UI —
-// routed through attempt() it would collapse to "something went wrong", which
-// tells an admin nothing about which field is wrong.
 type Parsed = { ok: true; data: ParsedStructure } | { ok: false; error: string };
 
 async function parse(formData: FormData): Promise<Parsed> {
@@ -40,8 +37,6 @@ async function parse(formData: FormData): Promise<Parsed> {
     data: {
       name,
       academicYear: clean(formData.get("academicYear"), 12) || academicYearFor(),
-      // Null, not the first program: an unscoped fee applies to every program,
-      // which is a real and common case (a sibling discount, a transport fee).
       program: pickFrom(programs, clean(formData.get("program"), 60)),
       amountPaise,
       active: formData.get("active") === "on",
@@ -81,14 +76,6 @@ export async function createStructure(formData: FormData): Promise<ActionResult>
   });
 }
 
-/**
- * Edit a structure.
- *
- * This changes the price list, not what any family already owes — assigned
- * totals are copies (see lib/feeStructures). Re-applying to a class is a
- * separate, deliberate action, which is what keeps a correction to next year's
- * Nursery fee from silently restating this year's invoices.
- */
 export async function updateStructure(formData: FormData): Promise<ActionResult> {
   return attempt("updateStructure", async () => {
     const admin = await requireAdmin();
@@ -118,9 +105,6 @@ export async function updateStructure(formData: FormData): Promise<ActionResult>
 
 export async function deleteStructure(formData: FormData): Promise<ActionResult> {
   return attempt("deleteStructure", async () => {
-    // Same rule as job openings: deletion is irreversible, so owners only, and
-    // checked here rather than via requireOwner() so the refusal reaches the
-    // admin as a message instead of a blanked page.
     const admin = await requireAdmin();
     if (admin.role !== "owner") return fail("Deleting a fee needs an owner account.");
     const id = clean(formData.get("id"), 60);
@@ -137,23 +121,6 @@ export async function deleteStructure(formData: FormData): Promise<ActionResult>
   });
 }
 
-/**
- * Put a whole class on a fee.
- *
- * The reason structures exist: typing the same ₹25,000 onto forty records is
- * forty chances to type ₹2,500 instead.
- *
- * Three cases, and the split is the point:
- *
- *  - no total set yet          → apply
- *  - already on THIS fee       → re-apply, keeping the child's own concession,
- *                                so a corrected amount reaches them
- *  - on a different amount     → skip
- *
- * The last one is what stops a bulk action from quietly overwriting a fee a
- * family negotiated. Bounded by the class roster (MAX_CLASS_SIZE), so the write
- * count is capped by the size of a preschool class.
- */
 export async function applyToClass(formData: FormData): Promise<ActionResult> {
   return attempt("applyToClass", async () => {
     const admin = await requireAdmin();
@@ -182,8 +149,6 @@ export async function applyToClass(formData: FormData): Promise<ActionResult> {
 
     const batch = db.batch();
     for (const s of targets) {
-      // Field paths, not a merged `fees` object: writing the whole map would let
-      // this overwrite paidPaise with a stale figure and erase recorded payments.
       batch.update(db.collection(STUDENTS).doc(s.id), {
         "fees.totalPaise": netTotalPaise(structure.amountPaise, s.fees.discountPaise),
         "fees.structureId": structureId,

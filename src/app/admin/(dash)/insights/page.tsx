@@ -4,8 +4,6 @@ import { Icon } from "@/components/ui/Icon";
 
 export const dynamic = "force-dynamic";
 
-// Deliberately just numbers — no charts. Enough to see which channels convert
-// and where leads stall, without the weight (or cost) of an analytics stack.
 export default async function InsightsPage() {
   const { totalThisMonth, sources, funnel, referrers } = await getInsights();
   const funnelTop = funnel[0]?.count || 1;

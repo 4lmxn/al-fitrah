@@ -8,8 +8,6 @@ import { Reveal } from "@/components/ui/Reveal";
 import { getSettings } from "@/lib/settings";
 import { getContact } from "@/lib/seo";
 
-// Async because the brand comes from configuration; a module-scope
-// constant cannot await, which is what kept school identity hardcoded.
 export async function generateMetadata(): Promise<Metadata> {
   return pageMeta("/privacy", {
   title: "Privacy Policy",
@@ -19,16 +17,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const lastUpdated = "4 August 2026";
 
-// Retention periods stated here must match what actually happens, or the policy
-// is worse than none. The 12-month CV figure matches the Cloud Storage lifecycle
-// rule in docs/ops.md §4 — change one and change the other.
 const retention = [
   { what: "Admissions enquiries", how: "Kept while your child could still join us, and for up to 24 months after your last contact with us. Removed sooner on request." },
   { what: "Job applications and CVs", how: "Automatically deleted 12 months after they are submitted." },
   { what: "Website analytics", how: "Only collected if you agree. Retained by Google for 14 months, and never used to advertise to children." },
 ];
 
-// DPDP requires people to know who else touches their data, by name.
 const processors = [
   { name: "Google (Firebase)", role: "Stores enquiry and student records securely in Google's data centres in Mumbai, India, and runs the website itself from Google's data centres in Taiwan." },
   { name: "Resend", role: "Delivers the notification emails our admissions team receives." },

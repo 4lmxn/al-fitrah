@@ -9,9 +9,6 @@ import { Icon } from "@/components/ui/Icon";
 
 export const revalidate = 3600;
 
-// Prerender the recent ones at build; anything older renders on first request
-// and is then cached. Prerendering the whole archive would make build time grow
-// with the school's history for pages almost nobody opens.
 export async function generateStaticParams() {
   return (await publishedSlugs().catch(() => [])).map((slug) => ({ slug }));
 }

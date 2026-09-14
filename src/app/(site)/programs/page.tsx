@@ -15,8 +15,6 @@ import { ProgramLevels } from "@/components/pages/ProgramLevels";
 import { SwipeRail } from "@/components/ui/SwipeRail";
 import { cn } from "@/lib/cn";
 
-// Async because the brand comes from configuration; a module-scope
-// constant cannot await, which is what kept school identity hardcoded.
 export async function generateMetadata(): Promise<Metadata> {
   return pageMeta("/programs", {
   title: "Our Programs",

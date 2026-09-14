@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 
-// Copy-to-clipboard button used for the referral link on lead detail.
 export function CopyButton({ value, label = "Copy" }: { value: string; label?: string }) {
   const [copied, setCopied] = useState(false);
 

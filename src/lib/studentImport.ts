@@ -1,20 +1,6 @@
 import { STUDENT_STATUSES, type Program, type StudentStatus } from "@/lib/students";
 
-/** Lists the file is validated against. Passed in, because they are configuration. */
 export type ImportLists = { programs: string[]; classSections: string[] };
-
-/**
- * CSV import for existing students.
- *
- * Until now a student could only be created from an admitted enquiry, which is
- * right for new families and useless for a school that already has 200 children
- * on its roll. Without this the CRM cannot be adopted at all — the alternative
- * is inventing 200 fake enquiries.
- *
- * Parsing is pure and separate from writing, so the admin can see exactly what
- * will happen before anything is committed. A bulk import that half-succeeds
- * and reports "done" is worse than one that refuses.
- */
 
 export type ImportRow = {
   rowNumber: number;
@@ -36,7 +22,6 @@ export type RowError = { rowNumber: number; message: string };
 export type ParseResult = {
   rows: ImportRow[];
   errors: RowError[];
-  /** Header names present in the file that we don't recognise. */
   unknownColumns: string[];
 };
 
@@ -56,14 +41,6 @@ export const KNOWN_COLUMNS = [
   "feetotal",
 ] as const;
 
-/**
- * Split one CSV line, honouring quoted fields.
- *
- * Written out rather than pulled from a dependency because the input is a
- * spreadsheet export, not arbitrary RFC 4180: names contain commas
- * ("Khan, Ayesha") and quotes get doubled. Those two cases are the whole
- * requirement, and both are covered by tests.
- */
 export function splitCsvLine(line: string): string[] {
   const out: string[] = [];
   let cur = "";
@@ -74,7 +51,7 @@ export function splitCsvLine(line: string): string[] {
     if (inQuotes) {
       if (ch === '"') {
         if (line[i + 1] === '"') {
-          cur += '"'; // escaped quote inside a quoted field
+          cur += '"';
           i++;
         } else {
           inQuotes = false;
@@ -97,7 +74,6 @@ export function splitCsvLine(line: string): string[] {
 
 const norm = (s: string) => s.toLowerCase().replace(/[\s_-]/g, "");
 
-/** Rupees (or blank) to integer paise. Mirrors lib/money, kept dependency-free. */
 function feeToPaise(raw: string): number | null {
   if (!raw) return 0;
   const cleaned = raw.replace(/[₹,\s]/g, "");
@@ -106,7 +82,6 @@ function feeToPaise(raw: string): number | null {
   return Number(whole) * 100 + Number(frac.padEnd(2, "0"));
 }
 
-/** Accepts YYYY-MM-DD and the DD/MM/YYYY that Indian spreadsheets produce. */
 export function parseDob(raw: string): string | null | undefined {
   if (!raw) return null;
   let y: number, m: number, d: number;
@@ -115,8 +90,6 @@ export function parseDob(raw: string): string | null | undefined {
   const dmy = raw.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
   if (iso) [, y, m, d] = iso.map(Number) as [number, number, number, number];
   else if (dmy) {
-    // Day-first, not month-first: a school in India exporting 03/08/2022 means
-    // 3 August. Reading it as March would put the child in the wrong intake.
     [, d, m, y] = dmy.map(Number) as [number, number, number, number];
   } else return undefined;
 
@@ -152,7 +125,7 @@ export function parseStudentCsv(text: string, lists: ImportLists): ParseResult {
   const seenAdmission = new Set<string>();
 
   lines.slice(1).forEach((line, i) => {
-    const rowNumber = i + 2; // 1-based, and the header is row 1
+    const rowNumber = i + 2;
     const cells = splitCsvLine(line);
 
     const firstName = at(cells, "firstname");
@@ -194,8 +167,6 @@ export function parseStudentCsv(text: string, lists: ImportLists): ParseResult {
     }
 
     const admissionNumber = at(cells, "admissionnumber") || null;
-    // Catch duplicates inside the file itself, before they reach Firestore and
-    // become two children sharing one identifier.
     if (admissionNumber) {
       if (seenAdmission.has(admissionNumber)) {
         return errors.push({ rowNumber, message: `Admission number ${admissionNumber} appears more than once in this file.` });

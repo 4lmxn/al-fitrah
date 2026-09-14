@@ -5,8 +5,6 @@ export const alt = "Al Fitrah Pre School, Sarjapura — Where young hearts and m
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-// Branded social-share card. Generated at build/request time so every shared
-// link (WhatsApp, Facebook, X) renders a rich preview instead of a bare URL.
 export default function OpengraphImage() {
   return new ImageResponse(
     (

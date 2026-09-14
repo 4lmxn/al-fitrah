@@ -2,10 +2,6 @@
 import { useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 
-// Click-to-load Google Maps. The embed sets third-party cookies and pulls a
-// heavy JS bundle on load, so we defer it behind an explicit tap: nothing from
-// Google loads until the visitor asks for the map. A direct "Open in Maps"
-// link is always available as a no-JS-cookie fallback.
 export function MapEmbed({
   embedUrl,
   directionsUrl,

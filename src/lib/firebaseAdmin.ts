@@ -3,13 +3,6 @@ import { getFirestore, type Firestore } from "firebase-admin/firestore";
 import { getAuth, type Auth } from "firebase-admin/auth";
 import { getStorage } from "firebase-admin/storage";
 
-/**
- * Server-only Firebase Admin init.
- * Credentials resolution order:
- *  1. FIREBASE_SERVICE_ACCOUNT_KEY  — full service-account JSON (string), for local dev.
- *  2. Application Default Credentials — used automatically on Firebase App Hosting.
- * Never import this from a Client Component.
- */
 let app: App | undefined;
 
 export function getAdminApp(): App {

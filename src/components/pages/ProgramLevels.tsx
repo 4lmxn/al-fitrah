@@ -8,11 +8,7 @@ import { Doodle } from "@/components/ui/Doodle";
 import { cn } from "@/lib/cn";
 import { SwipeRail } from "@/components/ui/SwipeRail";
 
-// One illustration per year, inline SVG. Photographs would be dishonest here —
-// we do not have a picture that is specifically "the Junior KG room" — and the
-// drawings carry the hand-made feel the rest of the site uses.
 const illustrations = [
-  // Pre-KG — stacking blocks
   <svg key="blocks" viewBox="0 0 100 100" aria-hidden className="h-28 w-28">
     <rect x="22" y="54" width="30" height="30" rx="6" fill="#ee7f82" />
     <path d="M31 69l4 4 6-8" stroke="#fff" strokeWidth="3.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
@@ -21,7 +17,6 @@ const illustrations = [
     <rect x="36" y="24" width="30" height="30" rx="6" fill="#c9a227" />
     <path d="M51 30l2.3 4.7 5.2.8-3.8 3.6.9 5.1-4.6-2.4-4.6 2.4.9-5.1-3.8-3.6 5.2-.8z" fill="#fff" />
   </svg>,
-  // Junior KG — crayons
   <svg key="crayons" viewBox="0 0 100 100" aria-hidden className="h-28 w-28">
     <g transform="rotate(-12 50 50)">
       <rect x="26" y="30" width="12" height="44" rx="4" fill="#ee7f82" />
@@ -32,7 +27,6 @@ const illustrations = [
       <path d="M62 32l6-10 6 10z" fill="#aed99a" />
     </g>
   </svg>,
-  // Senior KG — open book under a star
   <svg key="book" viewBox="0 0 100 100" aria-hidden className="h-28 w-28">
     <path d="M50 40c-8-6-18-6-26-3v34c8-3 18-3 26 3z" fill="#fff" stroke="#065f46" strokeWidth="3.5" strokeLinejoin="round" />
     <path d="M50 40c8-6 18-6 26-3v34c-8-3-18-3-26 3z" fill="#fff" stroke="#065f46" strokeWidth="3.5" strokeLinejoin="round" />

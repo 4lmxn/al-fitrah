@@ -1,8 +1,5 @@
 import { cn } from "@/lib/cn";
 
-// Soft divider between bands of colour. `fill` is the colour of the section the
-// wave is flowing *into*; `flip` points the crest the other way so the same
-// shape can close a band as well as open one.
 export function Wave({
   fill = "#ffffff",
   flip = false,

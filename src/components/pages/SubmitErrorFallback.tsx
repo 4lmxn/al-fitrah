@@ -2,10 +2,6 @@
 import { Icon } from "@/components/ui/Icon";
 import { useSchoolContact } from "@/components/SchoolContact";
 
-// Shown when a lead-capture submit fails (network, 429, 5xx). A failed POST is
-// the moment we're most likely to lose a real admission enquiry, so we don't
-// just say "call us" — we surface one-tap WhatsApp + call so the parent still
-// reaches a human. `context` tags the WhatsApp text with where they were.
 export function SubmitErrorFallback({
   message,
   dark = false,

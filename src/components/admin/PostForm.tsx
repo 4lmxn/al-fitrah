@@ -25,9 +25,6 @@ export function PostForm({
   post?: Post;
   submitLabel: string;
 }) {
-  // Event-only fields appear as the type changes, rather than being always
-  // present and ignored — a date box on a news item is a question with no
-  // right answer.
   const [type, setType] = useState<PostType>(post?.type ?? "news");
 
   return (

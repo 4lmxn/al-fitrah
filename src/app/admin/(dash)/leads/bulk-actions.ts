@@ -10,20 +10,12 @@ import { getAllowlist } from "@/lib/roles";
 import { isValidStage, stageLabelFor, terminalStages } from "@/lib/pipelines";
 import type { LeadType } from "@/lib/leads";
 
-/**
- * Bulk operations on selected leads.
- *
- * Bounded at a size a person can actually have reviewed. The inbox pages at 25,
- * so anything beyond this is not a considered selection — and a mistake applied
- * to 500 leads is a mistake nobody can undo by hand.
- */
 const MAX_SELECTION = 100;
 
 function ids(formData: FormData): string[] {
   return [...new Set(formData.getAll("id").map((v) => String(v).trim()).filter(Boolean))];
 }
 
-/** Move several leads to the same stage. */
 export async function bulkUpdateStage(formData: FormData): Promise<ActionResult> {
   return attempt("bulkUpdateStage", async () => {
     const admin = await requireAdmin();
@@ -44,16 +36,12 @@ export async function bulkUpdateStage(formData: FormData): Promise<ActionResult>
       const ref = db.collection("leads").doc(id);
       batch.update(ref, {
         stage,
-        // Same rule as a single move: a terminal stage clears the follow-up, or
-        // the digest keeps chasing families who have already enrolled or left.
         ...(terminal.has(stage) ? { followUpDate: FieldValue.delete() } : {}),
         updatedAt: FieldValue.serverTimestamp(),
       });
       queueNote(db, batch, id, { text: `Moved to ${label}`, author: admin.email, kind: "stage" });
     }
 
-    // One audit entry for the action, not one per lead: a bulk move is a single
-    // decision, and 100 near-identical rows would bury the log it belongs in.
     queueAudit(db, batch, {
       actor: admin.email,
       action: "lead.bulk_stage_changed",
@@ -67,7 +55,6 @@ export async function bulkUpdateStage(formData: FormData): Promise<ActionResult>
   });
 }
 
-/** Assign several leads to one owner, or clear their owner. */
 export async function bulkAssign(formData: FormData): Promise<ActionResult> {
   return attempt("bulkAssign", async () => {
     const admin = await requireAdmin();

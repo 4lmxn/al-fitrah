@@ -8,7 +8,6 @@ import { Icon } from "@/components/ui/Icon";
 import { Doodle } from "@/components/ui/Doodle";
 import { RainbowWords } from "@/components/ui/Rainbow";
 
-// Chip tints, cycled positionally. Emerald leads; the accents are decorative.
 const chipTone = ["bg-emerald", "bg-coral", "bg-grape"];
 const chipPos = [
   "bottom-6 -left-3 sm:-left-4",

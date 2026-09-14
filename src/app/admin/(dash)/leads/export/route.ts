@@ -9,17 +9,6 @@ import { findStage } from "@/lib/stageMeta";
 
 export const runtime = "nodejs";
 
-/**
- * Export leads as CSV.
- *
- * Owner-only, and audited. Everything in this file is already visible in the
- * console to any admin — the difference is that an export LEAVES the system.
- * It becomes a file on a laptop, an email attachment, a shared drive. Under
- * DPDP that is the moment worth restricting and recording, not the reading.
- *
- * Bounded: an export is a query like any other, and "download everything" is
- * how a cheap feature becomes an expensive one.
- */
 const MAX_ROWS = 5000;
 
 const HEADER = [
@@ -87,8 +76,6 @@ export async function GET(req: Request) {
     ];
   });
 
-  // Recorded before returning, so the export is on the record even if the
-  // download is interrupted — the data has already been read either way.
   await recordAudit({
     actor: admin.email,
     action: "lead.exported",
@@ -101,7 +88,6 @@ export async function GET(req: Request) {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
       "Content-Disposition": `attachment; filename="${csvFilename(type === "staff_application" ? "applications" : "leads")}"`,
-      // Contact details for children's families: never cached anywhere.
       "Cache-Control": "private, no-store",
     },
   });

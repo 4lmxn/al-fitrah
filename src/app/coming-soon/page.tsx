@@ -3,8 +3,6 @@ import { Icon } from "@/components/ui/Icon";
 import { pageMeta, getContact } from "@/lib/seo";
 import { getSettings } from "@/lib/settings";
 
-// Indexable on purpose: while the full site is gated, this is the one page we
-// want Google to start associating with the brand + location.
 export const metadata: Metadata = {
   ...pageMeta("/", {
     title: "Opening Soon",

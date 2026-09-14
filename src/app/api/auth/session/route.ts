@@ -44,8 +44,6 @@ export async function POST(req: Request) {
 export async function DELETE() {
   const store = await cookies();
   const value = store.get(SESSION_COOKIE)?.value;
-  // Revoke server-side so a stolen cookie dies with the logout instead of
-  // staying valid for the rest of its 5-day lifetime.
   if (value) {
     try {
       const decoded = await getAuthAdmin().verifySessionCookie(value);

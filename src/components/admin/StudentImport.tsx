@@ -8,14 +8,6 @@ const SAMPLE = `admissionNumber,firstName,lastName,dob,program,classSection,stat
 AF-2025-0001,Yusuf,Khan,03/08/2022,Pre-KG,Rose,enrolled,Ayesha Khan,9876543210,ayesha@example.com,25000
 ,Maryam,Ahmed,2022-11-14,Junior KG,Tulip,enrolled,Bilal Ahmed,9876543211,,30000`;
 
-/**
- * Two-step import: preview, then commit.
- *
- * The commit button only appears once a parse has succeeded, so the only way to
- * write is to have seen exactly what will be written. Bulk-creating children
- * from an unexamined spreadsheet produces a roll that is far harder to clean up
- * than to get right the first time.
- */
 export function StudentImport() {
   const [state, formAction, pending] = useActionState(
     async (_prev: ImportOutcome | null, formData: FormData) => importStudents(formData),

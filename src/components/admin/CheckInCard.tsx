@@ -9,7 +9,6 @@ function time(ms: number | null): string {
   return ms ? new Date(ms).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }) : "—";
 }
 
-/** Where a check-in came from, in one phrase. */
 function place(entry: CheckIn): string {
   if (entry.distanceM < 0) return "no location";
   return entry.withinFence

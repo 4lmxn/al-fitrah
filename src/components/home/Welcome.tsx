@@ -8,8 +8,6 @@ import { Doodle } from "@/components/ui/Doodle";
 export function Welcome() {
   const { welcome } = home;
   return (
-    // A white band cut out of the cream page with a wave at each edge — the
-    // welcome note reads as a page in a picture book rather than another card.
     <div className="relative">
       <Wave fill="#ffffff" />
       <section className="relative overflow-hidden bg-white py-10 sm:py-14">

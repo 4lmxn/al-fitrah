@@ -10,22 +10,6 @@ import type { LeadRow } from "@/lib/leadQueries";
 import type { LeadType } from "@/lib/leads";
 import { waLink } from "@/lib/phone";
 
-/**
- * The pipeline as columns.
- *
- * ── On drag and drop ────────────────────────────────────────────────────────
- *
- * There isn't any, deliberately. A board's value is seeing the whole pipeline
- * at once; dragging is one way to move a card and not the reason to build one.
- *
- * Making drag work properly here means touch support — HTML5 drag events do
- * nothing on a phone — which means either a dependency or hand-written pointer
- * handling, plus a keyboard path so the board is not mouse-only. That is a
- * sizeable amount of code and risk in exchange for a gesture, when a two-tap
- * stage change works everywhere, on every input, today.
- *
- * Worth adding later if staff ask for it. Not worth blocking the board on.
- */
 export function LeadBoard({
   type,
   columns: initial,
@@ -48,11 +32,6 @@ export function LeadBoard({
     return d.getTime();
   })();
 
-  /**
-   * Move a card between columns optimistically, and put it back if the write
-   * fails. Same contract as the list view: the screen must never keep a change
-   * that Firestore rejected, or the board quietly disagrees with the database.
-   */
   function move(row: LeadRow, to: string) {
     if (to === row.stage) return;
     const snapshot = columns;

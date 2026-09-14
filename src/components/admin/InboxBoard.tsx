@@ -37,22 +37,13 @@ export function InboxBoard({
   attention: boolean;
   q: string;
   wonLabel: string;
-  /** Configured pipeline, resolved server-side — settings are not readable here. */
   stages: StageView[];
-  /** Addresses that may own a lead; the allowlist is server-side config. */
   admins: string[];
   initial: State;
 }) {
-  // Client owns the truth after the first paint. Seeded from the server on
-  // mount; the parent keys this component on the active filter, so navigating
-  // (type/stage/search/view) remounts it with fresh server data instead of us
-  // trying to reconcile. Between navigations, mutations update this state
-  // directly — no "/admin" revalidation, so no full inbox re-read per click.
   const [state, setState] = useState<State>(initial);
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
-  // Selection lives here rather than in the URL: it is transient, and a
-  // bookmarked page of checkboxes is not a thing anyone wants.
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [, startTransition] = useTransition();
 
@@ -87,8 +78,6 @@ export function InboxBoard({
       return next;
     });
 
-  // Recompute the derived view (visible rows + counts/kpis/attention) after a
-  // single row changes, using deltas only — never re-scanning the whole set.
   function applyChange(prev: State, before: LeadRow, after: LeadRow): State {
     const counts = { ...prev.counts };
     const kpis = { ...prev.kpis };
@@ -108,7 +97,6 @@ export function InboxBoard({
       (needsAttention(after) ? 1 : 0) - (needsAttention(before) ? 1 : 0);
     const attentionCount = prev.attentionCount + attnDelta;
 
-    // Does the changed row still belong in the currently filtered view?
     const stillVisible = attention
       ? needsAttention(after)
       : activeStage
@@ -134,17 +122,13 @@ export function InboxBoard({
     markPending(before.id, true);
     startTransition(async () => {
       try {
-        // Actions now report expected failures by returning rather than
-        // throwing, so a result that isn't ok must roll back too — otherwise
-        // the optimistic change sticks on screen over a write that never
-        // happened, and the board quietly disagrees with Firestore.
         const result = await run();
         if (!result.ok) {
           setState(snapshot);
           setError(result.error);
         }
       } catch {
-        setState(snapshot); // roll back the optimistic change
+        setState(snapshot);
         setError(failMsg);
       } finally {
         markPending(before.id, false);
@@ -154,8 +138,6 @@ export function InboxBoard({
 
   function onStage(row: LeadRow, next: string) {
     if (next === row.stage) return;
-    // Mirror the server: a stage move appends one timeline entry, so a "new"
-    // lead that gets moved is no longer untouched.
     const after: LeadRow = { ...row, stage: next, noteCount: row.noteCount + 1 };
     const fd = new FormData();
     fd.set("id", row.id);

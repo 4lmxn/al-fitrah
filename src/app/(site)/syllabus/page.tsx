@@ -13,8 +13,6 @@ import { SwipeRail } from "@/components/ui/SwipeRail";
 import { TONES } from "@/components/ui/FeatureCard";
 import { cn } from "@/lib/cn";
 
-// Async because the brand comes from configuration; a module-scope
-// constant cannot await, which is what kept school identity hardcoded.
 export async function generateMetadata(): Promise<Metadata> {
   return pageMeta("/syllabus", {
   title: "Syllabus",
@@ -22,8 +20,6 @@ export async function generateMetadata(): Promise<Metadata> {
 });
 }
 
-// Same tint set the shared FeatureCard uses, applied here because these cards
-// carry a different layout.
 const tints = {
   emerald: "bg-emerald/10 text-emerald",
   gold: "bg-gold-soft text-gold",
@@ -41,7 +37,6 @@ const strands = [
   { icon: "calculate", title: "Mathematics", body: "Number recognition, counting, patterns, shapes, and logical thinking & problem solving." },
   { icon: "public", title: "Environmental studies (EVS)", body: "Understanding the world, nature & community awareness, health & hygiene, and observation skills." },
 ];
-
 
 export default function SyllabusPage() {
   return (

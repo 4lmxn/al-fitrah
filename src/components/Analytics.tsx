@@ -2,27 +2,10 @@
 import { useSyncExternalStore } from "react";
 import Script from "next/script";
 
-// Analytics, gated behind explicit consent.
-//
-// India's DPDP Act 2023 treats children's data as a special category and bars
-// behavioural tracking and targeted advertising directed at children. This site
-// collects a child's name, date of birth and age band on the same pages that
-// were loading GA4 unconditionally. Consent has to be opt-IN: no measurement
-// until someone chooses it, and a refusal that sticks.
-//
-// Stored in localStorage rather than a cookie on purpose — nothing needs to
-// reach the server, and a consent cookie sent on every request is the sort of
-// thing that ends up in a log.
-
 const STORAGE_KEY = "alfitrah.analytics-consent";
 
-// "unknown" is the server's answer: during SSR there is no storage to read, and
-// rendering the banner there would flash it at someone who already answered.
 type Consent = "granted" | "denied" | "undecided" | "unknown";
 
-// Consent lives in localStorage, which React can't see. useSyncExternalStore is
-// the supported way to read that without a setState-in-effect: it also keeps
-// every mounted copy — and other tabs, via the `storage` event — in agreement.
 const listeners = new Set<() => void>();
 
 function subscribe(onChange: () => void): () => void {
@@ -34,14 +17,11 @@ function subscribe(onChange: () => void): () => void {
   };
 }
 
-// Must return a primitive: a fresh object each call would loop forever.
 function getSnapshot(): Consent {
   try {
     const v = localStorage.getItem(STORAGE_KEY);
     return v === "granted" || v === "denied" ? v : "undecided";
   } catch {
-    // Private browsing or storage disabled. Treat as undecided — and since a
-    // choice can't be persisted, analytics never loads.
     return "undecided";
   }
 }
@@ -61,7 +41,6 @@ export function Analytics() {
     for (const l of listeners) l();
   }
 
-  // No measurement ID configured, or still server-rendering: no scripts, no banner.
   if (!gaId || consent === "unknown") return null;
 
   if (consent === "undecided") {

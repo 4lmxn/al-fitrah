@@ -14,16 +14,6 @@ function fmtSize(bytes: number): string {
   return `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
 
-/**
- * Files shared with parents.
- *
- * Not filtered by the parent's own children's classes. A class-specific
- * worksheet is not sensitive, and filtering would need a per-child query on
- * every load to save a family from scrolling past a form for another class.
- *
- * ponytail: filter by classSection against the parent's children if the list
- * ever gets long enough to be annoying.
- */
 export default async function PortalResourcesPage() {
   await requireParent();
   const [{ school }, resources] = await Promise.all([
@@ -64,9 +54,6 @@ export default async function PortalResourcesPage() {
             {resources.map((r) => (
               <li key={r.id}>
                 <a
-                  // Public files go straight to storage and cost nothing to
-                  // serve; the rest stream through the authenticated route,
-                  // which re-checks this parent's session on every request.
                   href={r.publicUrl ?? `/api/resources/${r.id}`}
                   className="flex items-center gap-4 rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft transition hover:shadow-lift"
                 >

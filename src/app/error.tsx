@@ -4,24 +4,13 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Icon } from "@/components/ui/Icon";
 
-// Deliberately NOT read from configuration. This is the root error boundary —
-// it renders when something below has already failed, quite possibly the
-// database that configuration lives in. A fallback number that needs a working
-// Firestore read is not a fallback. Kept in sync with settings by hand; if it
-// drifts, the worst case is an out-of-date number on a page nobody should see.
 const FALLBACK_PHONE = "+919986500718";
 
-// Catches render/data errors anywhere below the root layout. Admissions is a
-// phone-driven funnel, so the fallback always surfaces a working phone number
-// rather than leaving a parent on a dead screen.
 export default function Error({
   error,
   unstable_retry,
 }: {
   error: Error & { digest?: string };
-  // Next 16: retry re-fetches and re-renders the boundary's children, which is
-  // what a transient Firestore/network failure actually needs. `reset` only
-  // clears state and would fail again immediately.
   unstable_retry: () => void;
 }) {
   useEffect(() => {

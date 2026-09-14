@@ -6,8 +6,6 @@ import { Icon } from "@/components/ui/Icon";
 
 export const dynamic = "force-dynamic";
 
-// Where an entity can be opened from the log. Anything not listed simply
-// renders as text rather than a broken link.
 const ENTITY_HREF: Record<string, (id: string) => string | null> = {
   lead: (id) => `/admin/leads/${id}`,
   student: (id) => (id === "bulk" ? null : `/admin/students/${id}`),

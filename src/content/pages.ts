@@ -2,13 +2,6 @@ import type {
   AboutPage, ProgramsPage, AdmissionsPage, CampusPage, FaqPage, ParentPage, ContactPage, TrustPage,
 } from "./types";
 
-/**
- * Why a family can believe us, stated as checkable facts.
- *
- * This replaces the testimonial section the design mock shipped. A quote we
- * wrote ourselves is worth nothing; an affiliation a parent can ring up and
- * verify is worth a great deal.
- */
 export const trust: TrustPage = {
   eyebrow: "Why families trust us",
   title: "Checkable, not just claimed.",
@@ -45,9 +38,6 @@ export const about: AboutPage = {
     subtitle:
       "We believe every child is born with a natural capacity for learning, compassion, and connection. Al Fitrah is the environment for that nature to flourish.",
   },
-  // Rewritten to state what the school actually does rather than how it feels
-  // about children. Every competitor claims warmth; almost none of them can
-  // describe their own method in a sentence. NEEDS SCHOOL SIGN-OFF.
   mission: {
     title: "Our mission",
     body: "To give every child three unbroken years in which Qur'an and academics are taught by the same teachers, in the same room, on the same day. Not a school with Islamic classes bolted on, and not a madrasa with some English: one day, one rhythm, both halves of a child's life treated as one thing.",
@@ -86,9 +76,6 @@ export const programs: ProgramsPage = {
       { icon: "schedule", label: "Duration", value: "3 years" },
     ],
   },
-  // The year-by-year detail used to live only on /syllabus, where almost nobody
-  // looks. A parent deciding between preschools wants to know what year one
-  // actually contains, so it leads the programmes page now.
   levels: {
     title: "Three years, one continuous journey.",
     rainbow: ["continuous"],
@@ -123,9 +110,6 @@ export const programs: ProgramsPage = {
       },
     ],
   },
-  // Method, not content. The year-by-year section already answers "what does my
-  // child learn"; this answers "how do you teach it", which is a different
-  // question and the one that separates us from a school with the same subjects.
   method: {
     title: "How we teach it.",
     rainbow: ["teach"],
@@ -355,7 +339,6 @@ export const contact: ContactPage = {
     subtitle: "Have a question about admissions or want to arrange a visit? We're happy to help.",
   },
   details: {
-    // Keep in sync with FULL_ADDRESS in src/lib/seo.ts (single source of address truth).
     address: ["3rd Floor, Vivian Complex", "Opp HP Petrol Bunk, Sompura Gate", "Sarjapura, Bengaluru, Karnataka 562125"],
     phones: ["+91 99865 00718", "+91 99860 49413"],
     email: "alfitrah.sompura@gmail.com",

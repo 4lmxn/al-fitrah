@@ -37,8 +37,6 @@ function startOfToday(): number {
   return d.getTime();
 }
 
-// Local yyyy-mm-dd for a <input type="date"> default (avoids the UTC shift
-// toISOString would introduce for a midnight-local timestamp).
 function toDateInput(ms: number | null): string {
   if (!ms) return "";
   const d = new Date(ms);
@@ -48,14 +46,6 @@ function toDateInput(ms: number | null): string {
 
 export default async function LeadDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  // The enrolment lookup keys off the lead id alone, so it goes out with the
-  // lead rather than after it.
-  //
-  // This deliberately trades one read for one round trip: it now runs for every
-  // lead, including ones that can't have a student, where the answer is always
-  // no. That is a single extra read against a 50k/day allowance, versus ~60ms
-  // of Mumbai round trip on a page staff open constantly. Latency is the
-  // scarcer resource here, not reads.
   const [lead, enrolledEarly] = await Promise.all([getLead(id), studentForLead(id)]);
   if (!lead) notFound();
 
@@ -65,11 +55,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
   const wa = waLink(lead.phone);
   const notes = [...lead.notes].sort((a, b) => (b.atMs ?? 0) - (a.atMs ?? 0));
 
-  // Admitted parents are the highest-ROI referral channel — surface a personal
-  // link they can forward. Code is derived deterministically, no extra storage.
   const showReferral = lead.type === "admission_inquiry" && lead.stage === "admitted";
-  // Only looked up for admitted leads: an extra read on every other lead page
-  // would be paid by every view to answer a question that can't be yes.
   const enrolled = showReferral ? enrolledEarly : null;
   const refCode = showReferral ? referralCode(lead.name, lead.phone) : "";
 

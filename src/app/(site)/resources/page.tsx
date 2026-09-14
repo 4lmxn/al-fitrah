@@ -15,14 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-// Same rule as /careers: a public page must not read Firestore per visitor, or
-// a shared link burns the daily read budget on content that hasn't changed. The
-// admin actions call revalidatePath("/resources"), so an edit is live at once
-// and the hourly window is only a backstop.
 export const revalidate = 3600;
 
-// A Firestore blip must not take the page down; an empty list is a far better
-// failure than an error boundary.
 async function safeResources(): Promise<Resource[]> {
   try {
     return await listForAudience(["public"]);
@@ -61,12 +55,6 @@ export default async function ResourcesPage() {
                 <Reveal key={r.id} delay={i * 0.05}>
                   <li>
                     <a
-                      // Straight to Cloud Storage when the bucket can serve a
-                      // public URL: that costs this site nothing and caches at
-                      // the edge. The Mumbai files bucket cannot (no public
-                      // access, see docs/deploy-cloudrun-cloudflare.md §9), so
-                      // the download route streams it instead — it already
-                      // allows an anonymous viewer for a public file.
                       href={r.publicUrl ?? `/api/resources/${r.id}`}
                       className="flex items-center gap-4 rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft transition hover:shadow-lift"
                     >

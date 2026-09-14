@@ -5,9 +5,6 @@ import { SubmitErrorFallback } from "@/components/pages/SubmitErrorFallback";
 type Status = "idle" | "submitting" | "success" | "error";
 type FieldErrors = Record<string, string[]>;
 
-// Minimal name + phone capture shared by the waitlist and prospectus magnet.
-// `source` selects which lead tag is stored; `onSuccess` lets the prospectus
-// caller reveal its download once the lead lands.
 export function CaptureForm({
   source,
   cta = "Register interest",

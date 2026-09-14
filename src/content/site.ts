@@ -1,7 +1,4 @@
 import type { Site } from "./types";
-// Identity (name, contact, address, grievance officer) moved to configuration —
-// see lib/settings. What remains is navigation and CTA copy, which are page
-// structure rather than school details.
 export const site: Site = {
   name: "Al Fitrah Pre School",
   branch: "Sarjapura",

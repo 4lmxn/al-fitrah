@@ -3,10 +3,6 @@ import { useState } from "react";
 import { CaptureForm } from "@/components/pages/CaptureForm";
 import { Icon } from "@/components/ui/Icon";
 
-// Prospectus / fee-sheet lead magnet: capture name + phone, then reveal the
-// download. The PDF URL is env-gated (NEXT_PUBLIC_PROSPECTUS_URL) — until the
-// school provides the real file, submitting still captures the warm lead and we
-// promise to send it, rather than shipping a placeholder PDF.
 export function ProspectusMagnet() {
   const [done, setDone] = useState(false);
   const pdfUrl = process.env.NEXT_PUBLIC_PROSPECTUS_URL;

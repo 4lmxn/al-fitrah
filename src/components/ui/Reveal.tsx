@@ -1,11 +1,6 @@
 "use client";
 import { motion, useReducedMotion } from "framer-motion";
 
-/**
- * Gentle entrance reveal. Animates in on viewport entry but NEVER leaves content
- * hidden: it always ends visible (whileInView + fallback animate), and collapses
- * to static under prefers-reduced-motion.
- */
 export function Reveal({
   children,
   delay = 0,

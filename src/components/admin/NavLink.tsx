@@ -3,16 +3,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
 
-/**
- * Sidebar link that knows whether it is the current section.
- *
- * The active state used to be hardcoded onto Leads, so every page in the
- * console looked like Leads no matter where you were.
- *
- * "/admin" is a prefix of every other route, so a plain startsWith would light
- * every item at once. Leads owns the index and its own detail pages; everything
- * else matches its own subtree.
- */
 export function isActive(pathname: string, href: string): boolean {
   if (href === "/admin") {
     return pathname === "/admin" || pathname.startsWith("/admin/leads");

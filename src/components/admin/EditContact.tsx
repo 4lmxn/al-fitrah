@@ -17,9 +17,6 @@ type Lead = {
 const field =
   "w-full rounded-lg border border-emerald/15 bg-cream/40 px-3 py-2 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20";
 
-// Toggles the contact block between a read-only view and an inline edit form,
-// so staff can fix a typo or fill in a walk-in's details without a separate
-// page. Saving posts the editContact server action.
 export function EditContact({ lead, programs }: { lead: Lead; programs: string[] }) {
   const [editing, setEditing] = useState(false);
 

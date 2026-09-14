@@ -11,12 +11,9 @@ type Props = {
   action: (formData: FormData) => Promise<ActionResult>;
   opening?: JobOpening;
   submitLabel: string;
-  /** Configured types — settings are not readable from a client component. */
   employmentTypes: string[];
 };
 
-// Shared create/edit form. Requirements are entered one-per-line and stored as
-// a string[]. Used by both the "new" and "edit" admin pages.
 export function OpeningForm({ action, opening, submitLabel, employmentTypes }: Props) {
   return (
     <ActionForm action={action} className="space-y-6">

@@ -19,15 +19,10 @@ export default async function ChildPage({ params }: { params: Promise<{ studentI
   await requireParent();
   const { studentId } = await params;
 
-  // Authorisation happens inside getOwnStudent, against the session — never
-  // against this id on its own. A parent asking for someone else's child gets
-  // the same answer as one asking for a child that does not exist.
   const result = await getOwnStudent(studentId);
   if (!result) notFound();
   const { student, payments } = result;
 
-  // Only after the line above, which is what proves this parent may see this
-  // child at all. listDocuments deliberately does no authorisation of its own.
   const documents = await listDocuments(studentId);
 
   return (

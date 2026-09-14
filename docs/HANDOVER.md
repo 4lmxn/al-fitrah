@@ -29,7 +29,9 @@ real children's data. Treat it accordingly.
 - **Next.js 16** (App Router, React 19, Server Components + Server Actions)
 - **Firestore** — the only datastore
 - **Firebase Auth** — two separate identity flows (see §5)
-- **Firebase App Hosting** — compute, `asia-east1`, auto-deploys from `main`
+- **Cloud Run** (`asia-south1`) behind a **Cloudflare Worker** — compute, deployed
+  by hand; see §7. Firebase App Hosting (`asia-east1`) still exists and still
+  builds, but no longer serves the domain
 - **Tailwind v4**, no component library
 - **Vitest** for unit tests, **Playwright** for e2e
 - **Zod** for every trust boundary
@@ -89,7 +91,15 @@ src/
   components/        ui/ (primitives), admin/, portal/, home/, pages/, layout/
   content/           marketing copy as typed data, not JSX
   proxy.ts           the coming-soon gate (Next 16's middleware)
-docs/                this file, ops runbook, architecture, migration prep
+cloudflare/          the edge Worker that fronts Cloud Run
+scripts/             one-off migrations and repairs, all dry-run by default
+docs/
+  HANDOVER.md          this file — start here
+  DESIGN_NOTES.md      why each file is the way it is, keyed by declaration
+  ARCHITECTURE.md      how the modules fit, and what the ERP brief still wants
+  IMPLEMENTATION_PLAN.md  what was hardened, and what is still open
+  deploy-cloudrun-cloudflare.md  how production actually runs
+  ops.md               runbook: backups, alerts, index deploys
 ```
 
 **The rule that matters:** business logic lives in `src/lib/`, never in a page or
@@ -213,8 +223,14 @@ to be in the matcher's exclusion list or it gets served the holding page.
 
 ## 7. Deploying
 
-Push to `main`. App Hosting builds and rolls out automatically
-(`traffic.rolloutPolicy.codebaseBranch: main`). Config is `apphosting.yaml`.
+**Production is Cloud Run in `asia-south1`, behind a Cloudflare Worker**, and it
+does *not* deploy on push. Build the image and roll it out by hand — the full
+sequence, and why it is not App Hosting, is in
+`docs/deploy-cloudrun-cloudflare.md`. The Worker is in `cloudflare/`.
+
+App Hosting still builds from `main` and its rollout check still goes green on
+every commit. It is the older deployment and it is not what serves the domain;
+do not read that check as "my change is live".
 
 Firestore rules and indexes are **not** part of that deploy:
 
@@ -262,9 +278,15 @@ ever moves.
 Read a neighbouring file before writing a new one. The conventions are
 consistent and mostly visible.
 
-- Comments explain **why**, not what. Several of the most important ones are
-  cost or correctness arguments — read them before "simplifying" the thing they
-  defend.
+- **The source carries no comments.** They were stripped from `src/` in
+  Sep 2026, and the reasoning they held was moved to `docs/DESIGN_NOTES.md`,
+  keyed by file and declaration. Several of those notes are cost or correctness
+  arguments — read the note for a file before "simplifying" what it defends.
+  Names and types are doing all the explaining in the code itself, so make them
+  carry their weight.
+- If you add a comment, it should be because a reader would otherwise call the
+  code a bug: a workaround for someone else's defect, a deliberate ordering, a
+  ceiling. Everything longer than that belongs in the design notes.
 - A deliberate shortcut with a known ceiling is marked `ponytail:` with its
   upgrade path. Those are honest debt, not oversights.
 - Non-trivial logic leaves a test behind. Money, auth, and validation always do.

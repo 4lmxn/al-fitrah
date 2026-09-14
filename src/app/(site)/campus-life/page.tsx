@@ -13,8 +13,6 @@ import { RainbowWords } from "@/components/ui/Rainbow";
 import { DayTimeline, FactSection } from "@/components/pages/FactSections";
 import { facts } from "@/content/facts";
 
-// Async because the brand comes from configuration; a module-scope
-// constant cannot await, which is what kept school identity hardcoded.
 export async function generateMetadata(): Promise<Metadata> {
   return pageMeta("/campus-life", {
   title: "Campus Life",
@@ -22,8 +20,6 @@ export async function generateMetadata(): Promise<Metadata> {
 });
 }
 
-// Each frame gets its own hand-cut silhouette so a wall of photos never reads
-// as six identical crops.
 const wobbles = ["wobble-1", "wobble-2", "wobble-3", "wobble-4"];
 
 export default function CampusLifePage() {

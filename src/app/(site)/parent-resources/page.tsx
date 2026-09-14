@@ -12,8 +12,6 @@ import { FactSection } from "@/components/pages/FactSections";
 import { SwipeRail } from "@/components/ui/SwipeRail";
 import { facts } from "@/content/facts";
 
-// Async because the brand comes from configuration; a module-scope
-// constant cannot await, which is what kept school identity hardcoded.
 export async function generateMetadata(): Promise<Metadata> {
   return pageMeta("/parent-resources", {
   title: "Parent Resources",
@@ -21,8 +19,6 @@ export async function generateMetadata(): Promise<Metadata> {
 });
 }
 
-// Same tint set the shared FeatureCard uses, applied here because these cards
-// carry a different layout.
 const tints = ["bg-emerald/10 text-emerald", "bg-coral-soft text-coral", "bg-grape-soft text-grape", "bg-gold-soft text-gold", "bg-sky-soft text-sky", "bg-leaf-soft text-leaf"];
 
 export default function ParentResourcesPage() {

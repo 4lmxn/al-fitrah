@@ -16,38 +16,12 @@ import {
   detectDocumentType,
 } from "@/lib/studentDocuments";
 
-/**
- * A guardian uploads a document for their own child.
- *
- * This is the only write path in the system that a member of the public can
- * reach, and it accepts files. Everything below is load-bearing:
- *
- *   - Authorisation comes from the session, never the form. The student id is
- *     checked against the children this parent actually has, resolved
- *     server-side from their verified claim. A parent posting another family's
- *     id gets the same answer as one posting a made-up id.
- *
- *   - Rate limited per client address. Without it, one script turns a form into
- *     an unbounded storage bill.
- *
- *   - Capped in both directions: per file, and per child. A cap on file size
- *     alone still allows ten thousand small files.
- *
- *   - The bytes decide the type. A file claiming to be a PDF that is not gets
- *     refused before it is stored, rather than being handed to an admin's
- *     browser later to interpret.
- *
- *   - Audited with the guardian's verified identity, because a school should be
- *     able to answer who put a document on a child's record.
- */
 export async function uploadDocument(formData: FormData): Promise<ActionResult> {
   return attempt("portal.uploadDocument", async () => {
     const session = await getParentSession();
     if (!session) return fail("Your session has expired. Please sign in again.");
 
     const studentId = String(formData.get("studentId") ?? "");
-    // Never trust the id in the form. This resolves the parent's own children
-    // from their session and refuses anything else.
     if (!studentId || !(await assertOwnStudent(studentId))) {
       return fail("That child is not on your account.");
     }
@@ -74,9 +48,6 @@ export async function uploadDocument(formData: FormData): Promise<ActionResult> 
     const sniffed = detectDocumentType(buffer);
     if (!sniffed) return fail("That file isn't a PDF, JPG, PNG or WebP.");
 
-    // The id is allocated first so the object name and the record agree, and a
-    // failed write leaves an orphan object rather than a record pointing at
-    // nothing — a file nobody can see beats a link that breaks.
     const docId = crypto.randomUUID();
     const { path } = await uploadStudentDocument(studentId, docId, {
       buffer,
@@ -106,11 +77,6 @@ export async function uploadDocument(formData: FormData): Promise<ActionResult> 
   });
 }
 
-/**
- * getClientIp takes a Request; a server action has headers() instead. Wrapping
- * them keeps one implementation of "which address do we trust", rather than a
- * second copy here that could drift from the edge-token rule.
- */
 async function asRequest(): Promise<Request> {
   const h = await headers();
   return new Request("https://portal.local/", { headers: h });

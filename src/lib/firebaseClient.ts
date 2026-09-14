@@ -21,30 +21,13 @@ export async function signInWithGoogle(): Promise<string> {
   return result.user.getIdToken();
 }
 
-/**
- * Phone sign-in for parents.
- *
- * Firebase requires a reCAPTCHA verifier before it will send a code — it is the
- * only thing standing between a public form and an unbounded SMS bill. The
- * invisible variant keeps it out of the parent's way while still gating sends.
- */
 export async function sendParentOtp(phoneE164: string, containerId: string) {
   const { RecaptchaVerifier, signInWithPhoneNumber } = await import("firebase/auth");
   const auth = getAuth(clientApp());
-  // Indian numbers; the school's families are local and the input collects ten
-  // digits, so the country code is added rather than asked for.
   const verifier = new RecaptchaVerifier(auth, containerId, { size: "invisible" });
   return signInWithPhoneNumber(auth, phoneE164, verifier);
 }
 
-/**
- * Email-link sign-in for parents. No password, and no per-message cost.
- *
- * Firebase sends a one-time link; clicking it completes sign-in. The address is
- * kept in localStorage because the link may be opened in a different tab, and
- * Firebase needs to confirm the same address it sent to — without it the parent
- * is asked to retype the address they just entered.
- */
 export async function sendParentEmailLink(email: string): Promise<void> {
   const { getAuth, sendSignInLinkToEmail } = await import("firebase/auth");
   const auth = getAuth(clientApp());
@@ -59,7 +42,6 @@ export async function sendParentEmailLink(email: string): Promise<void> {
   }
 }
 
-/** Completes email-link sign-in when the parent returns via the link. */
 export async function completeParentEmailLink(fallbackEmail?: string): Promise<string | null> {
   const { getAuth, isSignInWithEmailLink, signInWithEmailLink } = await import("firebase/auth");
   const auth = getAuth(clientApp());

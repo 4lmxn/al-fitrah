@@ -20,18 +20,6 @@ function when(ms: number | null): string {
   return ms ? new Date(ms).toLocaleDateString("en-IN", { dateStyle: "medium" }) : "—";
 }
 
-/**
- * A child's documents, for their guardian.
- *
- * Downloads go through /portal/[studentId]/documents/[docId], which re-checks
- * the session against this child on every request — the link cannot be
- * forwarded to anyone who is not a guardian, and the file store has no public
- * address at all.
- *
- * Guardians can add but not remove. A school may be required to keep what it
- * was given, so deletion is an office action; the copy below says so rather
- * than leaving a parent hunting for a button that is not there.
- */
 export function PortalDocuments({
   studentId,
   documents,

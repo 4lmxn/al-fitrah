@@ -10,15 +10,6 @@ import { SwipeRail } from "@/components/ui/SwipeRail";
 import { TONES } from "@/components/ui/FeatureCard";
 import { cn } from "@/lib/cn";
 
-/**
- * Sections driven entirely by `content/facts.ts`.
- *
- * Every one of these returns `null` while its slot is empty. That is deliberate
- * and load-bearing: a half-filled "Our fees" heading over a "coming soon" is
- * worse than no fees section at all, and an invented ratio is worse than both.
- * The school fills a slot, the section appears; nothing else has to change.
- */
-
 const tints = {
   emerald: "bg-emerald/10 text-emerald",
   gold: "bg-gold-soft text-gold",
@@ -28,7 +19,6 @@ const tints = {
   leaf: "bg-leaf-soft text-leaf",
 };
 
-/** Icon + title + body cards. Covers settling-in, safety, communication, health. */
 export function FactSection({
   items,
   eyebrow,
@@ -74,7 +64,6 @@ export function FactSection({
   );
 }
 
-/** Headline numbers — ratio, class size, staff count. */
 export function KeyFacts() {
   if (facts.keyFacts.length === 0) return null;
   return (
@@ -98,12 +87,6 @@ export function KeyFacts() {
   );
 }
 
-/**
- * The fee schedule.
- *
- * A parent who cannot find a price does not enquire to discover it — they close
- * the tab and open a competitor's. This is the highest-value slot in the file.
- */
 export function Fees() {
   const f = facts.fees;
   if (!f) return null;
@@ -143,7 +126,6 @@ export function Fees() {
   );
 }
 
-/** Named teachers. "Guided by experts" is a claim; a name and a qualification is evidence. */
 export function Teachers() {
   if (facts.teachers.length === 0) return null;
   return (
@@ -174,13 +156,6 @@ export function Teachers() {
   );
 }
 
-/**
- * The timetable, with clock times.
- *
- * "Morning arrival and circle time" tells a parent nothing they could not have
- * guessed. "9:00 — arrival and free play" tells them what their child's morning
- * is actually shaped like.
- */
 export function DayTimeline() {
   if (facts.day.length === 0) return null;
   return (

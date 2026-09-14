@@ -10,9 +10,6 @@ import { recordAudit } from "@/lib/audit";
 import { getClassSections, getPrograms } from "@/lib/taxonomy";
 import { guardianEmailsFrom, guardianPhonesFrom } from "@/lib/students";
 
-// Firestore batches cap at 500 writes. Each student is one write, so this is
-// well inside it — but the cap is why the import commits in chunks rather than
-// building one giant batch and discovering the limit at 501 children.
 const BATCH_SIZE = 200;
 
 export type ImportOutcome = {
@@ -22,7 +19,6 @@ export type ImportOutcome = {
   skipped: { admissionNumber: string; reason: string }[];
   rowErrors: { rowNumber: number; message: string }[];
   unknownColumns: string[];
-  /** True when nothing was written because the caller only asked for a preview. */
   previewOnly: boolean;
   preview: ImportRow[];
 };
@@ -31,14 +27,6 @@ const empty = (): ImportOutcome => ({
   ok: true, created: 0, skipped: [], rowErrors: [], unknownColumns: [], previewOnly: true, preview: [],
 });
 
-/**
- * Parse a CSV and either preview it or write it.
- *
- * Preview is the default and the only way to reach a write is a second,
- * explicit submit. Bulk-creating children from a spreadsheet nobody has looked
- * at is how a roll ends up with 200 subtly wrong records that are far harder to
- * clean up than to prevent.
- */
 export async function importStudents(formData: FormData): Promise<ImportOutcome> {
   const admin = await requireAdmin();
 
@@ -53,15 +41,10 @@ export async function importStudents(formData: FormData): Promise<ImportOutcome>
   }
   if (!text) return { ...empty(), ok: false, error: "Paste some CSV or choose a file." };
 
-  // Validated against the school's configured lists, so an import is rejected
-  // for a program this school does not offer rather than one it never shipped.
   const [programs, classSections] = await Promise.all([getPrograms(), getClassSections()]);
   const parsed = parseStudentCsv(text, { programs, classSections });
   const commit = formData.get("commit") === "true";
 
-  // Refuse to write a file with any bad row. A partial import leaves the school
-  // unsure which children made it, and re-running would duplicate the ones that
-  // did — fix the spreadsheet and come back.
   if (parsed.errors.length) {
     return {
       ok: false,
@@ -82,13 +65,9 @@ export async function importStudents(formData: FormData): Promise<ImportOutcome>
   const db = getDb();
   const year = academicYearFor();
 
-  // Existing admission numbers, so a re-run skips rather than duplicates.
-  // One read per 1000 via a projection-free query is still cheaper than a
-  // per-row existence check, and the roll is small enough to hold in memory.
   const existingSnap = await db.collection(COLLECTION).select("admissionNumber").get();
   const taken = new Set<string>(existingSnap.docs.map((d) => d.data().admissionNumber).filter(Boolean));
 
-  // Numbers we generate must not collide with each other or with the roll.
   let highest = [...taken].filter((n) => n.startsWith(`AF-${year.split("-")[0]}-`)).sort().pop() ?? null;
 
   const skipped: ImportOutcome["skipped"] = [];
@@ -135,8 +114,6 @@ export async function importStudents(formData: FormData): Promise<ImportOutcome>
         guardianEmails: guardianEmailsFrom([{ email: row.guardianEmail }]),
         emergencyContact: null,
         medical: null,
-        // Imported children have no enquiry behind them, which is the honest
-        // record: they predate the CRM.
         leadId: null,
         fees: { totalPaise: row.feeTotalPaise, paidPaise: 0 },
         importedAt: FieldValue.serverTimestamp(),
@@ -149,7 +126,6 @@ export async function importStudents(formData: FormData): Promise<ImportOutcome>
     await batch.commit();
   }
 
-  // Bulk creation is the single largest change anyone can make to the roll.
   await recordAudit({
     actor: admin.email,
     action: "student.imported",
@@ -163,7 +139,6 @@ export async function importStudents(formData: FormData): Promise<ImportOutcome>
   return { ok: true, created, skipped, rowErrors: [], unknownColumns: parsed.unknownColumns, previewOnly: false, preview: [] };
 }
 
-/** Server-action wrapper for forms that only need pass/fail. */
 export async function importStudentsAction(formData: FormData): Promise<ActionResult> {
   return attempt("importStudents", async () => {
     const result = await importStudents(formData);

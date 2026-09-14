@@ -2,19 +2,6 @@ import { Icon } from "@/components/ui/Icon";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { uploadStudentPhotoAction } from "@/app/admin/(dash)/students/actions";
 
-/**
- * A child's photograph, and the control to replace it.
- *
- * The image is fetched from /admin/students/[id]/photo, which sits behind the
- * admin session — the file store is private and there is no URL for this that
- * works without one. That is deliberate: a photograph of a child should not be
- * reachable by anyone who happens to hold a link.
- *
- * Rendered with a plain <img> rather than next/image. The route is
- * authenticated and per-request, so the optimiser would either bypass it or
- * cache a child's face in a shared layer — and width and height are fixed here
- * anyway, so there is no layout shift to prevent.
- */
 export function StudentPhoto({
   studentId,
   hasPhoto,

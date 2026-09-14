@@ -12,8 +12,6 @@ export function ParentSignOut() {
       disabled={busy}
       onClick={async () => {
         setBusy(true);
-        // Server-side revoke, so the session dies here rather than lingering
-        // for the rest of its two weeks on a shared or borrowed phone.
         await fetch("/api/auth/parent-session", { method: "DELETE" }).catch(() => {});
         router.replace("/portal/sign-in");
       }}

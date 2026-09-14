@@ -8,8 +8,6 @@ import { RainbowWords } from "@/components/ui/Rainbow";
 import { Doodle } from "@/components/ui/Doodle";
 import { SwipeRail } from "@/components/ui/SwipeRail";
 
-// Each frame gets its own hand-cut silhouette so the row never reads as four
-// identical crops.
 const wobbles = ["wobble-1", "wobble-2", "wobble-3", "wobble-4"];
 
 export function Highlights() {

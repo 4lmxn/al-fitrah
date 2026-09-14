@@ -6,21 +6,13 @@ import { getSettings } from "@/lib/settings";
 import { Analytics } from "@/components/Analytics";
 import { ICON_NAMES } from "@/components/ui/Icon";
 
-// Rounded and friendly, per the approved design direction: Baloo 2 carries the
-// display voice, Nunito the body. Both are variable-weight, so the two families
-// together cost about what Playfair + Inter did.
 const sans = Nunito({ subsets: ["latin"], variable: "--font-nunito", display: "swap" });
 const display = Baloo_2({ subsets: ["latin"], variable: "--font-baloo", display: "swap" });
 
-
-
-// Colours the mobile browser chrome to match the cream page background so the
-// address bar doesn't sit as a jarring white/black strip above the site.
 export const viewport: Viewport = {
   themeColor: "#faf7f0",
 };
 
-// Async because the brand and description come from configuration.
 export async function generateMetadata(): Promise<Metadata> {
   const [{ school }, BRAND_NAME] = await Promise.all([getSettings(), getBrandName()]);
   const description = school.tagline;

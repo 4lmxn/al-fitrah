@@ -10,8 +10,6 @@ import { MapEmbed } from "@/components/pages/MapEmbed";
 import { pageMeta, getContact } from "@/lib/seo";
 import type { Metadata } from "next";
 
-// Async because the brand comes from configuration; a module-scope constant
-// cannot await, which is what kept school identity hardcoded.
 export async function generateMetadata(): Promise<Metadata> {
   return pageMeta("/contact", {
     title: "Contact Us",
@@ -19,15 +17,9 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-// Reads configured programs, so this page is revalidated rather than fully
-// static. Still zero Firestore reads per visitor — one read per revalidation
-// window, and editing settings invalidates the tag so a new program appears
-// without waiting it out. Cost invariant 3 holds: public pages never read
-// per request.
 export const revalidate = 3600;
 
 export default async function ContactPage() {
-  // `contact` is page copy; `school` is the configured identity.
   const [programs, school] = await Promise.all([getPrograms(), getContact()]);
   const { hero, details, hours } = contact;
   const rows = [

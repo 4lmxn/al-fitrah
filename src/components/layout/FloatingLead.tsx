@@ -4,20 +4,10 @@ import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
 import { useSchoolContact } from "@/components/SchoolContact";
 
-/**
- * Persistent lead widget on every marketing page: an "Enquire now" pill plus
- * round Call and WhatsApp buttons. Most parents here prefer a phone or a
- * WhatsApp message to a form, so both channels stay one tap away — and the
- * WhatsApp message encodes the current path, so replies land tagged with where
- * the parent was reading.
- *
- * The pill hides on very small screens; the two round buttons never do.
- */
 export function FloatingLead({ waBase }: { waBase: string }) {
   const pathname = usePathname();
   const { phone } = useSchoolContact();
 
-  // Hidden on the enquiry surfaces, which already lead with their own CTAs.
   if (pathname?.startsWith("/admin") || pathname === "/contact" || pathname === "/admissions") return null;
 
   const where = pathname === "/" ? "home" : pathname?.replace(/^\//, "");

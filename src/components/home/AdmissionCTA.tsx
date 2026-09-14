@@ -5,8 +5,6 @@ import { Icon } from "@/components/ui/Icon";
 import { Doodle } from "@/components/ui/Doodle";
 import { CaptureForm } from "@/components/pages/CaptureForm";
 
-// "Limited seats" band with an inline, low-friction waitlist capture — a parent
-// can register interest for 2026–27 in two fields without leaving the page.
 export function AdmissionCTA() {
   const { seats } = home;
   return (

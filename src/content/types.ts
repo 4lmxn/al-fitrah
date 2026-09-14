@@ -5,7 +5,6 @@ export type Site = {
   branch: string;
   tagline: string;
   ctaLabel: string;
-  /** Top announcement bar. Split so one phrase can be picked out in gold. */
   announcement: { before: string; highlight: string; after: string };
   nav: NavItem[];
 };
@@ -13,17 +12,14 @@ export type Home = {
   hero: {
     eyebrow: string;
     title: string;
-    /** Words inside `title` to render in rainbow letters. */
     rainbow: string[];
     subtitle: string;
     cta: Cta;
     image: string;
     imageAlt: string;
     badge: string;
-    /** Small facts that float over the hero photo. */
     chips: { icon: string; label: string }[];
   };
-  /** Count-up strip. `value` animates from zero when scrolled into view. */
   stats: { value: number; suffix?: string; label: string }[];
   quickFacts: { icon: string; label: string; value: string }[];
   approach: { eyebrow: string; title: string; rainbow: string[]; subtitle: string; items: { icon: string; title: string; body: string }[] };
@@ -33,7 +29,6 @@ export type Home = {
   contact: { title: string; subtitle: string; address: string; phone: string; email: string; image: string; imageAlt: string };
 };
 
-// Shared page primitives
 export type Feature = { icon: string; title: string; body: string };
 export type Step = { icon: string; title: string; body: string };
 export type FaqItem = { q: string; a: string };
@@ -48,11 +43,6 @@ export type AboutPage = {
   location: { eyebrow: string; title: string; lines: string[]; image: string; imageAlt: string };
 };
 
-/**
- * One year of the programme. Parents choose by year — "what will my child do in
- * Pre-KG?" — not by subject, so the three levels are the spine of the page and
- * the subject breakdown is supporting detail.
- */
 export type ProgramLevel = {
   badge: string;
   name: string;
@@ -66,11 +56,6 @@ export type ProgramLevel = {
 export type ProgramsPage = {
   hero: { eyebrow: string; title: string; subtitle: string; stats: { icon: string; label: string; value: string }[] };
   levels: { title: string; rainbow: string[]; subtitle: string; items: ProgramLevel[] };
-  /**
-   * How we teach, not what we teach. The year-by-year section above already
-   * covers content; repeating the subject list under a second heading was
-   * saying the same thing twice.
-   */
   method: {
     title: string;
     rainbow: string[];
@@ -82,11 +67,6 @@ export type ProgramsPage = {
     imageCaption: string;
   };
   outcomes: { eyebrow: string; title: string; statement: string; body: string; cta: Cta };
-  /**
-   * Representative imagery for the Qur'an method, not photos of Al Fitrah's
-   * own students — captioned generically for that reason. Swap for real
-   * classroom photos if/when the school supplies them.
-   */
   quranMethod: {
     eyebrow: string;
     title: string;
@@ -134,11 +114,6 @@ export type ContactPage = {
   hours: { title: string; rows: { label: string; value: string }[]; note: string };
 };
 
-/**
- * Verifiable credibility, in place of testimonials. Every line here is a fact
- * that can be checked — an affiliation, a named curriculum, a published policy
- * — rather than a sentiment a competitor could copy in thirty seconds.
- */
 export type TrustPage = {
   eyebrow: string;
   title: string;

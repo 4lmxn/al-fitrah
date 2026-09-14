@@ -24,16 +24,10 @@ export default async function AdminInbox({
   const { role } = await requireAdmin();
   const type: LeadType = TYPES.includes(sp.type as LeadType) ? (sp.type as LeadType) : "admission_inquiry";
   const attention = sp.view === "attention";
-  // The pipeline as columns. Not compatible with a stage filter (a board IS
-  // the stage filter), with search (matches span stages), or with the
-  // attention view (a to-do list, not a pipeline) — so those win.
   const board = sp.view === "board" && !attention && !sp.q?.trim();
-  // Validated against the configured pipeline below, once it is resolved.
   const requestedStage = !attention ? sp.stage : undefined;
   const q = sp.q?.trim() || "";
 
-  // One of the two, never both — the board and the list answer the same
-  // question differently and fetching both would double the reads to render one.
   const inbox = board
     ? null
     : await getInbox(type, {
@@ -56,18 +50,12 @@ export default async function AdminInbox({
 
   const wonLabel = type === "staff_application" ? "Hired" : "Admitted";
 
-  // Ignore a stage in the URL that the configured pipeline no longer contains,
-  // so a bookmarked filter for a deleted stage falls back to "all" instead of
-  // an empty table with no explanation.
   const stage = pipeline.some((s) => s.id === requestedStage) ? requestedStage : undefined;
 
-  // "Next page" preserves the active filter; anything else resets to page one,
-  // since a cursor from one filter is meaningless under another.
   const nextHref = nextCursor
     ? `/admin?${new URLSearchParams({ type, ...(stage ? { stage } : {}), after: nextCursor }).toString()}`
     : null;
   const isPaged = Boolean(sp.after);
-
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -140,9 +128,6 @@ export default async function AdminInbox({
       {board && boardData ? (
         <LeadBoard type={type} columns={boardData.columns} stages={pipeline} q={q} />
       ) : (
-        /* Interactive board: KPIs, filters, and the leads table. Keyed on the
-           active filter so a navigation remounts it with fresh server data;
-           between navigations it updates optimistically without re-reading. */
         <InboxBoard
           key={`${type}|${stage ?? ""}|${attention ? "attn" : ""}|${q}|${sp.after ?? ""}`}
           type={type}

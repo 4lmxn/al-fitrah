@@ -1,9 +1,6 @@
 import { Icon } from "./Icon";
 import { cn } from "@/lib/cn";
 
-// Icon tile tints. Brand emerald and gold lead; the accents give a row of cards
-// variety without any of them becoming a second brand colour — the tint is a
-// wash behind an icon, never a fill on a surface a visitor reads text off.
 const tones = {
   emerald: "bg-emerald/10 text-emerald",
   gold: "bg-gold-soft text-gold",
@@ -15,7 +12,6 @@ const tones = {
 
 export type Tone = keyof typeof tones;
 
-/** Cycle for grids: `TONES[i % TONES.length]`. */
 export const TONES: Tone[] = ["emerald", "coral", "grape", "gold", "sky", "leaf"];
 
 export function FeatureCard({

@@ -8,8 +8,6 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
 import { SwipeRail } from "@/components/ui/SwipeRail";
 
-// Async because the brand comes from configuration; a module-scope
-// constant cannot await, which is what kept school identity hardcoded.
 export async function generateMetadata(): Promise<Metadata> {
   return pageMeta("/news", {
   title: "News & Events",
@@ -18,9 +16,6 @@ export async function generateMetadata(): Promise<Metadata> {
 });
 }
 
-// ISR, not per-request. A visitor costs zero Firestore reads; only a
-// revalidation does. Publishing calls revalidatePath, so the page is current
-// the moment the school hits Publish and the hourly window is just a backstop.
 export const revalidate = 3600;
 
 function fmt(ms: number | null): string {
@@ -28,8 +23,6 @@ function fmt(ms: number | null): string {
 }
 
 export default async function NewsPage() {
-  // Degrade to an empty page rather than a 500: a Firestore blip must not take
-  // down a marketing page, same as the careers listing.
   const posts = await listPublished().catch((err) => {
     console.error("news: read failed", err);
     return [];

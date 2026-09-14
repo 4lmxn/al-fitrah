@@ -48,12 +48,10 @@ export function CareersForm({ roles }: { roles: string[] }) {
       return;
     }
     setStatus("submitting");
-    // Abort if the server hangs so the button can't stay stuck in "Submitting…".
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 15_000);
     try {
       const res = await fetch("/api/application", { method: "POST", body: fd, signal: controller.signal });
-      // Guard non-JSON bodies (e.g. a gateway's HTML error page).
       let data: { ok?: boolean; error?: string; issues?: FieldErrors } = {};
       try {
         data = await res.json();

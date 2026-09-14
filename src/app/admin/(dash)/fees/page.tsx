@@ -15,28 +15,6 @@ import { RemindButton } from "@/components/admin/RemindButton";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Who to ring this morning.
- *
- * The previous version of this page listed every enrolled child with a balance,
- * sorted by nothing in particular. That is a report, not a worklist: it gives
- * the office one possible action — message everybody who owes anything — which
- * is exactly the blast that trains parents to ignore school fee messages.
- *
- * So the same rows are bucketed by lib/feeStatus and the buckets are ordered by
- * how recoverable the money is. A broken promise sits at the top because the
- * parent named that date themselves, which makes it both the easiest call to
- * make and the one most likely to be paid.
- *
- * The read cost is unchanged: still one page of enrolled students, filtered in
- * memory. Bucketing is arithmetic on data already fetched.
- *
- * ponytail: this pages through enrolled students and buckets the page, so the
- * totals are honest about covering one page only. If the school ever wants
- * "every overdue family, school-wide", store dueDate and balancePaise as
- * queryable fields and index them. Not worth the extra write until asked.
- */
-
 const bucketStyle: Record<FeeBucket, { chip: string; icon: string }> = {
   broken: { chip: "bg-red-50 text-red-700", icon: "notification_important" },
   overdue: { chip: "bg-red-50 text-red-700", icon: "error" },
@@ -48,7 +26,6 @@ const bucketStyle: Record<FeeBucket, { chip: string; icon: string }> = {
   unset: { chip: "bg-ink/5 text-ink/50", icon: "info" },
 };
 
-/** Explains, in one line, why this group is on screen and what to do about it. */
 const bucketBlurb: Partial<Record<FeeBucket, string>> = {
   broken: "They named this date themselves and it has passed. Most recoverable money in the system — call these first.",
   overdue: "Past the due date with no promise on record.",

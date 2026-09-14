@@ -12,8 +12,6 @@ export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   const ip = getClientIp(req);
-  // Fail open when the client IP is unknown: never funnel every visitor into a
-  // single shared "unknown" bucket, which would rate-limit real families en masse.
   if (ip !== "unknown" && await rateLimited(ip)) {
     return NextResponse.json({ ok: false, error: "Too many requests. Please try again shortly." }, { status: 429 });
   }
@@ -33,7 +31,6 @@ export async function POST(req: Request) {
     );
   }
 
-  // Honeypot tripped — pretend success, store nothing.
   if (parsed.data.website) return NextResponse.json({ ok: true });
 
   const {
@@ -41,20 +38,13 @@ export async function POST(req: Request) {
     programInterest, message, utmSource, utmMedium, utmCampaign, referredBy,
   } = parsed.data;
 
-  // Only persist attribution that was actually present, so leads aren't padded
-  // with empty utm keys.
   const utm = Object.fromEntries(
     Object.entries({ source: utmSource, medium: utmMedium, campaign: utmCampaign })
       .filter(([, v]) => v),
   );
 
-  // Explicit source lets waitlist/prospectus surfaces reuse this route later;
-  // the plain form is always "website".
   const source = "website";
 
-  // Checked before the write so the new lead can carry the link. A suspected
-  // duplicate is still created — a second enquiry from one number is often a
-  // sibling, and dropping it to tidy the list loses a real family.
   const verdict = await findDuplicate(phone);
 
   try {
@@ -76,8 +66,6 @@ export async function POST(req: Request) {
       ...(referredBy ? { referredBy } : {}),
       ...leadDefaults(phone, verdict),
     });
-    // The lead is already stored. notify() never throws, so a dead channel
-    // cannot lose the enquiry it was meant to announce.
     await notify("lead.created", {
       parentName, childName: childName || "—", phone, email: email || "—",
       childAge, programInterest: programInterest || "—", message: message || "—",

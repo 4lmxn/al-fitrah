@@ -7,15 +7,6 @@ import { rateLimited } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 
-/**
- * Exchange a verified phone credential for a parent session.
- *
- * Rate limited harder than the admin login. Phone sign-in is the first surface
- * here with a per-attempt cost to the school — every code Firebase sends is a
- * billed SMS — so an unthrottled endpoint is an invitation to spend someone
- * else's money. The limit is on this exchange as well as on Firebase's own
- * send, because a caller who already has tokens can otherwise hammer it.
- */
 export async function POST(req: Request) {
   const ip = getClientIp(req);
   if (ip !== "unknown" && await rateLimited(`parent-login:${ip}`, { max: 10, windowMs: 10 * 60_000 })) {
@@ -53,7 +44,6 @@ export async function POST(req: Request) {
   return NextResponse.json({ ok: true });
 }
 
-/** Sign out, revoking server-side so a stolen cookie dies with the logout. */
 export async function DELETE() {
   const store = await cookies();
   const value = store.get(PARENT_SESSION_COOKIE)?.value;

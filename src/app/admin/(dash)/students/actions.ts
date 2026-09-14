@@ -37,18 +37,6 @@ import {
 
 const clean = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
 
-/**
- * Turn an admitted enquiry into a student record.
- *
- * Runs in a transaction because the admission number is derived from the
- * highest one already issued. Two staff admitting children at the same moment
- * would otherwise read the same highest value and mint the same number — which
- * is exactly the identifier the school uses to tell two children apart, and the
- * field the student list paginates on.
- *
- * The lead is not consumed. It stays as the record of how the family found the
- * school, which the funnel and referral reporting still count.
- */
 export async function createStudentFromLead(formData: FormData): Promise<ActionResult> {
   return attempt("createStudentFromLead", async () => {
     const admin = await requireAdmin();
@@ -84,8 +72,6 @@ export async function createStudentFromLead(formData: FormData): Promise<ActionR
         return;
       }
 
-      // One student per enquiry. Without this, a double-submit or a second
-      // staff member on the same lead silently creates a duplicate child.
       const existing = await tx.get(
         db.collection(COLLECTION).where("leadId", "==", leadId).limit(1),
       );
@@ -128,18 +114,11 @@ export async function createStudentFromLead(formData: FormData): Promise<ActionR
         classSection: null,
         academicYear: year,
         status: "enrolled" satisfies StudentStatus,
-        // Carried over from the enquiry so staff don't retype what a parent
-        // already gave us. Editable on the student record afterwards.
         guardians,
-        // Written together with guardians so a parent can sign in the moment a
-        // child is enrolled, and so the two can never disagree.
         guardianPhones: guardianPhonesFrom(guardians),
         guardianEmails: guardianEmailsFrom(guardians),
         emergencyContact: null,
         medical: null,
-        // Explicit zeros rather than an absent object: the dues list reads this
-        // on every student, and a missing field would make "owes nothing" and
-        // "not set up yet" indistinguishable.
         fees: { totalPaise: 0, paidPaise: 0 },
         leadId,
         createdAt: FieldValue.serverTimestamp(),
@@ -149,8 +128,6 @@ export async function createStudentFromLead(formData: FormData): Promise<ActionR
 
     if (conflict) return fail(conflict);
 
-    // Outside the transaction: the timeline entry is a nicety, and failing it
-    // must not undo an enrolment that already succeeded.
     const batch = db.batch();
     queueNote(db, batch, leadId, {
       text: `Enrolled as a student (${program})`,
@@ -172,7 +149,6 @@ export async function createStudentFromLead(formData: FormData): Promise<ActionR
   });
 }
 
-/** Edit the details a school actually keeps changing. */
 export async function updateStudent(formData: FormData): Promise<ActionResult> {
   return attempt("updateStudent", async () => {
     const admin = await requireAdmin();
@@ -195,8 +171,6 @@ export async function updateStudent(formData: FormData): Promise<ActionResult> {
       lastName: clean(formData.get("lastName"), 60),
       program,
       status,
-      // Constrained to the configured sections: an unrecognised value would
-      // create a class the attendance register can never show.
       classSection: pickFrom(await getClassSections(), clean(formData.get("classSection"), 60)),
       emergencyContact: {
         name: clean(formData.get("emergencyName"), 80),
@@ -225,18 +199,6 @@ export async function updateStudent(formData: FormData): Promise<ActionResult> {
   });
 }
 
-/**
- * Replace a student's photograph.
- *
- * Its own action rather than a field on updateStudent: a file upload and a form
- * of text inputs fail in different ways and at different sizes, and folding
- * them together means a rejected 3 MB photo also throws away the medical notes
- * someone just typed.
- *
- * The bytes decide the type, not the browser's claim. An uploaded file that
- * says it is a PNG but is not gets refused here rather than stored and served
- * back to an admin's browser to interpret.
- */
 export async function uploadStudentPhotoAction(formData: FormData): Promise<ActionResult> {
   return attempt("uploadStudentPhoto", async () => {
     const admin = await requireAdmin();
@@ -259,8 +221,6 @@ export async function uploadStudentPhotoAction(formData: FormData): Promise<Acti
       photoPath: path,
       updatedAt: FieldValue.serverTimestamp(),
     });
-    // A child's photograph is personal data. Who attached one, and when, is
-    // worth being able to answer later.
     queueAudit(db, batch, {
       actor: admin.email,
       action: "student.photo_set",
@@ -274,14 +234,6 @@ export async function uploadStudentPhotoAction(formData: FormData): Promise<Acti
   });
 }
 
-/**
- * The office adds a document to a child's record.
- *
- * Same checks as the guardian path in src/app/portal/[studentId]/actions.ts,
- * minus the rate limit — this side is already behind an allowlisted sign-in, so
- * the threat the limiter answers (an open form and a script) does not exist
- * here. Everything else stays: the caps, the sniffed type, the audit entry.
- */
 export async function uploadStudentDocumentAction(formData: FormData): Promise<ActionResult> {
   return attempt("uploadStudentDocument", async () => {
     const admin = await requireAdmin();
@@ -332,16 +284,6 @@ export async function uploadStudentDocumentAction(formData: FormData): Promise<A
   });
 }
 
-/**
- * Remove a document from a child's record. Office only, by design — guardians
- * can add but not delete, because a school may be required to keep what it was
- * given.
- *
- * The index entry goes first and the object second, on purpose. If the object
- * delete fails afterwards, the result is a stored file nobody can reach, which
- * costs a little storage and nothing else. The other order risks a record
- * pointing at a file that is gone — a download that breaks with no explanation.
- */
 export async function deleteStudentDocumentAction(formData: FormData): Promise<ActionResult> {
   return attempt("deleteStudentDocument", async () => {
     const admin = await requireAdmin();
@@ -357,8 +299,6 @@ export async function deleteStudentDocumentAction(formData: FormData): Promise<A
       console.error("document object cleanup failed", doc.path, err),
     );
 
-    // Deleting a child's document is exactly the action worth being able to
-    // account for later.
     await recordAudit({
       actor: admin.email,
       action: "student.document_removed",

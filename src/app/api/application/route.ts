@@ -12,8 +12,6 @@ export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   const ip = getClientIp(req);
-  // Fail open when the client IP is unknown: never funnel every visitor into a
-  // single shared "unknown" bucket, which would rate-limit real families en masse.
   if (ip !== "unknown" && await rateLimited(ip)) {
     return NextResponse.json({ ok: false, error: "Too many requests. Please try again shortly." }, { status: 429 });
   }
@@ -43,7 +41,6 @@ export async function POST(req: Request) {
     );
   }
 
-  // Honeypot tripped — pretend success, store nothing.
   if (parsed.data.website) return NextResponse.json({ ok: true });
 
   const cv = form.get("cv");
@@ -57,13 +54,11 @@ export async function POST(req: Request) {
 
   const { name, phone, email, role, message, portfolioUrl } = parsed.data;
   const db = getDb();
-  const ref = db.collection("leads").doc(); // pre-generate id for the CV path
+  const ref = db.collection("leads").doc();
 
   let cvPath: string | null = null;
   try {
     const buffer = Buffer.from(await cv.arrayBuffer());
-    // The browser-declared MIME type was allowlist-checked above, but it is
-    // client-controlled — verify the actual file signature before storing.
     if (!hasValidCvSignature(buffer)) {
       return NextResponse.json({ ok: false, error: "CV must be a PDF, DOC, or DOCX file." }, { status: 422 });
     }
@@ -92,7 +87,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, id: ref.id });
   } catch (err) {
     console.error("application intake failed", err);
-    // Roll back the uploaded CV so we never leave an orphan file.
     if (cvPath) await deleteObject(cvPath).catch((rollbackErr) => console.error("cv rollback failed", rollbackErr));
     return NextResponse.json({ ok: false, error: "Something went wrong. Please call us instead." }, { status: 500 });
   }

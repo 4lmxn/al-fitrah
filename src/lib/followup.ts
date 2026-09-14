@@ -1,6 +1,4 @@
 import { waLink } from "@/lib/phone";
-// One place to edit the follow-up WhatsApp copy staff send from the console.
-// {first} is replaced with the lead's first name.
 export const FOLLOW_UP_TEMPLATE =
   "Assalamu alaikum {first}, this is Al Fitrah Pre School, Sarjapura. " +
   "Thank you for your interest in admissions for 2026–27. We'd love to help " +
@@ -12,12 +10,6 @@ function firstName(name: string): string {
   return n && n !== "—" ? n : "there";
 }
 
-// Resolve the "next follow-up" a staff member picked when logging contact.
-// Three inputs, in precedence order: the literal "clear", a +N-day offset from
-// today, or a "YYYY-MM-DD" date. Returns `undefined` when nothing was chosen,
-// which the caller distinguishes from `null` (an explicit clear).
-// Dates are pinned to local midnight — the digest compares against local
-// start/end of day, so a UTC-parsed date would land on the wrong day in IST.
 export function resolveFollowUp(
   dateRaw: string,
   offsetRaw: unknown,
@@ -40,8 +32,6 @@ export function resolveFollowUp(
   return d;
 }
 
-// wa.me link with the follow-up template pre-filled. Returns null if the phone
-// has no digits to dial.
 export function followUpWaLink(phone: string, name: string): string | null {
   return waLink(phone, FOLLOW_UP_TEMPLATE.replace("{first}", firstName(name)));
 }

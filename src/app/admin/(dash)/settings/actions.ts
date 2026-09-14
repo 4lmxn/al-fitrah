@@ -7,14 +7,12 @@ import { NOTIFY_CHANNELS, NOTIFY_EVENTS, type NotifyChannel } from "@/lib/notify
 
 const clean = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
 
-/** Settings change platform behaviour for everyone. Owners only. */
 async function requireOwnerForSettings() {
   const admin = await requireAdmin();
   if (admin.role !== "owner") return null;
   return admin;
 }
 
-/** A textarea of one-per-line values becomes a list, blank lines dropped. */
 function lines(v: FormDataEntryValue | null, max = 50): string[] {
   return String(v ?? "")
     .split("\n")
@@ -34,7 +32,6 @@ export async function saveSchool(formData: FormData): Promise<ActionResult> {
         tagline: clean(formData.get("tagline"), 200),
         phone: clean(formData.get("phone"), 30),
         email: clean(formData.get("email"), 120),
-        // Structured so the LocalBusiness JSON-LD can emit a real PostalAddress.
         address: {
           street: clean(formData.get("street"), 160),
           locality: clean(formData.get("locality"), 120),
@@ -106,9 +103,6 @@ export async function saveOperations(formData: FormData): Promise<ActionResult> 
     if (!Number.isInteger(maxAccuracyM) || maxAccuracyM < 20 || maxAccuracyM > 2000) {
       return fail("Location accuracy ceiling must be 20–2000 m.");
     }
-    // Enforcing against an unset pin locks every teacher out of the register
-    // and leaves no one able to fix it from inside the app. Null Island is not
-    // a campus, so treat it as "pin not set yet" and refuse the combination.
     if (enforce && lat === 0 && lng === 0) {
       return fail("Set the campus latitude and longitude before switching enforcement on.");
     }
@@ -118,13 +112,9 @@ export async function saveOperations(formData: FormData): Promise<ActionResult> 
       attendance: {
         lowAttendancePercent: low,
         campus: { lat, lng, radiusM, maxAccuracyM, enforce },
-        // Checkbox per weekday; unchecked days simply aren't submitted.
         nonSchoolDays: [0, 1, 2, 3, 4, 5, 6].filter((d) => formData.get(`nonSchoolDay-${d}`) === "on"),
       },
       features: {
-        // comingSoon is NOT editable here. proxy.ts runs on every request in a
-        // runtime that cannot read Firestore, so the gate must stay an env var;
-        // a second copy here could disagree with the one actually in force.
         comingSoon: (await import("@/lib/flags")).COMING_SOON,
         onlinePayments: formData.get("onlinePayments") === "on",
         whatsappNotifications: formData.get("whatsappNotifications") === "on",
@@ -135,15 +125,6 @@ export async function saveOperations(formData: FormData): Promise<ActionResult> 
   });
 }
 
-/**
- * Save a pipeline's stages.
- *
- * Stage ids are submitted as hidden fields and never derived from the label on
- * save. A lead stores its stage by id, so re-deriving would silently orphan
- * every lead on a stage whose label was edited — the lead would point at a
- * stage that no longer exists and drop out of its own pipeline. Renaming is
- * therefore safe; only adding and removing change the id set.
- */
 export async function savePipeline(formData: FormData): Promise<ActionResult> {
   return attempt("savePipeline", async () => {
     const admin = await requireOwnerForSettings();
@@ -173,8 +154,6 @@ export async function savePipeline(formData: FormData): Promise<ActionResult> {
 
     if (stages.length < 2) return fail("A pipeline needs at least two stages.");
     if (!stages.some((s) => s.group === "won")) {
-      // Without a won stage the KPI row has no "Admitted" column and the funnel
-      // has no end — a pipeline nobody can succeed in.
       return fail("A pipeline needs at least one stage in the Won group.");
     }
 
@@ -184,7 +163,6 @@ export async function savePipeline(formData: FormData): Promise<ActionResult> {
   });
 }
 
-/** Which channels fire for each event, and what they say. */
 export async function saveNotifications(formData: FormData): Promise<ActionResult> {
   return attempt("saveNotifications", async () => {
     const admin = await requireOwnerForSettings();
@@ -197,8 +175,6 @@ export async function saveNotifications(formData: FormData): Promise<ActionResul
       events[event] = NOTIFY_CHANNELS.filter((c) => formData.get(`ch-${event}-${c}`) === "on");
       const subject = clean(formData.get(`subject-${event}`), 200);
       const body = clean(formData.get(`body-${event}`), 4000);
-      // A blank template would send an empty email rather than nothing at all,
-      // which is worse than the event being switched off.
       if (!subject || !body) return fail(`The "${event}" template needs a subject and a body.`);
       templates[event] = { subject, body };
     }

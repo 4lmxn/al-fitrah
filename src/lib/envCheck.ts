@@ -1,19 +1,10 @@
 import "server-only";
 
-
-// Boot-time environment validation. Called once from instrumentation.ts when a
-// server instance starts. Logs grouped, actionable warnings instead of letting
-// features fail silently at request time (e.g. admin login locking everyone out,
-// inquiry emails never sending). Never throws — the site still boots so missing
-// optional config doesn't take the whole app down.
-
 type Check = { name: string; impact: string };
 
-// One of these satisfies the Firebase Admin project id.
 const PROJECT_ID =
   process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 
-// Critical: auth, admin dashboard, and Firestore reads/writes break without these.
 const critical: Check[] = [
   { name: "FIREBASE_PROJECT_ID / NEXT_PUBLIC_FIREBASE_PROJECT_ID", impact: "Firebase Admin can't init — no Firestore or auth" },
   { name: "NEXT_PUBLIC_FIREBASE_API_KEY", impact: "client Firebase auth won't initialize" },
@@ -22,7 +13,6 @@ const critical: Check[] = [
   { name: "ADMIN_EMAILS", impact: "admin login authorizes NO ONE — dashboard locked" },
 ];
 
-// Degraded: the site runs, but a specific feature silently no-ops.
 const degraded: Check[] = [
   { name: "RESEND_API_KEY", impact: "inquiry & application emails won't send (leads still saved)" },
   { name: "INQUIRY_FROM_EMAIL", impact: "inquiry & application emails won't send (leads still saved)" },
@@ -31,7 +21,6 @@ const degraded: Check[] = [
   { name: "CRON_SECRET", impact: "daily follow-up reminder digest is disabled (endpoint returns 401)" },
 ];
 
-// Optional: sensible fallback exists; worth noting but harmless.
 const optional: Check[] = [
   { name: "FIREBASE_SERVICE_ACCOUNT_KEY", impact: "falls back to Application Default Credentials (fine on Firebase App Hosting, required for local dev)" },
   { name: "NEXT_PUBLIC_SITE_URL", impact: "canonical URLs default to https://al-fitrah.web.app" },
@@ -41,8 +30,6 @@ const optional: Check[] = [
   { name: "NEXT_PUBLIC_GEO_LNG", impact: "no geo coordinates in LocalBusiness schema — weaker Maps/local ranking" },
 ];
 
-// A var counts as set only if present and non-blank. The project-id row checks
-// the resolved value rather than a single var name.
 function missing({ name }: Check): boolean {
   if (name.startsWith("FIREBASE_PROJECT_ID")) return !PROJECT_ID;
   return !process.env[name]?.trim();
@@ -51,11 +38,6 @@ function missing({ name }: Check): boolean {
 function format(checks: Check[]): string {
   return checks.map((c) => `    - ${c.name} — ${c.impact}`).join("\n");
 }
-
-// The grievance officer is no longer checked here. It moved from a compiled-in
-// constant to the settings document, which is async and can't be read at boot —
-// so this check could only ever warn unconditionally, including after the school
-// had filled it in. The admin settings page banners it from the live value.
 
 export function checkEnv(): void {
   const missingCritical = critical.filter(missing);

@@ -1,8 +1,5 @@
 import { ImageResponse } from "next/og";
 
-// iOS "Add to Home Screen" icon. Without it, Safari crops a shrunk screenshot
-// of the page; this ships a branded emerald tile with a gold monogram instead.
-// Auto-wired by Next as <link rel="apple-touch-icon"> — no manifest needed.
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 

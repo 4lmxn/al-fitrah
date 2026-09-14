@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-// Entry is only at Pre-KG for children aged 2y10m–3y10m, so the inquiry
-// captures eligibility rather than a tier.
 export const AGE_BANDS = ["below", "eligible", "above"] as const;
 
 const optionalText = (max: number) => z.string().trim().max(max).optional().or(z.literal(""));
@@ -11,33 +9,21 @@ export const leadSchema = z.object({
   childName: optionalText(80),
   phone: z.string().trim().min(7, "Please enter a valid phone number").max(20)
     .regex(/^[0-9+\-\s()]+$/, "Phone may only contain digits and + - ( )"),
-  // Checkbox — the number is reachable on WhatsApp. Serialised as "on" by the
-  // browser; coerced to a boolean so staff can one-tap message the right leads.
   whatsapp: z.preprocess((v) => v === "on" || v === "true" || v === true, z.boolean()).optional(),
   email: z.string().trim().email("Please enter a valid email").max(120).optional().or(z.literal("")),
   childAge: z.enum(AGE_BANDS, { message: "Please select an age band" }),
   childDob: optionalText(20),
-  // Shape only. The list of programs is configuration, so membership is checked
-  // against settings in the route — a compile-time enum could only accept the
-  // programs that shipped, and would reject a school's own new program.
   programInterest: optionalText(60),
   message: z.string().trim().max(1000).optional().or(z.literal("")),
-  // Attribution — captured from the landing URL, never shown to the visitor.
   utmSource: optionalText(120),
   utmMedium: optionalText(120),
   utmCampaign: optionalText(120),
   referredBy: optionalText(60),
-  // Honeypot — bots fill it. Accept any value here and check emptiness after
-  // parse: a max(0) constraint would fail validation and return a field error
-  // that tells bots exactly which field is the trap.
   website: z.string().optional(),
 });
 
 export type LeadInput = z.infer<typeof leadSchema>;
 
-// Low-friction capture for the waitlist and prospectus magnet: name + phone
-// only, age optional. `source` is constrained so the public endpoint can't be
-// used to forge an arbitrary lead source.
 export const CAPTURE_SOURCES = ["waitlist", "prospectus"] as const;
 
 export const captureSchema = z.object({

@@ -19,13 +19,6 @@ const tints = {
   leaf: "bg-leaf-soft text-leaf",
 };
 
-/**
- * Verifiable credibility, where the design mock had a testimonial.
- *
- * A quote the school writes about itself carries no weight, and inventing one
- * is out of the question. An affiliation a parent can telephone and check does
- * the same job honestly.
- */
 export function Trust() {
   return (
     <Section className="relative overflow-hidden bg-cream-deep/60">

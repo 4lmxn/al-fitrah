@@ -22,8 +22,6 @@ export function ParentSignIn() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  // A parent arriving back on this page from an email link completes sign-in
-  // without touching anything — the link IS the credential.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -75,9 +73,6 @@ export function ParentSignIn() {
     setBusy(true);
     setError("");
     try {
-      // The shared rule, not a local slice: taking the last ten digits of a
-      // mistyped eleven-digit number silently produces a different, valid
-      // number and sends the code there.
       const mobile = indianMobileE164(phone);
       if (!mobile) throw new Error("Enter your 10-digit mobile number.");
       setConfirmation(await sendParentOtp(mobile, "recaptcha"));

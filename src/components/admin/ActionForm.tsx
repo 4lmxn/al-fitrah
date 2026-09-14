@@ -4,14 +4,6 @@ import type { ReactNode } from "react";
 import type { ActionResult } from "@/lib/actionResult";
 import { Icon } from "@/components/ui/Icon";
 
-/**
- * A form whose server action reports failure by returning rather than throwing.
- *
- * Exists so every admin form shows its own errors in place. Previously an action
- * that threw took the whole page to the error boundary with an opaque digest —
- * an admin logging a call would lose the screen and be told nothing. Here the
- * message lands under the form that caused it and the inputs stay filled.
- */
 export function ActionForm({
   action,
   children,
@@ -23,7 +15,6 @@ export function ActionForm({
   children: ReactNode;
   className?: string;
   errorClassName?: string;
-  /** Lets a sibling read the form's live state — see RegisterSummary. */
   id?: string;
 }) {
   const [state, formAction] = useActionState(

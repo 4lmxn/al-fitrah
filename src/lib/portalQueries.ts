@@ -4,20 +4,10 @@ import { toStudent, COLLECTION as STUDENTS, type Student } from "@/lib/students"
 import { listPayments, type Payment } from "@/lib/fees";
 import { assertOwnStudent, type ParentSession } from "@/lib/parentAuth";
 
-/**
- * Reads for the parent portal.
- *
- * Every function here takes the resolved session — never a student id from the
- * request on its own. The rule from lib/parentAuth applies at the data layer as
- * well as the page, because a page is one caller and the data layer is the last
- * place a mistake can still be caught.
- */
-
 export type PortalChild = Pick<Student, "id" | "fullName" | "admissionNumber" | "program" | "classSection"> & {
   balancePaise: number;
 };
 
-/** The signed-in parent's children. Ids come from the session, not the URL. */
 export async function getStudentsForParent(session: ParentSession): Promise<PortalChild[]> {
   if (session.studentIds.length === 0) return [];
   const db = getDb();
@@ -35,18 +25,10 @@ export async function getStudentsForParent(session: ParentSession): Promise<Port
     }));
 }
 
-/**
- * One child, only if the signed-in parent is a guardian of them.
- *
- * Returns null rather than throwing on a mismatch, and the page renders a
- * not-found — a parent probing ids should not be able to learn which exist.
- */
 export async function getOwnStudent(studentId: string): Promise<{ student: Student; payments: Payment[] } | null> {
   if (!(await assertOwnStudent(studentId))) return null;
   const doc = await getDb().collection(STUDENTS).doc(studentId).get();
   if (!doc.exists) return null;
-  // listPayments enforces admin auth, so the parent path queries directly —
-  // authorisation for this read was already established above.
   const snap = await getDb()
     .collection("payments")
     .where("studentId", "==", studentId)

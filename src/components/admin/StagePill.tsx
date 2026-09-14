@@ -1,13 +1,6 @@
 import { findStage, type StageView } from "@/lib/stageMeta";
 import { cn } from "@/lib/cn";
 
-/**
- * Status pill for a stage.
- *
- * Takes the resolved pipeline rather than looking a stage up itself: stages are
- * configuration now, and configuration is server-only and async. The caller
- * already has the pipeline, so passing it keeps this a plain render.
- */
 export function StagePill({ stage, stages, className }: { stage: string; stages: StageView[]; className?: string }) {
   const m = findStage(stages, stage);
   return (

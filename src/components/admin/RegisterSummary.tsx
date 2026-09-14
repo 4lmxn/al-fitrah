@@ -1,27 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
 
-/**
- * Live count of what is currently marked, above the register.
- *
- * The register defaults everyone to present and asks the teacher to mark the
- * exceptions, which means the number that matters — how many are away today —
- * is invisible until after saving. On a phone, with the list scrolled past, it
- * is invisible even then.
- *
- * Deliberately reads the form rather than owning the state. The register is a
- * plain uncontrolled form of radio inputs; lifting twenty children's statuses
- * into React to display two numbers would be a rewrite of the thing that
- * already works, and would put the saved value and the displayed value in two
- * places that can disagree.
- */
 export function RegisterSummary({
   formId,
   presentIds,
   total,
 }: {
   formId: string;
-  /** Status ids that count as the child being here. From settings, not hardcoded. */
   presentIds: string[];
   total: number;
 }) {

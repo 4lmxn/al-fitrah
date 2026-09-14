@@ -14,7 +14,6 @@ const GROUPS: { value: StageGroup; label: string; hint: string }[] = [
 
 type Row = { id: string; label: string; group: StageGroup; terminal: boolean; isNew: boolean };
 
-/** New stages get an id derived from the label; existing ids never change. */
 function idFrom(label: string): string {
   return label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 40) || "stage";
 }
@@ -64,9 +63,6 @@ export function PipelineEditor({
                 name="stageLabel"
                 value={r.label}
                 onChange={(e) => {
-                  // Only a brand-new stage re-derives its id. Renaming an
-                  // existing one must not change the id, or every lead sitting
-                  // on it would point at a stage that no longer exists.
                   const patch: Partial<Row> = { label: e.target.value };
                   if (r.isNew) patch.id = idFrom(e.target.value);
                   update(i, patch);

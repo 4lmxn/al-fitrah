@@ -9,13 +9,8 @@ import { getClientIp } from "@/lib/clientIp";
 
 export const runtime = "nodejs";
 
-// Low-friction lead capture shared by the waitlist and prospectus magnet. Lands
-// the same `leads` collection with type "admission_inquiry" so these show up in
-// the CRM alongside form enquiries, tagged by `source`.
 export async function POST(req: Request) {
   const ip = getClientIp(req);
-  // Fail open when the client IP is unknown: never funnel every visitor into a
-  // single shared "unknown" bucket, which would rate-limit real families en masse.
   if (ip !== "unknown" && await rateLimited(ip)) {
     return NextResponse.json({ ok: false, error: "Too many requests. Please try again shortly." }, { status: 429 });
   }
@@ -35,7 +30,6 @@ export async function POST(req: Request) {
     );
   }
 
-  // Honeypot tripped — pretend success, store nothing.
   if (parsed.data.website) return NextResponse.json({ ok: true });
 
   const { parentName, phone, whatsapp, email, childAge, source, utmSource, utmMedium, utmCampaign, referredBy } = parsed.data;

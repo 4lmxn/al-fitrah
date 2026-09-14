@@ -1,8 +1,5 @@
 import { SITE_URL } from "@/lib/seo";
 
-// Deterministic, human-ish referral code from a parent's name + phone — stable
-// across visits with no extra storage. e.g. "ayesha-0718". The last 4 phone
-// digits disambiguate common first names.
 export function referralCode(name: string, phone: string): string {
   const first = (name.trim().split(/\s+/)[0] || "friend")
     .toLowerCase()
@@ -15,7 +12,6 @@ export function referralLink(code: string): string {
   return `${SITE_URL}/?ref=${encodeURIComponent(code)}`;
 }
 
-// Pre-filled WhatsApp share a parent can forward to friends.
 export function referralShareLink(code: string): string {
   const text =
     `We're really happy with Al Fitrah Pre School in Sarjapura. ` +

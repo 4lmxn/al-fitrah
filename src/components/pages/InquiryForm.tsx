@@ -44,8 +44,6 @@ export function InquiryForm({ programs }: { programs: string[] }) {
     setError("");
     setFieldErrors({});
     const fd = new FormData(e.currentTarget);
-    // Capture campaign attribution from the landing URL at submit time. Read
-    // from window (not useSearchParams) so the host pages stay static.
     const p = new URLSearchParams(window.location.search);
     const payload = {
       ...Object.fromEntries(fd.entries()),
@@ -54,7 +52,6 @@ export function InquiryForm({ programs }: { programs: string[] }) {
       utmCampaign: p.get("utm_campaign") ?? "",
       referredBy: p.get("ref") ?? p.get("referredBy") ?? "",
     };
-    // Abort if the server hangs so the button can't stay stuck in "Submitting…".
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 15_000);
     try {
@@ -64,7 +61,6 @@ export function InquiryForm({ programs }: { programs: string[] }) {
         body: JSON.stringify(payload),
         signal: controller.signal,
       });
-      // Guard non-JSON bodies (e.g. a gateway's HTML error page).
       let data: { ok?: boolean; error?: string; issues?: FieldErrors } = {};
       try {
         data = await res.json();

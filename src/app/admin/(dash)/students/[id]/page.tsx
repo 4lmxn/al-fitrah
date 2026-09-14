@@ -46,23 +46,14 @@ export default async function StudentDetail({
 }) {
   const { id } = await params;
   const sp = await searchParams;
-  // Tabs live in the URL rather than in client state: the page is
-  // server-rendered, so a tab that costs a round trip to Firestore should not
-  // also cost a hydration boundary — and a link to a child's fees is a thing
-  // staff will want to send each other.
   const tab: TabId = (TABS.find((t) => t.id === sp.tab)?.id ?? "overview") as TabId;
 
-  // Independent reads — the payment ledger is keyed by student id, not by
-  // anything on the student document, so waiting for one before the other only
-  // added a round trip.
   const [student, payments, programs, sections, methods, statuses, admin, structures] = await Promise.all([
     getStudent(id), listPayments(id), getPrograms(), getClassSections(), getPaymentMethods(),
     getAttendanceStatuses(), requireAdmin(), listStructures({ activeOnly: true }),
   ]);
   if (!student) notFound();
 
-  // Only for the attendance tab, and only when the child is in a class — the
-  // register is stored per class-day, so without one there is nothing to read.
   const monthKey = dateKey();
   const { from, to } = monthBounds(monthKey);
   const registers =
@@ -71,8 +62,6 @@ export default async function StudentDetail({
       : [];
   const attendance = summarise(registers, student.id, statuses);
 
-  // Only when the tab is open. These are a child's identity documents; there
-  // is no reason to read them to render the fees screen.
   const documents = tab === "documents" ? await listDocuments(id) : [];
 
   const tabHref = (t: TabId) => `/admin/students/${student.id}${t === "overview" ? "" : `?tab=${t}`}`;
@@ -284,8 +273,6 @@ export default async function StudentDetail({
                 ))}
               </select>
               {sections.length === 0 && (
-                // An empty dropdown reads as a broken form. Say what is missing
-                // and where to fix it instead.
                 <span className="mt-1 block text-xs text-ink/50">
                   No class sections yet —{" "}
                   <Link href="/admin/settings" className="font-semibold text-emerald hover:underline">

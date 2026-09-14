@@ -4,13 +4,6 @@ import { EyebrowPill } from "./EyebrowPill";
 import { Doodle } from "./Doodle";
 import { RainbowWords } from "./Rainbow";
 
-/**
- * Compact hero for interior pages.
- *
- * `highlight` names words inside `title` to render in rainbow letters. They are
- * matched literally; a word that is not in the title is ignored, so a copy edit
- * can never break the page.
- */
 export function PageHero({
   eyebrow,
   title,

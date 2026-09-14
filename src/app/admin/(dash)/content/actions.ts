@@ -11,8 +11,6 @@ import { recordAudit } from "@/lib/audit";
 
 const clean = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
 
-// Every surface a post can appear on. Publishing has to refresh all of them, or
-// the school hits Publish, looks at the homepage, and sees nothing.
 function revalidatePublic(slug?: string) {
   revalidatePath("/");
   revalidatePath("/news");
@@ -48,8 +46,6 @@ function parse(formData: FormData): Parsed {
     data: {
       type,
       title,
-      // Falls back to the opening of the body so a card is never blank just
-      // because nobody filled in an optional field.
       excerpt: clean(formData.get("excerpt"), 300) || body.replace(/\s+/g, " ").slice(0, 200),
       body,
       eventDate,
@@ -59,7 +55,6 @@ function parse(formData: FormData): Parsed {
   };
 }
 
-/** Validate and store an attached image, if there is one. */
 async function handleImage(
   formData: FormData,
   postId: string,
@@ -67,10 +62,6 @@ async function handleImage(
   const file = formData.get("image");
   if (!(file instanceof File) || file.size === 0) return { ok: true, image: null };
 
-  // Refused before the upload, not after. The configured bucket is private by
-  // design (children's records, applicants' CVs), and a public image URL into
-  // it would 404 — so storing the object first would leave an orphan and put a
-  // broken image on the news page with nothing in the logs.
   if (!publicImagesSupported()) {
     return {
       ok: false,
@@ -84,8 +75,6 @@ async function handleImage(
   if (!check.ok) return check;
 
   const buffer = Buffer.from(await file.arrayBuffer());
-  // These are served publicly from our own origin, so the bytes decide the
-  // type — not the upload's claim about itself.
   const sniffed = detectImageType(buffer);
   if (!sniffed) return { ok: false, error: "That file isn't a JPG, PNG or WebP image." };
 
@@ -99,8 +88,6 @@ export async function createPost(formData: FormData): Promise<ActionResult> {
     if (!parsed.ok) return fail(parsed.error);
     const data = parsed.data;
 
-    // Slug is derived once, here, and never again — see lib/posts. Collisions
-    // get a numeric suffix rather than silently overwriting another post's URL.
     let slug = slugify(data.title);
     if (await slugTaken(slug)) slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
 
@@ -115,8 +102,6 @@ export async function createPost(formData: FormData): Promise<ActionResult> {
       slug,
       imageUrl: img.image?.url ?? null,
       imagePath: img.image?.path ?? null,
-      // Only a published post gets a publishedAt; the public feed orders by it,
-      // so a draft carrying one would jump the queue the moment it went live.
       publishedAt: data.published ? FieldValue.serverTimestamp() : null,
       authorEmail: admin.email,
       createdAt: FieldValue.serverTimestamp(),
@@ -159,9 +144,6 @@ export async function updatePost(formData: FormData): Promise<ActionResult> {
       updatedAt: FieldValue.serverTimestamp(),
     };
 
-    // Stamp publishedAt on the transition to published, and leave it alone
-    // afterwards — re-saving a live post must not reorder the feed and push
-    // week-old news back to the top.
     if (data.published && !prev.published) update.publishedAt = FieldValue.serverTimestamp();
     if (!data.published) update.publishedAt = null;
 
@@ -172,9 +154,6 @@ export async function updatePost(formData: FormData): Promise<ActionResult> {
 
     await ref.update(update);
 
-    // Replace the old file only after the new one is safely stored and the
-    // document points at it. Failing here leaves an orphan, which costs a few
-    // KB; failing the other way round leaves a post pointing at nothing.
     if (img.image && prev.imagePath) {
       await deleteObject(prev.imagePath).catch((err) => console.error("old post image cleanup failed", err));
     }
@@ -191,7 +170,6 @@ export async function updatePost(formData: FormData): Promise<ActionResult> {
   });
 }
 
-/** Publish/unpublish straight from the list. */
 export async function togglePublished(formData: FormData): Promise<ActionResult> {
   return attempt("togglePublished", async () => {
     const admin = await requireAdmin();
@@ -235,9 +213,6 @@ export async function deletePost(formData: FormData): Promise<ActionResult> {
     await ref.delete();
     if (imagePath) await deleteObject(imagePath).catch((err) => console.error("post image cleanup failed", err));
 
-    // Recorded after the delete, not with it: the post document is gone, so
-    // there is nothing left to batch against — and an audit entry for a delete
-    // that did not happen would be worse than one written a moment late.
     await recordAudit({
       actor: admin.email,
       action: "post.deleted",

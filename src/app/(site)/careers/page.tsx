@@ -10,8 +10,6 @@ import { SwipeRail } from "@/components/ui/SwipeRail";
 import { CareersForm } from "@/components/pages/CareersForm";
 import { listActiveOpenings } from "@/lib/jobOpenings";
 
-// Async because the brand comes from configuration; a module-scope
-// constant cannot await, which is what kept school identity hardcoded.
 export async function generateMetadata(): Promise<Metadata> {
   return pageMeta("/careers", {
   title: "Careers",
@@ -19,12 +17,6 @@ export async function generateMetadata(): Promise<Metadata> {
 });
 }
 
-// Openings are managed from the admin console and change a handful of times a
-// year, but this is a public page — force-dynamic meant one Firestore read per
-// visitor, so a shared campaign link could burn the daily read budget on a page
-// whose content hadn't changed. Cached and revalidated hourly instead; the
-// admin actions already call revalidatePath("/careers"), so an edit is live
-// immediately and the hourly window is only a backstop.
 export const revalidate = 3600;
 
 const values = [
@@ -40,9 +32,6 @@ const benefits = [
   "A meaningful role in children's foundational years",
 ];
 
-// A Firestore blip must not take down the apply form — it is the whole point
-// of the page. Degrade to "no listed openings" and let the general application
-// through instead of throwing the route to the error boundary.
 async function safeOpenings() {
   try {
     return await listActiveOpenings();
@@ -52,8 +41,6 @@ async function safeOpenings() {
   }
 }
 
-// Same tint set the shared FeatureCard uses, applied here because these cards
-// carry a different layout.
 const tints = ["bg-emerald/10 text-emerald", "bg-coral-soft text-coral", "bg-grape-soft text-grape", "bg-gold-soft text-gold", "bg-sky-soft text-sky", "bg-leaf-soft text-leaf"];
 
 export default async function CareersPage() {

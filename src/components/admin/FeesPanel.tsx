@@ -37,9 +37,7 @@ export function FeesPanel({
   studentId: string;
   fees: StudentFees;
   payments: Payment[];
-  /** Configured payment methods — settings are not readable from a client component. */
   methods: string[];
-  /** Fees currently in use, for the assignment picker. */
   structures: FeeStructure[];
 }) {
   const settled = fees.balancePaise <= 0 && fees.totalPaise > 0;

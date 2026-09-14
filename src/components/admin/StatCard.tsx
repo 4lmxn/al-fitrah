@@ -1,7 +1,6 @@
 import { Icon } from "@/components/ui/Icon";
 import { cn } from "@/lib/cn";
 
-// Brand-strict tones only: emerald + gold. No off-brand status hues.
 type Tone = "brand" | "gold" | "soft" | "deep";
 
 const TONES: Record<Tone, { card: string; iconWrap: string; accent: string }> = {

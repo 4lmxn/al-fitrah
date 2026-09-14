@@ -6,8 +6,6 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { getContact, getBrandName } from "@/lib/seo";
 
-// Unmatched URLs render under the ROOT layout (not the (site) group), so the
-// chrome is repeated here to keep a wrong link from feeling like a dead end.
 export const metadata = {
   title: "Page not found",
   robots: { index: false, follow: true },

@@ -7,7 +7,6 @@ import { NavLink } from "@/components/admin/NavLink";
 
 export const dynamic = "force-dynamic";
 
-// Admin console must never be indexed.
 export const metadata = { robots: { index: false, follow: false } };
 
 export default async function AdminDashLayout({ children }: { children: React.ReactNode }) {

@@ -1,17 +1,5 @@
 import { cn } from "@/lib/cn";
 
-// Scattered background ornaments — sun, stars, clouds, kites, crescents,
-// leaves, hearts. All inline SVG on purpose: emoji is what made the old site
-// read as generic, and an icon font can't do hand-drawn shapes.
-//
-// Every doodle is decorative. They are aria-hidden, pointer-events-none, and
-// sit at z-0 so page content (which sits in a positioned, z-10 wrapper) always
-// wins both the stacking order and the click.
-//
-// Colours come from the brand first: emerald and gold do the heavy lifting,
-// the playful accents (coral, sky, grape, leaf) only ever appear here and in
-// illustrations.
-
 export type DoodleKind =
   | "sun" | "star" | "sparkle" | "cloud" | "kite"
   | "crescent" | "heart" | "leaf" | "dot" | "book" | "rainbow";
@@ -99,10 +87,8 @@ export function Doodle({
   className,
 }: {
   kind: DoodleKind;
-  /** Any CSS colour. Prefer brand emerald/gold; accents for variety. */
   color?: string;
   motion?: keyof typeof motions;
-  /** Position and size, e.g. "left-[4%] top-8 w-12". */
   className?: string;
 }) {
   return (

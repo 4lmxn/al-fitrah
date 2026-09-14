@@ -13,8 +13,6 @@ import { RainbowWords } from "@/components/ui/Rainbow";
 import { Eyebrow } from "@/components/ui/EyebrowPill";
 import { Teachers } from "@/components/pages/FactSections";
 
-// Async because the brand comes from configuration; a module-scope
-// constant cannot await, which is what kept school identity hardcoded.
 export async function generateMetadata(): Promise<Metadata> {
   return pageMeta("/about", {
   title: "About Us",

@@ -1,4 +1,3 @@
-// src/components/layout/Header.tsx
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -6,7 +5,6 @@ import { site } from "@/content/site";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 
-/** Rounded mark: an open book under a crescent, in the brand emerald and gold. */
 function Mark() {
   return (
     <svg width="44" height="44" viewBox="0 0 48 48" aria-hidden className="shrink-0">

@@ -7,7 +7,6 @@ function initials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-// Deterministic tint per name — brand palette only (emerald + gold).
 const TINTS = [
   "bg-emerald/10 text-emerald-deep ring-emerald/15",
   "bg-gold/15 text-[#7a611a] ring-gold/25",

@@ -28,17 +28,10 @@ export async function updateStage(formData: FormData): Promise<ActionResult> {
   const type = data.type as LeadType;
   if (!(await isValidStage(type, stage))) return fail("Invalid stage for this lead type");
 
-  // No-op if unchanged, so the timeline doesn't fill with duplicate entries.
   if (normalizeStage(data.stage ?? "new") === stage) return;
 
-  // Stage change and its timeline entry commit together: a move that isn't
-  // logged leaves no record of who advanced the lead or when.
   const db = getDb();
   const batch = db.batch();
-  // Reaching a terminal stage clears any pending follow-up. Nobody should be
-  // chased after they've enrolled or gone elsewhere — and the inbox's overdue
-  // query relies on this: because terminal leads carry no followUpDate, that
-  // query needs no stage filter, which is what keeps it a cheap aggregation.
   batch.update(ref, {
     stage,
     ...((await terminalStages(type)).has(stage) ? { followUpDate: FieldValue.delete() } : {}),
@@ -53,16 +46,10 @@ export async function updateStage(formData: FormData): Promise<ActionResult> {
     meta: { from: normalizeStage(data.stage ?? "new"), to: stage },
   });
   await batch.commit();
-  // Only the detail page is revalidated. The inbox list updates itself
-  // optimistically (InboxBoard), so we deliberately DON'T revalidate "/admin" —
-  // that would force a full getInbox() re-read (a page of docs plus its counts)
-  // on every stage click.
   revalidatePath(`/admin/leads/${id}`);
   });
 }
 
-// Set or clear the follow-up date. An empty value clears it (lead drops out of
-// the reminder digest); a "YYYY-MM-DD" value is pinned to local midnight.
 export async function setFollowUp(formData: FormData): Promise<ActionResult> {
   return attempt("setFollowUp", async () => {
   const admin = await requireAdmin();
@@ -70,9 +57,6 @@ export async function setFollowUp(formData: FormData): Promise<ActionResult> {
   const raw = String(formData.get("followUpDate") ?? "").trim();
   if (!id) return fail("Missing lead id");
 
-  // Clearing DELETES the field rather than writing null. A null still occupies
-  // the followUpDate index and would be swept into the digest's range query;
-  // an absent field is not indexed at all. See the cron route for the full note.
   let followUpDate: Date | FieldValue = FieldValue.delete();
   if (raw) {
     const d = new Date(`${raw}T00:00:00`);
@@ -97,8 +81,6 @@ export async function setFollowUp(formData: FormData): Promise<ActionResult> {
   });
 }
 
-// Push the follow-up forward by N days from today (a "snooze"). Base is today,
-// so snoozing an overdue lead always lands in the future.
 export async function snoozeFollowUp(formData: FormData): Promise<ActionResult> {
   return attempt("snoozeFollowUp", async () => {
   const admin = await requireAdmin();
@@ -129,31 +111,22 @@ export async function snoozeFollowUp(formData: FormData): Promise<ActionResult> 
   });
 }
 
-// Log what happened and schedule what's next in one submit — the loop staff
-// actually run after every call. A blank note is fine if a follow-up is set,
-// and vice versa; if neither is present the action is a no-op.
 export async function logContact(formData: FormData): Promise<ActionResult> {
   return attempt("logContact", async () => {
   const admin = await requireAdmin();
   const id = String(formData.get("id") ?? "");
-  // Cap note length. The 1 MiB ceiling no longer applies now that notes are a
-  // subcollection, but an unbounded textarea is still worth bounding.
   const text = String(formData.get("text") ?? "").trim().slice(0, 2000);
   if (!id) return fail("Missing lead id");
 
   const update: Record<string, unknown> = { updatedAt: FieldValue.serverTimestamp() };
 
-  // Next follow-up: an explicit date, a "+N days" offset, or "clear".
-  // `undefined` means the staff member didn't touch it — leave it alone.
   const nextFollowUp = resolveFollowUp(
     String(formData.get("followUpDate") ?? ""),
     formData.get("followUpDays"),
   );
-  // null means an explicit "clear" — delete the field rather than writing null,
-  // which would keep the lead in the digest's range query. See the cron route.
   if (nextFollowUp !== undefined) update.followUpDate = nextFollowUp ?? FieldValue.delete();
 
-  if (!text && !("followUpDate" in update)) return; // nothing to do
+  if (!text && !("followUpDate" in update)) return;
 
   const db = getDb();
   const batch = db.batch();
@@ -171,8 +144,6 @@ export async function logContact(formData: FormData): Promise<ActionResult> {
   });
 }
 
-// Edit a lead's contact fields — fix a typo, or fill in the details of a
-// walk-in that was logged from the front desk with only a name and number.
 export async function editContact(formData: FormData): Promise<ActionResult> {
   return attempt("editContact", async () => {
   const admin = await requireAdmin();
@@ -188,8 +159,6 @@ export async function editContact(formData: FormData): Promise<ActionResult> {
   const email = String(formData.get("email") ?? "").trim().slice(0, 120);
   const programInterest = pickFrom(await getPrograms(), String(formData.get("programInterest") ?? "").trim());
 
-  // Batched, not a bare update: an edit that is not recorded is worse than one
-  // that fails, because nobody knows the record changed.
   const db2 = getDb();
   const batch2 = db2.batch();
   batch2.update(db2.collection("leads").doc(id), {
@@ -213,12 +182,6 @@ export async function editContact(formData: FormData): Promise<ActionResult> {
   });
 }
 
-/**
- * Assign a lead to a member of staff, or clear the assignment.
- *
- * Restricted to the admin allowlist: assigning work to an address that cannot
- * sign in produces a lead nobody owns while looking like one somebody does.
- */
 export async function assignLead(formData: FormData): Promise<ActionResult> {
   return attempt("assignLead", async () => {
     const admin = await requireAdmin();
@@ -270,14 +233,6 @@ export async function assignLead(formData: FormData): Promise<ActionResult> {
   });
 }
 
-/**
- * Replace a lead's tags.
- *
- * Values are checked against the configured vocabulary. Free-text tags were the
- * alternative, and they rot the same way free-text class sections did:
- * "Sibling", "sibling" and "Sibling " become three tags, and a filter on any
- * one of them quietly misses most of the leads it should match.
- */
 export async function setTags(formData: FormData): Promise<ActionResult> {
   return attempt("setTags", async () => {
     const admin = await requireAdmin();
@@ -308,18 +263,6 @@ export async function setTags(formData: FormData): Promise<ActionResult> {
   });
 }
 
-/**
- * Schedule an interview and record a rating.
- *
- * Both live on the lead rather than in a separate collection: a candidate has
- * one interview at a time and one current rating, and a subcollection would buy
- * history nobody has asked for at the cost of a second read on every open.
- *
- * The interview date deliberately reuses followUpDate. The digest, the overdue
- * query and the attention badge already work off that field — a parallel
- * "interviewDate" would need all three taught about it, and would compete with
- * follow-ups for the same attention.
- */
 export async function scheduleInterview(formData: FormData): Promise<ActionResult> {
   return attempt("scheduleInterview", async () => {
     const admin = await requireAdmin();
@@ -336,7 +279,6 @@ export async function scheduleInterview(formData: FormData): Promise<ActionResul
 
     const location = String(formData.get("interviewLocation") ?? "").trim().slice(0, 120);
     const ratingRaw = Number(formData.get("rating"));
-    // 0 clears the rating; anything outside 1-5 is a malformed submission.
     const rating = Number.isInteger(ratingRaw) && ratingRaw >= 0 && ratingRaw <= 5 ? ratingRaw : null;
     if (rating === null) return fail("Rating must be between 1 and 5.");
 
@@ -350,8 +292,6 @@ export async function scheduleInterview(formData: FormData): Promise<ActionResul
       interviewAt,
       interviewLocation: location || null,
       rating: rating === 0 ? null : rating,
-      // Scheduling an interview is a follow-up: it puts the candidate back in
-      // the digest on the right day instead of relying on someone remembering.
       ...(raw ? { followUpDate: new Date(raw) } : {}),
       updatedAt: FieldValue.serverTimestamp(),
     });

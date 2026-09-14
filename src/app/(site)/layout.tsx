@@ -6,8 +6,6 @@ import { Footer } from "@/components/layout/Footer";
 import { FloatingLead } from "@/components/layout/FloatingLead";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
 
-// Marketing chrome lives here — admin routes sit outside this group, so they
-// render without the public header, footer, or smooth-scroll.
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const [{ school }, wa] = await Promise.all([getSettings(), waEnquiryLink()]);
   const contact = { waHref: wa, phone: school.phone };

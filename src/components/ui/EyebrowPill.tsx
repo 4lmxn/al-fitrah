@@ -1,7 +1,6 @@
 import { Icon } from "./Icon";
 import { cn } from "@/lib/cn";
 
-/** Floating chip above a hero title — white, softly shadowed, slightly tilted. */
 export function EyebrowPill({ icon, children, className }: { icon?: string; children: React.ReactNode; className?: string }) {
   return (
     <span
@@ -16,11 +15,6 @@ export function EyebrowPill({ icon, children, className }: { icon?: string; chil
   );
 }
 
-/**
- * Section eyebrow — hand-lettered rather than the usual uppercase tracking-wide
- * label. Tilted a couple of degrees so it sits on the page like a note rather
- * than a form field.
- */
 export function Eyebrow({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <span className={cn("inline-block -rotate-2 font-display text-lg font-semibold text-coral", className)}>

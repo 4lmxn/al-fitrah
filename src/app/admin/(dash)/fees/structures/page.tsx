@@ -14,14 +14,6 @@ const field =
   "w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20";
 const label = "mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/45";
 
-/**
- * The school's price list.
- *
- * Editing a fee here changes what will be charged next, never what a family has
- * already been told they owe — assigned totals are copies. "Apply to a class"
- * is the deliberate step that pushes a change onto records, and it skips any
- * child whose fee was set to something else on purpose.
- */
 export default async function FeeStructuresPage() {
   const [admin, structures, programs, sections] = await Promise.all([
     requireAdmin(),

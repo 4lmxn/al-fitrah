@@ -23,7 +23,6 @@ import { LocationFields } from "@/components/admin/LocationFields";
 
 export const dynamic = "force-dynamic";
 
-// Shared so the live counter can read the register form it sits above.
 const REGISTER_FORM_ID = "attendance-register";
 
 const STATUS_STYLE: Record<string, string> = {
@@ -55,8 +54,6 @@ export default async function AttendancePage({
 
   const blocked = isFuture(key) ? "future" : isWeekend(key, nonSchoolDays) ? "weekend" : null;
 
-  // Roster, today's register, and the month's registers for the summary column.
-  // Three reads plus the roster — flat in the number of days, not children.
   const [roster, register, month] = await Promise.all([
     listClassRoster(classSection),
     getRegister(academicYear, classSection, key),
@@ -72,9 +69,6 @@ export default async function AttendancePage({
   const marked = register !== null;
   const fallback = defaultStatusFor(key, statuses, nonSchoolDays);
 
-  // Nothing to register against until the school names its classes. Said
-  // plainly, with the way to fix it, rather than rendering an empty picker over
-  // an empty roll and leaving staff to guess what is broken.
   if (sections.length === 0) {
     return (
       <div className="mx-auto max-w-2xl">

@@ -2,7 +2,6 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 
-/** Site-wide momentum scrolling. No-ops under prefers-reduced-motion. */
 export function SmoothScroll() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;

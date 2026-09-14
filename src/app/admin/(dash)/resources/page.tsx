@@ -41,14 +41,6 @@ function AudienceChoice({ resource }: { resource?: Resource }) {
   );
 }
 
-/**
- * The resource centre.
- *
- * "Anyone" is not a label for a checkbox here, it is a storage location: a file
- * shared publicly is moved to a world-readable path and served straight from
- * Cloud Storage, and one un-shared is moved back. Nothing else in the console
- * relocates bytes on a save, which is why the page says so out loud.
- */
 export default async function ResourcesPage({
   searchParams,
 }: {

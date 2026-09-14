@@ -2,20 +2,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 
-/**
- * Hidden position fields for any form the campus fence guards.
- *
- * The browser is asked for a position on mount and the answer is posted as
- * three ordinary form fields. It is NOT asked for a verdict: the server does
- * the trigonometry, against the campus pin the client never sees. All this
- * component can do is supply a position or fail to, and both are handled
- * server-side in the attendance actions.
- *
- * Failure is deliberately not hidden. A teacher who blocked the permission
- * needs to know that before they tap Save, not after the server refuses —
- * so the state is on screen with a way to ask again.
- */
-
 type State =
   | { status: "asking" }
   | { status: "ok"; lat: number; lng: number; accuracyM: number }
@@ -24,8 +10,6 @@ type State =
 const OPTIONS: PositionOptions = {
   enableHighAccuracy: true,
   timeout: 10_000,
-  // A fix from the last minute is good enough and returns instantly. Forcing a
-  // cold GPS lock on every render would make the button feel broken indoors.
   maximumAge: 60_000,
 };
 
@@ -44,17 +28,12 @@ function supported(): boolean {
 }
 
 export function LocationFields({ label = "Location" }: { label?: string }) {
-  // Lazy initial state rather than an effect that immediately sets it: the
-  // "asking" and unsupported cases are known before the first paint, and
-  // setting them from inside the effect is a cascading render for nothing.
   const [state, setState] = useState<State>(() =>
     supported()
       ? { status: "asking" }
       : { status: "error", message: "This browser can't report a location." },
   );
 
-  // Only ever called from an async callback or a click, never synchronously
-  // from the effect body.
   const request = useCallback(() => {
     if (!supported()) return;
     navigator.geolocation.getCurrentPosition(

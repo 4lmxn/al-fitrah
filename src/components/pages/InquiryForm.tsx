@@ -97,7 +97,6 @@ export function InquiryForm({ programs }: { programs: string[] }) {
   const busy = status === "submitting";
   return (
     <form data-testid="inquiry-form" className="space-y-5" onSubmit={onSubmit} noValidate>
-      {/* Honeypot — visually hidden, must stay empty */}
       <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
 
       <div className="grid gap-5 sm:grid-cols-2">
@@ -169,11 +168,6 @@ export function InquiryForm({ programs }: { programs: string[] }) {
         {!busy && <Icon name="arrow_forward" className="text-base transition-transform group-hover:translate-x-1" />}
       </button>
 
-      {/* DPDP: a child's data may only be processed with verifiable parental
-          consent, so the enquiry has to state who is submitting it. Kept as a
-          statement above the button rather than another checkbox — one more
-          tick box costs conversions and adds no legal weight over an
-          unambiguous notice at the point of submission. */}
       <p className="text-xs leading-relaxed text-ink/50">
         By submitting, you confirm you are the parent or legal guardian of the child named above.
         We use your details only to respond to your enquiry, and never for advertising. See our{" "}

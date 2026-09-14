@@ -118,7 +118,6 @@ export default async function AttendancePage({
         enforce={settings.attendance.campus.enforce}
       />
 
-      {/* Class + date pickers */}
       <div className="mt-7 flex flex-wrap items-center gap-2">
         {sections.map((c: string) => (
           <Link
@@ -176,9 +175,6 @@ export default async function AttendancePage({
           <input type="hidden" name="classSection" value={classSection} />
           <input type="hidden" name="dateKey" value={key} />
 
-          {/* How many are here, right now, before saving. The register defaults
-              everyone to present, so the number a teacher is actually producing
-              is the one they cannot see until it is too late to check. */}
           <div className="mb-4 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-emerald/10 bg-white/90 px-5 py-4 shadow-soft">
             <RegisterSummary
               formId={REGISTER_FORM_ID}
@@ -191,9 +187,6 @@ export default async function AttendancePage({
             </p>
           </div>
 
-          {/* A list of cards, not a table. Registers are marked on a phone, and
-              a table there means a horizontal scroll with the month column —
-              the one signal worth glancing at — pushed off screen entirely. */}
           <ul className="space-y-2">
             {roster.map((s) => {
               const current = register?.entries[s.id] ?? fallback ?? "present";
@@ -215,8 +208,6 @@ export default async function AttendancePage({
                       <p className="mt-0.5 text-xs tabular-nums text-ink/40">{s.admissionNumber}</p>
                     </div>
 
-                    {/* This month, kept visible at every width rather than
-                        hidden on the screen where the teacher is standing. */}
                     {stats.percent !== null && (
                       <div className="shrink-0 text-right">
                         <span
@@ -240,7 +231,6 @@ export default async function AttendancePage({
                     )}
                   </div>
 
-                  {/* Tap targets sized for a thumb, not a cursor. */}
                   <div className="mt-3 flex flex-wrap gap-2">
                     {statuses.map(({ id: status, label: statusLabel }) => (
                       <label key={status} className="cursor-pointer">
@@ -264,12 +254,8 @@ export default async function AttendancePage({
             })}
           </ul>
 
-          {/* Pinned on a phone: with twenty children the save button is
-              otherwise a full scroll away from the last child marked. */}
           <div className="fixed inset-x-0 bottom-0 z-20 border-t border-emerald/10 bg-cream-deep/95 px-4 py-3 backdrop-blur sm:static sm:mt-4 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none">
             <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-3">
-              {/* Same fence as staff check-in — a register marked from off-campus
-                  is the thing the feature exists to stop. */}
               <LocationFields />
               <button
                 type="submit"

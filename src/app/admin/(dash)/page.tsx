@@ -59,7 +59,6 @@ export default async function AdminInbox({
 
   return (
     <div className="mx-auto max-w-6xl">
-      {/* Header + type switch */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Pipeline</p>
@@ -89,7 +88,6 @@ export default async function AdminInbox({
               <Icon name="download" className="text-[18px]" /> Export CSV
             </a>
           )}
-          {/* Walk-ins and phone enquiries are logged here, not on the website. */}
           <Link
             href="/admin/leads/new"
             className="inline-flex items-center gap-2 rounded-full bg-emerald px-4 py-2.5 text-sm font-semibold text-cream shadow-soft transition hover:bg-emerald-deep"
@@ -99,10 +97,6 @@ export default async function AdminInbox({
         </div>
       </div>
 
-      {/* List or board. Both are kept: the list carries search, bulk actions
-          and the attention to-do view, none of which a pipeline board does
-          well; the board answers "where is everyone" at a glance, which a
-          paged list cannot. */}
       <div className="mt-7 inline-flex rounded-full bg-white p-1 shadow-soft ring-1 ring-emerald/10">
         {[
           { id: "", label: "List", icon: "view_list" },
@@ -141,8 +135,6 @@ export default async function AdminInbox({
         />
       )}
 
-      {/* Search scans a bounded window rather than the whole collection, so say
-          so instead of quietly implying these are all the matches there are. */}
       {searchTruncated && (
         <p className="mt-4 flex items-center gap-2 rounded-xl border border-gold/30 bg-gold-soft/40 px-4 py-3 text-xs text-[#7a611a]">
           <Icon name="info" className="text-[16px]" />
@@ -151,8 +143,6 @@ export default async function AdminInbox({
         </p>
       )}
 
-      {/* Cursor paging. No page numbers: that needs a total, and counting the
-          whole collection on every view is exactly the cost this replaced. */}
       {(nextHref || isPaged) && (
         <nav aria-label="Pagination" className="mt-5 flex items-center justify-between gap-3">
           {isPaged ? (

@@ -230,7 +230,6 @@ export function InboxBoard({
         </div>
       )}
 
-      {/* KPIs */}
       <div className="mt-7 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard label="Total" value={kpis.total} icon="groups" tone="brand" />
         <StatCard label="New" value={kpis.new} icon="mark_email_unread" tone="gold" hint="Awaiting first contact" />
@@ -238,7 +237,6 @@ export function InboxBoard({
         <StatCard label={wonLabel} value={kpis.won} icon="verified" tone="deep" />
       </div>
 
-      {/* Needs-attention banner */}
       {attentionCount > 0 && !attention && (
         <Link
           href={`/admin?type=${type}&view=attention`}
@@ -255,7 +253,6 @@ export function InboxBoard({
         </Link>
       )}
 
-      {/* Toolbar: stage filter + search */}
       <div className="mt-7 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap gap-2">
           {attentionCount > 0 && (
@@ -309,7 +306,6 @@ export function InboxBoard({
         </form>
       </div>
 
-      {/* Table */}
       <div className="mt-5 overflow-hidden rounded-2xl border border-emerald/10 bg-white/90 shadow-soft">
         {rows.length === 0 ? (
           <div className="flex flex-col items-center gap-3 p-16 text-center">

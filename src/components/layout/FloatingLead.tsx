@@ -29,7 +29,6 @@ export function FloatingLead({ waBase }: { waBase: string }) {
           aria-label="Call the school"
           className="relative inline-grid h-14 w-14 place-items-center rounded-full bg-emerald text-cream shadow-lift transition hover:scale-105"
         >
-          {/* Expanding ring, drawn behind the button. Decorative. */}
           <span aria-hidden className="absolute inset-0 -z-10 animate-pulsering rounded-full bg-emerald" />
           <Icon name="call" className="text-[26px]" />
         </a>

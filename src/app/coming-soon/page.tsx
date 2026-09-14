@@ -22,7 +22,6 @@ export default async function ComingSoonPage() {
   const [contact, { school }] = await Promise.all([getContact(), getSettings()]);
   return (
     <main className="relative flex min-h-screen flex-col overflow-hidden bg-emerald-deep text-cream">
-      {/* Ambient depth + geometric texture */}
       <div className="bg-geo-on-emerald pointer-events-none absolute inset-0 opacity-70" aria-hidden />
       <div
         className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-gold/15 blur-3xl"

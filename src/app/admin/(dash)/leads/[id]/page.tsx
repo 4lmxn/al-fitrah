@@ -65,7 +65,6 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
         <Icon name="arrow_back" className="text-[18px]" /> Back to leads
       </Link>
 
-      {/* Header card */}
       <div className="mt-4 overflow-hidden rounded-2xl border border-emerald/10 bg-white/90 shadow-soft">
         <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7">
           <div className="flex items-center gap-4">
@@ -86,7 +85,6 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
             </div>
           </div>
 
-          {/* Quick actions */}
           <div className="flex flex-wrap gap-2">
             <a href={`tel:${lead.phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-1.5 rounded-full bg-emerald px-4 py-2 text-sm font-semibold text-cream transition hover:bg-emerald-deep">
               <Icon name="call" className="text-[18px]" /> Call
@@ -104,7 +102,6 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
           </div>
         </div>
 
-        {/* Detail strip */}
         <dl className="grid gap-px border-t border-emerald/10 bg-emerald/10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="bg-white/90 p-5">
             <dt className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">Phone</dt>
@@ -131,7 +128,6 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
           </div>
         </dl>
 
-        {/* Attribution — how this lead reached us */}
         {(lead.type === "admission_inquiry" || lead.utm?.source || lead.referredBy) && (
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-emerald/10 bg-cream/40 px-6 py-3 text-[11px] text-ink/55">
             <Icon name="campaign" className="text-[15px] text-gold" />
@@ -143,7 +139,6 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
           </div>
         )}
 
-        {/* Inline contact edit (admission leads) */}
         {lead.type === "admission_inquiry" && (
           <div className="border-t border-emerald/10 bg-white/90 px-6 py-4">
             <EditContact
@@ -273,7 +268,6 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
       </section>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        {/* Left column */}
         <div className="space-y-6 lg:col-span-2">
           {lead.message && (
             <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
@@ -306,13 +300,10 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
             </section>
           )}
 
-          {/* Activity timeline — notes + stage changes, newest first */}
           <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
             <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
               <Icon name="history" className="text-[18px] text-gold" /> Activity
             </h2>
-            {/* Log what happened and schedule the next follow-up together — the
-                core "what happened + what's next" loop, in one submit. */}
             <ActionForm action={logContact} className="mt-4 space-y-3 rounded-xl border border-emerald/15 bg-cream/30 p-4">
               <input type="hidden" name="id" value={lead.id} />
               <textarea name="text" rows={2} placeholder="Log a call, visit, or decision…" className="w-full resize-none rounded-lg border border-emerald/15 bg-white/70 px-3 py-2 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20" />
@@ -350,7 +341,6 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
           </section>
         </div>
 
-        {/* Right column — stage pipeline */}
         <aside className="lg:sticky lg:top-6 lg:self-start">
           <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
             <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
@@ -392,7 +382,6 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
             <p className="mt-4 border-t border-emerald/10 pt-3 text-[11px] text-ink/45">Tap a stage to move this lead.</p>
           </section>
 
-          {/* Follow-up */}
           <section className="mt-6 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
             <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
               <Icon name="event" className="text-[18px] text-gold" /> Follow-up
@@ -437,9 +426,6 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
             </div>
           </section>
 
-          {/* Enrolment — the one way a student record gets created, so the
-              pipeline stays the single entry point and every student keeps a
-              traceable line back to the enquiry that produced them. */}
           {showReferral && (
             <section className="mt-6 rounded-2xl border border-emerald/15 bg-white/90 p-6 shadow-soft">
               <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
@@ -510,7 +496,6 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
             </section>
           )}
 
-          {/* Referral — only once a family is admitted */}
           {showReferral && (
             <section className="mt-6 rounded-2xl border border-gold/25 bg-gold-soft/30 p-6 shadow-soft">
               <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-[#7a611a]">

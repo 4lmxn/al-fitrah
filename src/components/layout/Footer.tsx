@@ -39,8 +39,6 @@ export async function Footer() {
 
         <nav aria-label="Footer">
           <p className="font-display text-lg font-semibold text-cream">Learn</p>
-          {/* py on links keeps every tap target ≥24px (WCAG 2.2) and lifts the
-              muted text to AA contrast on the emerald ground. */}
           <ul className="mt-3 text-sm text-cream/80">
             {learn.map((l) => (
               <li key={l.href}>

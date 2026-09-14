@@ -18,7 +18,6 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         Skip to content
       </a>
       <SmoothScroll />
-      {/* Ambient geometric texture across marketing pages */}
       <div className="bg-geo pointer-events-none fixed inset-0 z-0 opacity-60" aria-hidden />
       <div className="relative z-10">
         <Header name={school.name} branch={school.branch} />

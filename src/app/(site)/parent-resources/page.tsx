@@ -37,8 +37,6 @@ export default function ParentResourcesPage() {
           >
             {resources.map((r, i) => (
               <Reveal key={r.title} delay={i * 0.06} className="h-full">
-                {/* Informational cards — no downloads are live yet, so these are
-                    not links. Families are pointed to the contact CTA below. */}
                 <div
                   className={`group relative flex h-full flex-col justify-between overflow-hidden rounded-xl4 bg-white p-6 shadow-soft sm:p-8`}
                 >
@@ -74,7 +72,6 @@ export default function ParentResourcesPage() {
         </Container>
       </Section>
 
-      {/* Real academic calendar — sourced from the school's 2026–27 year planner. */}
       <Section id="calendar" className="bg-cream-deep/60">
         <Container>
           <Reveal className="max-w-2xl">

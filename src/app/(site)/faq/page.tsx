@@ -37,7 +37,6 @@ export default function FaqPage() {
 
       <Section className="pt-0 sm:pt-0">
         <Container className="grid gap-10 lg:grid-cols-12">
-          {/* Sidebar */}
           <aside className="hidden lg:col-span-3 lg:block">
             <div className="sticky top-24">
               <p className="text-xs font-semibold uppercase tracking-wider text-ink/50">Categories</p>

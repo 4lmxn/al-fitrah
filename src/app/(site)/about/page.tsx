@@ -84,8 +84,6 @@ export default function AboutPage() {
         </Container>
       </Section>
 
-      {/* Named teachers with real qualifications. Renders once supplied — until
-          then "Guided by experts" above is the only claim we make. */}
       <Teachers />
 
       <Section className="pt-0 sm:pt-0">

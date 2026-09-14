@@ -50,7 +50,6 @@ export default function CampusLifePage() {
         </Container>
       </Section>
 
-      {/* The timetable with real clock times. Renders once supplied. */}
       <DayTimeline />
 
       <Section>
@@ -69,9 +68,6 @@ export default function CampusLifePage() {
         </Container>
       </Section>
 
-      {/* Renders once the school supplies its policies. Premises security and
-          authorised pickup are among the first things a parent checks, and the
-          campus being on a third floor makes them more pressing, not less. */}
       <FactSection
         items={facts.safety}
         eyebrow="Safety & hygiene"

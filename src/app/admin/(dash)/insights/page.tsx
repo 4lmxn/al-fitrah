@@ -17,7 +17,6 @@ export default async function InsightsPage() {
       </div>
 
       <div className="mt-7 grid gap-6 lg:grid-cols-2">
-        {/* Funnel */}
         <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
           <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
             <Icon name="filter_alt" className="text-[18px] text-gold" /> Admission funnel
@@ -43,7 +42,6 @@ export default async function InsightsPage() {
           </p>
         </section>
 
-        {/* Sources */}
         <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
           <div className="flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
@@ -84,7 +82,6 @@ export default async function InsightsPage() {
         </section>
       </div>
 
-      {/* Referrers */}
       <section className="mt-6 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
         <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
           <Icon name="handshake" className="text-[18px] text-gold" /> Referrals

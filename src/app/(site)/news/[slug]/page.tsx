@@ -55,9 +55,6 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           <img src={post.imageUrl} alt="" className="mt-7 w-full rounded-xl4 object-cover shadow-soft" />
         )}
 
-        {/* Rendered as plain paragraphs, never as HTML. The editor is a plain
-            textarea, so treating its contents as markup would turn the CMS into
-            a stored-XSS surface for anyone with admin access. */}
         <div className="mt-8 space-y-4 text-lg leading-relaxed text-ink/80">
           {post.body.split(/\n{2,}/).map((para, i) => (
             <p key={i}>{para}</p>

@@ -14,7 +14,6 @@ export default function HomePage() {
     <>
       <Hero />
       <QuickFacts />
-      {/* Ratio and class size — renders once the school supplies them. */}
       <KeyFacts />
       <Welcome />
       <Approach />

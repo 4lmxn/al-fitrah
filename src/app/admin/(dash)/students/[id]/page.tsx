@@ -152,8 +152,6 @@ export default async function StudentDetail({
                   <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">
                     This month · {student.classSection}
                   </h2>
-                  {/* Null, not zero: a child enrolled today has no counted days,
-                      and "0%" would read as a truancy problem. */}
                   <p className="text-2xl font-semibold tabular-nums text-emerald-deep">
                     {attendance.percent === null ? "—" : `${attendance.percent}%`}
                   </p>
@@ -188,8 +186,6 @@ export default async function StudentDetail({
         />
       )}
 
-      {/* Guardians — read-only here. They come from the enquiry, and editing
-          them belongs with contact management rather than this form. */}
       <section hidden={tab !== "guardians"} className="mt-7 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
         <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
           <Icon name="family_restroom" className="text-[18px] text-gold" /> Guardians
@@ -229,9 +225,6 @@ export default async function StudentDetail({
         />
       )}
 
-      {/* One form, three sections. They stay together because they save
-          together — splitting Medical onto its own tab would mean a partial
-          save, or two forms that can disagree about the same record. */}
       {tab === "overview" && (
       <ActionForm action={updateStudent} className="mt-6 space-y-6">
         <input type="hidden" name="id" value={student.id} />
@@ -259,8 +252,6 @@ export default async function StudentDetail({
             </label>
             <label className="block">
               <span className={label}>Class / section</span>
-              {/* A fixed list, not free text: attendance groups by this value,
-                  and "Rose" vs "rose" would silently split the register. */}
               <select
                 name="classSection"
                 defaultValue={student.classSection ?? ""}
@@ -292,9 +283,6 @@ export default async function StudentDetail({
             </label>
             <div className="block">
               <span className={label}>Date of birth</span>
-              {/* Read-only: DOB determines eligibility, so a correction should be
-                  a deliberate act with the birth certificate in hand, not a
-                  stray keystroke in a form that also edits the class section. */}
               <input value={toDateInput(student.dobMs)} readOnly disabled className={`${field} opacity-60`} />
             </div>
           </div>

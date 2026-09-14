@@ -6,7 +6,15 @@ import { requireAdmin, requireOwner } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { queueAudit } from "@/lib/audit";
 import { normalizeIndianPhone } from "@/lib/phone";
-import { COLLECTION, MAX_STAFF, queueRoster, rosterFrom, toStaff, type StaffMember } from "@/lib/staff";
+import {
+  COLLECTION,
+  MAX_STAFF,
+  needsOwnerToEdit,
+  queueRoster,
+  rosterFrom,
+  toStaff,
+  type StaffMember,
+} from "@/lib/staff";
 
 const clean = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
 
@@ -102,6 +110,10 @@ export async function updateStaff(formData: FormData): Promise<ActionResult> {
     const doc = await ref.get();
     if (!doc.exists) return fail("That person is no longer on the staff list.");
     const before = toStaff(doc);
+
+    if (needsOwnerToEdit(before, parsed.data.email) && admin.role !== "owner") {
+      return fail("Only an owner can edit a record that controls who signs in.");
+    }
 
     if (parsed.data.email && parsed.data.email !== before.email) {
       const clash = await db.collection(COLLECTION).where("email", "==", parsed.data.email).limit(1).get();

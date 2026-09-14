@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { resolveAllowlist, resolveRole, type RosterEntry } from "@/lib/roles";
-import { rosterFrom, type StaffMember } from "@/lib/staff";
+import { needsOwnerToEdit, rosterFrom, type StaffMember } from "@/lib/staff";
 
 const member = (over: Partial<StaffMember> = {}): StaffMember => ({
   id: "s1",
@@ -61,6 +61,40 @@ describe("who is an owner", () => {
 
   it("gives no role to a missing address", () => {
     expect(resolveRole(null, ["owner@school.com"], [])).toBe("staff");
+  });
+});
+
+describe("an unreadable roster", () => {
+  it("does not promote anyone just because the roster could not be read", () => {
+    // The hole this closes: an empty roster used to mean both "no owner exists
+    // yet" and "the read failed", and the first of those grants owner to
+    // everyone. A Firestore blip must not hand out delete rights.
+    expect(resolveRole("anyone@school.com", [], null)).toBe("staff");
+  });
+
+  it("still honours a configured owner while the roster is unreadable", () => {
+    expect(resolveRole("owner@school.com", ["owner@school.com"], null)).toBe("owner");
+  });
+
+  it("falls back to the configured allowlist rather than admitting nobody", () => {
+    expect(resolveAllowlist(["owner@school.com"], null)).toEqual(["owner@school.com"]);
+  });
+});
+
+describe("who may edit a staff record", () => {
+  it("needs an owner to touch a record that grants access", () => {
+    // Otherwise a staff account edits the owner's row, points it at an address
+    // it controls, and the roster hands it owner on the next sign-in.
+    expect(needsOwnerToEdit(member({ access: true }), "ayesha@school.com")).toBe(true);
+  });
+
+  it("needs an owner to change the address a record signs in with", () => {
+    expect(needsOwnerToEdit(member({ access: false }), "someone-else@school.com")).toBe(true);
+  });
+
+  it("lets staff keep ordinary records up to date", () => {
+    expect(needsOwnerToEdit(member({ access: false, email: null }), null)).toBe(false);
+    expect(needsOwnerToEdit(member({ access: false }), "ayesha@school.com")).toBe(false);
   });
 });
 

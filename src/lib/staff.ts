@@ -39,6 +39,10 @@ export function toStaff(d: FirebaseFirestore.DocumentSnapshot): StaffMember {
   };
 }
 
+export function needsOwnerToEdit(before: StaffMember, nextEmail: string | null): boolean {
+  return before.access || (nextEmail ?? null) !== before.email;
+}
+
 export function rosterFrom(members: StaffMember[]): RosterEntry[] {
   return members
     .filter((m) => m.access && m.status === "active" && m.email)

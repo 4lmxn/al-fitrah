@@ -81,9 +81,6 @@ export function LeadBoard({
         </p>
       )}
 
-      {/* Columns scroll sideways as a group. This is the one place a horizontal
-          scroll is right: a pipeline is a sequence, and squashing six stages
-          into a phone's width would make every card unreadable. */}
       <div className="-mx-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">
         <div className="flex min-w-max gap-3">
           {columns.map((col) => {
@@ -176,9 +173,6 @@ export function LeadBoard({
                           )}
                         </div>
 
-                        {/* Moving a card. A select rather than a drag handle:
-                            it works with a thumb, a mouse and a keyboard, and
-                            it announces itself to a screen reader. */}
                         <label className="mt-2 block">
                           <span className="sr-only">Move {row.name} to another stage</span>
                           <select

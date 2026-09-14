@@ -27,9 +27,6 @@ export default async function EditOpeningPage({ params }: { params: Promise<{ id
         <OpeningForm action={updateOpening} opening={opening} employmentTypes={employmentTypes} submitLabel="Save changes" />
       </div>
 
-      {/* Owners only. Hiding this is a courtesy so staff aren't shown a control
-          that will fail — the real gate is requireOwner() in the action, since
-          a hidden button is not a permission. */}
       {role === "owner" && (
         <div className="mt-6 flex items-center justify-between rounded-2xl border border-red-200 bg-red-50/50 p-5">
           <div>

@@ -30,14 +30,7 @@ export function Header({ name, branch }: { name: string; branch: string }) {
 
   return (
     <>
-      {/* Announcement bar — the one thing every visiting parent is here to
-          find out, above everything else.
 
-          On a phone the full sentence wraps to three lines and eats the top of
-          the screen, so below `sm` it becomes a single-line ticker; from `sm`
-          up there is room to simply centre it. This is the one place on the
-          site where automatic motion is appropriate: it is a short, repeated
-          notice rather than something a parent has to sit and read. */}
       <div className="ticker overflow-hidden bg-emerald-deep py-2 font-display text-sm font-semibold text-cream">
         <div className="ticker-track flex w-max sm:w-full sm:justify-center">
           <span className="flex shrink-0 items-center gap-1 whitespace-nowrap px-4">
@@ -45,8 +38,6 @@ export function Header({ name, branch }: { name: string; branch: string }) {
             <span className="text-gold-light">{site.announcement.highlight}</span>
             {site.announcement.after}
           </span>
-          {/* Second copy exists only to make the loop seamless, so it is hidden
-              from assistive tech and removed once the animation is off. */}
           <span aria-hidden className="ticker-dupe flex shrink-0 items-center gap-1 whitespace-nowrap px-4 sm:hidden">
             {site.announcement.before}
             <span className="text-gold-light">{site.announcement.highlight}</span>

@@ -171,9 +171,6 @@ export function FeesPanel({
         </button>
       </ActionForm>
 
-      {/* When the balance falls due. Without it nothing can distinguish a family
-          who is late from one whose fee is not payable yet, and the only
-          available action becomes messaging all of them on the same day. */}
       <ActionForm action={setFeeDueDate} className="mt-3 flex flex-wrap items-end gap-2">
         <input type="hidden" name="id" value={studentId} />
         <label className="block">
@@ -195,11 +192,6 @@ export function FeesPanel({
         )}
       </ActionForm>
 
-      {/* "I'll pay by Friday" is the commonest reply to a fee reminder, and on
-          paper it is forgotten by the time Friday arrives. That forgotten
-          callback is where most uncollected fees are actually lost. Logging it
-          silences the chase until the date passes, then puts the family at the
-          top of the collection list the morning after. */}
       <ActionForm action={logFeePromise} className="mt-3 rounded-xl border border-emerald/15 bg-cream/30 p-4">
         <input type="hidden" name="id" value={studentId} />
         <p className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">

@@ -19,8 +19,6 @@ export function CTABand({
     <Section>
       <Container>
         <div className="relative overflow-hidden rounded-xl4 bg-gradient-to-br from-emerald to-emerald-deep px-8 py-16 text-center text-cream shadow-lift">
-          {/* depth: geometric texture + soft gold glow, then a sun bleeding off
-              the corner so the band reads hand-made rather than stamped */}
           <div className="bg-geo-on-emerald pointer-events-none absolute inset-0 opacity-70" aria-hidden />
           <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-gold/15 blur-3xl" aria-hidden />
           <Doodle kind="sun" color="#e3c97c" motion="none" className="-right-5 -top-6 w-28 opacity-40" />

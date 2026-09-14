@@ -50,9 +50,6 @@ export default async function ChildPage({ params }: { params: Promise<{ studentI
           <div className="bg-white p-5">
             <dt className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">Fee for the year</dt>
             <dd className="mt-1 tabular-nums text-ink/85">{formatPaise(student.fees.totalPaise)}</dd>
-            {/* The concession is shown, not just netted out — a family that was
-                given one should be able to see it was applied, and a figure
-                lower than the published fee otherwise looks like an error. */}
             {student.fees.discountPaise > 0 && (
               <dd className="mt-1 text-[11px] text-ink/45">
                 after {formatPaise(student.fees.discountPaise)} concession

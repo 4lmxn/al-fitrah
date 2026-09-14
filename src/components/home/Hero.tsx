@@ -63,8 +63,6 @@ export function Hero() {
           className="relative mx-auto w-full max-w-[26rem] lg:max-w-none"
         >
           <Doodle kind="crescent" color="#c9a227" motion="bob2" className="-top-4 right-[6%] z-20 w-12" />
-          {/* Organic frame: a thick white border and a border-radius that keeps
-              shifting, so the photo reads cut-out rather than cropped. */}
           <div className="blob relative z-10 aspect-[4/5] overflow-hidden border-[9px] border-white shadow-lift">
             <Image
               src={hero.image}

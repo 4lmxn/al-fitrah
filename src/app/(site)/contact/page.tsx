@@ -89,8 +89,6 @@ export default async function ContactPage() {
         </Container>
       </Section>
 
-      {/* Parents land here expecting a way to write in, not just phone numbers.
-          Same form and API as the admissions page — one leads pipeline. */}
       <Section id="message" className="pt-0 sm:pt-0">
         <Container className="max-w-3xl">
           <Reveal>

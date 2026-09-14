@@ -63,11 +63,8 @@ export default function ProgramsPage() {
         </Container>
       </Section>
 
-      {/* What happens in each of the three years. The spine of the page. */}
       <ProgramLevels />
 
-      {/* How we teach it — deliberately not another subject list, which the
-          year-by-year section above already gives in full. */}
       <Section className="relative overflow-hidden">
         <Doodle kind="sparkle" color="#b38cf4" motion="twinkle" className="left-[5%] top-[10%] w-5" />
         <Container className="relative z-10">
@@ -110,10 +107,6 @@ export default function ProgramsPage() {
         </Container>
       </Section>
 
-      {/* Representative imagery for the Qur'an method — not photos of Al
-          Fitrah's own students, so captioned generically rather than as
-          campus photos. Swap for real classroom photos if the school sends
-          them. */}
       <Section className="relative overflow-hidden bg-cream-deep/60">
         <Doodle kind="crescent" color="#c9a227" motion="bob" className="right-[6%] top-[10%] w-8" />
         <Container className="relative z-10">
@@ -138,8 +131,6 @@ export default function ProgramsPage() {
         </Container>
       </Section>
 
-      {/* The payoff. This is the page's closing argument, so it gets the weight
-          of a band rather than sitting in a card beside a photograph. */}
       <Section className="pt-0 sm:pt-0">
         <Container>
           <Reveal>

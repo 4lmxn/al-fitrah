@@ -27,9 +27,6 @@ export default async function AdmissionsPage() {
     <>
       <PageHero eyebrow={hero.eyebrow} title={hero.title} subtitle={hero.subtitle} highlight={["place"]} />
 
-      {/* Both render only once the school fills content/facts.ts. Separation
-          anxiety is the first thing a parent of a 2y10m child asks about, and a
-          fee schedule they cannot find is the commonest reason they leave. */}
       <FactSection
         items={facts.settlingIn}
         eyebrow="The first two weeks"
@@ -41,7 +38,6 @@ export default async function AdmissionsPage() {
 
       <Section className="pt-0 sm:pt-0">
         <Container className="grid gap-8 lg:grid-cols-12">
-          {/* Process + assistance */}
           <div className="space-y-8 lg:col-span-5">
             <Reveal>
               <div className="rounded-xl4 bg-white p-8 shadow-soft">
@@ -80,13 +76,10 @@ export default async function AdmissionsPage() {
               </div>
             </Reveal>
           </div>
-          {/* Form */}
           <Reveal delay={0.1} className="lg:col-span-7">
             <div id="enroll" className="scroll-mt-28 rounded-xl4 bg-white p-8 shadow-soft sm:p-10">
               <h2 className="text-2xl text-emerald-deep">{form.title}</h2>
               <p className="mt-2 text-ink/70">{form.subtitle}</p>
-              {/* Privacy consent line lives inside InquiryForm so admissions
-                  and the contact page stay consistent. */}
               <div className="mt-8"><InquiryForm programs={programs} /></div>
             </div>
           </Reveal>

@@ -19,7 +19,6 @@ export default async function AdminDashLayout({ children }: { children: React.Re
 
   return (
     <div className="min-h-[100dvh] bg-cream-deep/40 lg:grid lg:grid-cols-[16rem_1fr]">
-      {/* Sidebar (desktop) — solid brand emerald with geometric texture */}
       <aside className="bg-geo-on-emerald sticky top-0 hidden h-[100dvh] flex-col border-r-2 border-gold/30 bg-emerald-deep p-5 text-cream lg:flex">
         <Link href="/admin" className="flex items-center gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-cream/10 ring-1 ring-gold/30">
@@ -57,7 +56,6 @@ export default async function AdminDashLayout({ children }: { children: React.Re
         </div>
       </aside>
 
-      {/* Mobile topbar */}
       <header className="bg-emerald text-cream lg:hidden">
         <div className="flex items-center justify-between px-5 py-3">
           <Link href="/admin" className="flex items-center gap-2 font-display text-lg">

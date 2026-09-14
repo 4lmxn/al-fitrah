@@ -30,11 +30,6 @@ export function StudentPhoto({
         )}
       </div>
 
-      {/* Choose, then upload. Two controls rather than submitting on change:
-          that needs a client component and an event handler, and this works
-          identically with JavaScript unavailable. The file input is visually
-          hidden but still the label's control, so it stays keyboard-reachable
-          and announces itself. */}
       <ActionForm action={uploadStudentPhotoAction} className="mt-2 w-20">
         <input type="hidden" name="id" value={studentId} />
         <label className="block cursor-pointer rounded-lg px-1 py-1 text-center text-[11px] font-semibold text-emerald transition hover:bg-emerald/8 focus-within:ring-2 focus-within:ring-emerald">

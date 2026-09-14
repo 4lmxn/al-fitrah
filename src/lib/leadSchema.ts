@@ -24,7 +24,7 @@ export const leadSchema = z.object({
 
 export type LeadInput = z.infer<typeof leadSchema>;
 
-export const CAPTURE_SOURCES = ["waitlist", "prospectus"] as const;
+const CAPTURE_SOURCES = ["waitlist", "prospectus"] as const;
 
 export const captureSchema = z.object({
   parentName: z.string().trim().min(2, "Please enter a name").max(80),

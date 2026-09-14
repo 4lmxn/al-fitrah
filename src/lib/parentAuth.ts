@@ -14,7 +14,7 @@ export type ParentSession = {
   studentIds: string[];
 };
 
-export async function studentsForEmail(email: string): Promise<string[]> {
+async function studentsForEmail(email: string): Promise<string[]> {
   const key = email.trim().toLowerCase();
   if (!key) return [];
   const snap = await getDb()
@@ -25,7 +25,7 @@ export async function studentsForEmail(email: string): Promise<string[]> {
   return snap.docs.map((d) => d.id);
 }
 
-export async function studentsForPhone(phone: string): Promise<string[]> {
+async function studentsForPhone(phone: string): Promise<string[]> {
   const key = normalizeIndianPhone(phone);
   if (!key) return [];
   const snap = await getDb()

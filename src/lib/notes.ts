@@ -1,7 +1,7 @@
 import "server-only";
 import { FieldValue, type Firestore, type WriteBatch } from "firebase-admin/firestore";
 
-export const NOTES = "notes";
+const NOTES = "notes";
 
 export const NOTES_PAGE_SIZE = 50;
 

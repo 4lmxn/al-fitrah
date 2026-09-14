@@ -8,10 +8,10 @@ export type { Post, PostType } from "@/lib/postMeta";
 
 export const COLLECTION = "posts";
 
-export const PUBLIC_PAGE_SIZE = 12;
-export const ADMIN_PAGE_SIZE = 25;
+const PUBLIC_PAGE_SIZE = 12;
+const ADMIN_PAGE_SIZE = 25;
 
-export function toPost(d: FirebaseFirestore.DocumentSnapshot): Post {
+function toPost(d: FirebaseFirestore.DocumentSnapshot): Post {
   const x = d.data() ?? {};
   return {
     id: d.id,

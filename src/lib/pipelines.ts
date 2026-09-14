@@ -14,10 +14,6 @@ export async function getPipeline(type: LeadType): Promise<StageView[]> {
   });
 }
 
-export async function getPipelineLabel(type: LeadType): Promise<string> {
-  return (await getSettings()).pipelines[type].label;
-}
-
 export async function isValidStage(type: LeadType, stage: string): Promise<boolean> {
   return (await getPipeline(type)).some((s) => s.id === stage);
 }

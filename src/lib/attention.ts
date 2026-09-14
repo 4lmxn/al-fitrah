@@ -1,6 +1,6 @@
 import type { LeadRow } from "@/lib/leadQueries";
 
-export const DEFAULT_TERMINAL_STAGES = new Set(["admitted", "lost", "hired", "rejected"]);
+const DEFAULT_TERMINAL_STAGES = new Set(["admitted", "lost", "hired", "rejected"]);
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export function needsAttention(l: LeadRow, now = Date.now(), terminal: Set<string> = DEFAULT_TERMINAL_STAGES): boolean {

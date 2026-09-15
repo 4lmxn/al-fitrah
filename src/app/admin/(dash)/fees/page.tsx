@@ -135,12 +135,20 @@ export default async function FeesPage({
             child&apos;s record.
           </p>
         </div>
-        <Link
-          href="/admin/fees/structures"
-          className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep shadow-soft ring-1 ring-emerald/10 transition hover:bg-emerald/5"
-        >
-          <Icon name="receipt_long" className="text-[18px]" /> Fee structures
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/admin/fees/import"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-emerald-deep shadow-soft ring-1 ring-emerald/10 transition hover:bg-emerald/5"
+          >
+            <Icon name="upload_file" className="text-[18px]" /> Import payments
+          </Link>
+          <Link
+            href="/admin/fees/structures"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-emerald-deep shadow-soft ring-1 ring-emerald/10 transition hover:bg-emerald/5"
+          >
+            <Icon name="receipt_long" className="text-[18px]" /> Fee structures
+          </Link>
+        </div>
       </div>
 
       <div className="mt-7 grid gap-4 sm:grid-cols-3">

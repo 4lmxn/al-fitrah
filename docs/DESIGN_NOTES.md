@@ -1725,6 +1725,57 @@ should not be able to learn which ones exist.
 
 ---
 
+## `src/lib/paymentImport.ts`
+
+**`export type ColumnMap`**
+
+Reading the bank's report without knowing what the bank calls its columns.
+
+The office maps the file's headers onto the four things this needs once, in the
+UI, and `guessMapping` pre-fills what it recognises. That is deliberate rather
+than lazy: nobody here has seen a real SBI Collect export yet, the format
+differs between institutions, and a header the bank renames next year would
+otherwise break the import silently. Guessing is a convenience; the confirmation
+is the contract.
+
+`guessMapping` returns nothing for a header it does not recognise rather than
+approximating. A wrong guess credits the wrong column, and an amount column that
+is actually a transaction id fails loudly, while a date column read as an amount
+might not.
+
+**`export function parsePaymentCsv(text, map)`**
+
+Every row this refuses is refused for a reason that would otherwise cost money:
+
+- **No reference number** — the reference is what makes a payment unique, so a
+  row without one could never be recognised on a second upload. Importing it
+  would mean the next re-import pays the child twice.
+- **A reference repeated inside the file** — the same, one upload earlier.
+- **No admission number** — there is no other way to know whose payment this is.
+  Names are not used for matching: two children share a name, a ledger entry
+  does not.
+- **An amount it cannot read exactly** — `parseRupees` refuses `1e5` and `0x10`
+  where `Number()` would accept them. Money is integer paise; a float is never
+  introduced.
+- **Zero or negative** — a correction is a negative row recorded by hand and
+  deliberately, never something that arrives in a bulk file.
+
+**`export function resolveRows(...)`**
+
+Three outcomes, and only one of them writes.
+
+An unknown admission number becomes `unmatched` and is held back for the office,
+never credited to the nearest match. A reference already in the ledger becomes
+`duplicate` and is skipped. This is what makes re-uploading a month's report
+safe, which matters because an office will do exactly that when it is unsure
+whether the first attempt worked.
+
+Idempotency lives on the reference rather than on a file hash: a bank that
+re-issues the same month's report with one corrected row must import that row
+and skip the rest.
+
+---
+
 ## `src/lib/phone.ts`
 
 **`/**`**

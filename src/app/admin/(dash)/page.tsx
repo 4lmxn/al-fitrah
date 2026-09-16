@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { getInbox, getBoard, SEARCH_SCAN_LIMIT } from "@/lib/leadQueries";
-import { listAdminEmails } from "@/lib/roles";
+import { getInbox, SEARCH_SCAN_LIMIT } from "@/lib/leadQueries";
 import { requireAdmin } from "@/lib/adminAuth";
 import { LEAD_TYPE_LABEL, type LeadType } from "@/lib/leads";
 import { Icon } from "@/components/ui/Icon";
 import { InboxBoard } from "@/components/admin/InboxBoard";
-import { LeadBoard } from "@/components/admin/LeadBoard";
 
 export const dynamic = "force-dynamic";
 
@@ -18,35 +16,23 @@ const TYPE_ICON: Record<LeadType, string> = {
 export default async function AdminInbox({
   searchParams,
 }: {
-  searchParams: Promise<{ type?: string; stage?: string; q?: string; view?: string; after?: string; assignee?: string; tag?: string }>;
+  searchParams: Promise<{ type?: string; stage?: string; q?: string; view?: string; after?: string }>;
 }) {
   const sp = await searchParams;
   const { role } = await requireAdmin();
   const type: LeadType = TYPES.includes(sp.type as LeadType) ? (sp.type as LeadType) : "admission_inquiry";
   const attention = sp.view === "attention";
-  const board = sp.view === "board" && !attention && !sp.q?.trim();
   const requestedStage = !attention ? sp.stage : undefined;
   const q = sp.q?.trim() || "";
 
-  const inbox = board
-    ? null
-    : await getInbox(type, {
-        stage: requestedStage,
-        q,
-        attention,
-        cursor: sp.after,
-        assignee: sp.assignee,
-        tag: sp.tag,
-      });
-  const boardData = board ? await getBoard(type) : null;
+  const inbox = await getInbox(type, {
+    stage: requestedStage,
+    q,
+    attention,
+    cursor: sp.after,
+  });
 
-  const pipeline = inbox?.pipeline ?? boardData!.pipeline;
-  const attentionCount = inbox?.attentionCount ?? boardData!.attentionCount;
-  const rows = inbox?.rows ?? [];
-  const counts = inbox?.counts ?? {};
-  const kpis = inbox?.kpis ?? { total: 0, new: 0, active: 0, won: 0, lost: 0 };
-  const nextCursor = inbox?.nextCursor ?? null;
-  const searchTruncated = inbox?.searchTruncated ?? false;
+  const { pipeline, attentionCount, rows, counts, kpis, nextCursor, searchTruncated } = inbox;
 
   const wonLabel = type === "staff_application" ? "Hired" : "Admitted";
 
@@ -97,43 +83,16 @@ export default async function AdminInbox({
         </div>
       </div>
 
-      <div className="mt-7 inline-flex rounded-full bg-white p-1 shadow-soft ring-1 ring-emerald/10">
-        {[
-          { id: "", label: "List", icon: "view_list" },
-          { id: "board", label: "Board", icon: "view_kanban" },
-        ].map((v) => {
-          const active = board ? v.id === "board" : v.id === "";
-          return (
-            <Link
-              key={v.id || "list"}
-              href={`/admin?${new URLSearchParams({ type, ...(v.id ? { view: v.id } : {}) })}`}
-              aria-current={active ? "page" : undefined}
-              className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-semibold transition ${
-                active ? "bg-emerald text-cream shadow-sm" : "text-emerald-deep hover:bg-emerald/5"
-              }`}
-            >
-              <Icon name={v.icon} className="text-[17px]" />
-              {v.label}
-            </Link>
-          );
-        })}
-      </div>
-
-      {board && boardData ? (
-        <LeadBoard type={type} columns={boardData.columns} stages={pipeline} q={q} />
-      ) : (
-        <InboxBoard
-          key={`${type}|${stage ?? ""}|${attention ? "attn" : ""}|${q}|${sp.after ?? ""}`}
-          type={type}
-          activeStage={stage}
-          attention={attention}
-          q={q}
-          wonLabel={wonLabel}
-          stages={pipeline}
-          admins={await listAdminEmails()}
-          initial={{ rows, counts, kpis, attentionCount }}
-        />
-      )}
+      <InboxBoard
+        key={`${type}|${stage ?? ""}|${attention ? "attn" : ""}|${q}|${sp.after ?? ""}`}
+        type={type}
+        activeStage={stage}
+        attention={attention}
+        q={q}
+        wonLabel={wonLabel}
+        stages={pipeline}
+        initial={{ rows, counts, kpis, attentionCount }}
+      />
 
       {searchTruncated && (
         <p className="mt-4 flex items-center gap-2 rounded-xl border border-gold/30 bg-gold-soft/40 px-4 py-3 text-xs text-[#7a611a]">

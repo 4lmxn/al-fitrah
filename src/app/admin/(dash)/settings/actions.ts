@@ -67,7 +67,6 @@ export async function saveTaxonomy(formData: FormData): Promise<ActionResult> {
         manualLeadSources: lines(formData.get("manualLeadSources")),
         employmentTypes: lines(formData.get("employmentTypes")),
         paymentMethods: lines(formData.get("paymentMethods")),
-        leadTags: lines(formData.get("leadTags")),
       },
     });
     if (!res.ok) return fail(res.error);

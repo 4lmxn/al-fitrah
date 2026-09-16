@@ -50,7 +50,6 @@ export const settingsSchema = z.object({
     manualLeadSources: taxonomy,
     employmentTypes: taxonomy,
     paymentMethods: taxonomy,
-    leadTags: taxonomy,
   }),
 
   attendance: z.object({
@@ -76,13 +75,11 @@ export const settingsSchema = z.object({
       "lead.created": z.array(z.enum(["email", "dashboard", "whatsapp", "sms"])).max(4),
       "application.received": z.array(z.enum(["email", "dashboard", "whatsapp", "sms"])).max(4),
       "followup.due": z.array(z.enum(["email", "dashboard", "whatsapp", "sms"])).max(4),
-      "lead.assigned": z.array(z.enum(["email", "dashboard", "whatsapp", "sms"])).max(4),
     }),
     templates: z.object({
       "lead.created": z.object({ subject: z.string().max(200), body: z.string().max(4000) }),
       "application.received": z.object({ subject: z.string().max(200), body: z.string().max(4000) }),
       "followup.due": z.object({ subject: z.string().max(200), body: z.string().max(4000) }),
-      "lead.assigned": z.object({ subject: z.string().max(200), body: z.string().max(4000) }),
     }),
   }),
 
@@ -145,7 +142,6 @@ export const DEFAULT_SETTINGS: Settings = {
     manualLeadSources: ["walk-in", "phone", "whatsapp", "referral"],
     employmentTypes: ["Full-time", "Part-time", "Contract", "Volunteer"],
     paymentMethods: ["cash", "upi", "bank transfer", "cheque", "card"],
-    leadTags: ["Sibling", "Referred", "Priority", "Financial aid", "Relocating", "Revisit later"],
   },
   attendance: {
     statuses: [
@@ -169,7 +165,6 @@ export const DEFAULT_SETTINGS: Settings = {
       "lead.created": ["email", "dashboard"],
       "application.received": ["email", "dashboard"],
       "followup.due": ["email"],
-      "lead.assigned": ["dashboard"],
     },
     templates: {
       "lead.created": {
@@ -204,10 +199,6 @@ export const DEFAULT_SETTINGS: Settings = {
       "followup.due": {
         subject: "{{count}} lead(s) need follow-up today",
         body: ["Follow-up reminder.", "", "{{list}}", "", "Open the console: {{link}}"].join("\n"),
-      },
-      "lead.assigned": {
-        subject: "{{parentName}} assigned to {{assignee}}",
-        body: ["{{assignedBy}} assigned this enquiry to {{assignee}}.", "", "Open it: {{link}}"].join("\n"),
       },
     },
   },

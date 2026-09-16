@@ -267,7 +267,7 @@ arg. `NEXT_PUBLIC_*` are inlined at build time; everything else is runtime-only.
 ## 8. Where things stand
 
 **Live and working:** marketing site, admissions enquiries → CRM pipeline with
-duplicate detection and assignment, staff applications with CV upload, student
+duplicate detection, staff applications with CV upload, student
 records, fee ledger and collection worklist, class attendance, news/events CMS,
 parent portal, audit log, notification engine, configurable settings.
 

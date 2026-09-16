@@ -14,7 +14,7 @@ re-verified against the code on 16 Sep 2026:
 | Module | State | Gap |
 |---|---|---|
 | **Public website** | Mostly built | No Gallery page; "Academics" is split across Programs/Syllabus |
-| **CRM** | Built | No tasks. Assignment, tags, duplicate detection, bulk actions and CSV export all shipped |
+| **CRM** | Built | No tasks. Duplicate detection, bulk stage moves and CSV export shipped. Assignment, tags and the Kanban board were built, then **removed in Sep 2026** — see below |
 | **Admissions pipeline** | **Configurable** — stages are data, edited in Settings | None. The brief's nine stages are a configuration choice now, not a code change |
 | **Teacher recruitment** | Applications, CV, portfolio link, interview scheduling, 1–5 rating | Internal comments reuse the shared notes subcollection instead of a separate field |
 | **Attendance** | Class register, staff check-in, monthly % | No CSV export, no bulk edit, no rollups, so no trend view |
@@ -26,6 +26,24 @@ The gaps that remain are the two heavy ones — the dashboard suite and online
 payment — plus attendance depth and analytics depth. Saying the platform is
 finished would be dishonest; so would the earlier version of this table, which
 described gaps that four releases had already closed.
+
+### Three CRM features were removed on purpose
+
+Lead **assignment**, lead **tags**, and the Kanban **board view** were built
+against the brief and deleted in Sep 2026. None of them failed; they were
+answers to a problem this branch does not have. Assignment routes work between
+people, and one office shares one console. Tags sort volume, and the volume is a
+handful of enquiries a week. The board was a second full rendering of the leads
+the list already showed, with its own copies of call, WhatsApp and stage-change.
+
+What went with them: `assignedTo` and `tags` on the lead document (the fields
+stay in Firestore, unread), the `lead.assigned` notification event, the
+`leadTags` taxonomy, three composite indexes, and the board's per-column read
+budget. Bulk **stage** moves stayed — moving six enquiries at once is volume
+work that survives at any size.
+
+If the school hires admissions staff, assignment is the one to rebuild first,
+and `git log` has it.
 
 ## 2. The decision that has to come first
 

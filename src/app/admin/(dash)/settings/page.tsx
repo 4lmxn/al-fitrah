@@ -123,7 +123,6 @@ export default async function SettingsPage() {
             <List name="manualLeadSources" title="Staff-entered sources" hint="Subset offered when logging a lead by hand." values={settings.taxonomy.manualLeadSources} />
             <List name="employmentTypes" title="Employment types" hint="Shown on job openings." values={settings.taxonomy.employmentTypes} />
             <List name="paymentMethods" title="Payment methods" hint="Offered when recording a fee payment." values={settings.taxonomy.paymentMethods} />
-            <List name="leadTags" title="Lead tags" hint="Labels staff can put on an enquiry." values={settings.taxonomy.leadTags} />
           </div>
           <button type="submit" className="rounded-full bg-emerald px-5 py-2 text-sm font-semibold text-cream transition hover:bg-emerald-deep">Save lists</button>
         </ActionForm>

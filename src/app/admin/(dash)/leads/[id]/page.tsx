@@ -4,7 +4,7 @@ import { getLead } from "@/lib/leadQueries";
 import { LEAD_TYPE_LABEL } from "@/lib/leads";
 import { findStage } from "@/lib/stageMeta";
 import { getPipeline } from "@/lib/pipelines";
-import { getLeadTags, getPrograms } from "@/lib/taxonomy";
+import { getPrograms } from "@/lib/taxonomy";
 import { relativeTime } from "@/lib/relativeTime";
 import { Icon } from "@/components/ui/Icon";
 import { LeadAvatar } from "@/components/admin/LeadAvatar";
@@ -17,8 +17,7 @@ import { createStudentFromLead } from "../../students/actions";
 import { EditContact } from "@/components/admin/EditContact";
 import { sourceLabel } from "@/lib/leads";
 import { referralCode, referralLink, referralShareLink } from "@/lib/referral";
-import { updateStage, logContact, snoozeFollowUp, assignLead, setTags, scheduleInterview } from "./actions";
-import { listAdminEmails } from "@/lib/roles";
+import { updateStage, logContact, snoozeFollowUp, scheduleInterview } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -49,8 +48,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
   const [lead, enrolledEarly] = await Promise.all([getLead(id), studentForLead(id)]);
   if (!lead) notFound();
 
-  const [pipeline, programs, tagVocabulary] = await Promise.all([getPipeline(lead.type), getPrograms(), getLeadTags()]);
-  const admins = await listAdminEmails();
+  const [pipeline, programs] = await Promise.all([getPipeline(lead.type), getPrograms()]);
   const currentIdx = pipeline.findIndex((s) => s.id === lead.stage);
   const wa = waLink(lead.phone);
   const notes = [...lead.notes].sort((a, b) => (b.atMs ?? 0) - (a.atMs ?? 0));
@@ -216,56 +214,6 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
           </Link>
         </div>
       )}
-
-      <section className="mt-6 rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft">
-        <ActionForm action={assignLead} className="flex flex-wrap items-center gap-3">
-          <input type="hidden" name="id" value={lead.id} />
-          <span className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
-            <Icon name="person_add" className="text-[18px] text-gold" /> Owner
-          </span>
-          <select
-            name="assignedTo"
-            defaultValue={lead.assignedTo ?? ""}
-            className="rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm outline-none focus:border-emerald focus:ring-2 focus:ring-emerald/20"
-          >
-            <option value="">Unassigned</option>
-            {admins.map((a) => (
-              <option key={a} value={a}>{a}</option>
-            ))}
-          </select>
-          <button type="submit" className="rounded-full bg-emerald px-4 py-2 text-sm font-semibold text-cream transition hover:bg-emerald-deep">
-            Save owner
-          </button>
-        </ActionForm>
-
-        <ActionForm action={setTags} className="mt-4 border-t border-emerald/10 pt-4">
-          <input type="hidden" name="id" value={lead.id} />
-          <span className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
-            <Icon name="label" className="text-[18px] text-gold" /> Tags
-          </span>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {tagVocabulary.length === 0 ? (
-              <p className="text-xs text-ink/45">
-                No tags configured yet — add some under Settings → Lists.
-              </p>
-            ) : (
-              tagVocabulary.map((t) => (
-                <label key={t} className="cursor-pointer">
-                  <input type="checkbox" name={`tag-${t}`} defaultChecked={lead.tags.includes(t)} className="peer sr-only" />
-                  <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold text-ink/55 ring-1 ring-inset ring-emerald/15 transition peer-checked:bg-emerald peer-checked:text-cream peer-checked:ring-emerald peer-focus-visible:ring-2 peer-focus-visible:ring-emerald">
-                    {t}
-                  </span>
-                </label>
-              ))
-            )}
-          </div>
-          {tagVocabulary.length > 0 && (
-            <button type="submit" className="mt-3 rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep ring-1 ring-inset ring-emerald/20 transition hover:bg-emerald/5">
-              Save tags
-            </button>
-          )}
-        </ActionForm>
-      </section>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">

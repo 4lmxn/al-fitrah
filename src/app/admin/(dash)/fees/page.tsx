@@ -15,6 +15,7 @@ import { RemindButton } from "@/components/admin/RemindButton";
 import { formatDate } from "@/lib/relativeTime";
 import { EmptyState } from "@/components/admin/EmptyState";
 import { CARD } from "@/components/ui/styles";
+import { getSettings } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +42,7 @@ function primaryGuardian(s: Student): { name: string; phone: string } {
   return { name: g?.name ?? "—", phone: g?.phone ?? s.guardianPhones[0] ?? "" };
 }
 
-function Row({ s, bucket }: { s: Student; bucket: FeeBucket }) {
+function Row({ s, bucket, payUrl }: { s: Student; bucket: FeeBucket; payUrl: string }) {
   const g = primaryGuardian(s);
   const late = daysOverdue(s.fees);
   const wa = g.phone
@@ -50,6 +51,7 @@ function Row({ s, bucket }: { s: Student; bucket: FeeBucket }) {
         childName: s.firstName || s.fullName,
         balancePaise: s.fees.balancePaise,
         bucket,
+        payUrl: payUrl || undefined,
       })
     : null;
 
@@ -106,7 +108,11 @@ export default async function FeesPage({
   searchParams: Promise<{ after?: string }>;
 }) {
   const sp = await searchParams;
-  const { rows, nextCursor } = await listStudents({ status: "enrolled", cursor: sp.after });
+  const [{ rows, nextCursor }, settings] = await Promise.all([
+    listStudents({ status: "enrolled", cursor: sp.after }),
+    getSettings(),
+  ]);
+  const payUrl = settings.fees.payUrl;
 
   const now = new Date();
   const graded = rows
@@ -192,7 +198,7 @@ export default async function FeesPage({
               </div>
               <ul>
                 {items.map(({ s, bucket: b }) => (
-                  <Row key={s.id} s={s} bucket={b} />
+                  <Row key={s.id} s={s} bucket={b} payUrl={payUrl} />
                 ))}
               </ul>
             </section>
@@ -213,7 +219,7 @@ export default async function FeesPage({
           </div>
           <ul>
             {promised.map(({ s, bucket }) => (
-              <Row key={s.id} s={s} bucket={bucket} />
+              <Row key={s.id} s={s} bucket={bucket} payUrl={payUrl} />
             ))}
           </ul>
         </section>

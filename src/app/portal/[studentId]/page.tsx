@@ -9,6 +9,7 @@ import { listDocuments } from "@/lib/studentDocuments";
 import { PortalDocuments } from "@/components/portal/PortalDocuments";
 import { formatDate } from "@/lib/relativeTime";
 import { CARD, SECTION_LABEL } from "@/components/ui/styles";
+import { getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = { title: "Fees & attendance", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -21,10 +22,12 @@ export default async function ChildPage({ params }: { params: Promise<{ studentI
   if (!result) notFound();
   const { student, payments } = result;
 
-  const [documents, attendance] = await Promise.all([
+  const [documents, attendance, settings] = await Promise.all([
     listDocuments(studentId),
     getOwnAttendance(studentId),
+    getSettings(),
   ]);
+  const payUrl = settings.fees.payUrl;
 
   const monthLabel = new Date(`${attendance?.monthKey ?? ""}T00:00:00`).toLocaleDateString("en-IN", {
     month: "long",
@@ -67,6 +70,32 @@ export default async function ChildPage({ params }: { params: Promise<{ studentI
             </dd>
           </div>
         </dl>
+
+        {payUrl && student.fees.balancePaise > 0 && (
+          <div className={`${CARD} mt-5 flex flex-wrap items-center gap-4 p-5`}>
+            <div className="min-w-[14rem] flex-1">
+              <p className="font-display text-lg text-emerald-deep">Pay this balance online</p>
+              <p className="mt-1 text-sm text-ink/60">
+                Opens the school&apos;s SBI Collect page. Quote {student.fullName}&apos;s admission
+                number, <b className="tabular-nums">{student.admissionNumber}</b>, so the office can
+                match your payment.
+              </p>
+              <p className="mt-2 text-[11px] text-ink/45">
+                The balance above will not change straight away — the school records SBI payments
+                from the bank&apos;s report, which usually takes a day or two. Please don&apos;t pay
+                twice if it still shows here tomorrow.
+              </p>
+            </div>
+            <a
+              href={payUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-emerald px-5 text-sm font-semibold text-cream transition hover:bg-emerald-deep"
+            >
+              <Icon name="payments" className="text-[18px]" /> Pay {formatPaise(student.fees.balancePaise)}
+            </a>
+          </div>
+        )}
 
         <section className={`${CARD} mt-8 p-6`}>
           <div className="flex flex-wrap items-baseline justify-between gap-2">

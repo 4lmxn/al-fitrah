@@ -34,6 +34,10 @@ export const settingsSchema = z.object({
     grievanceOfficerEmail: z.string().max(120),
   }),
 
+  fees: z.object({
+    payUrl: z.union([z.literal(""), z.string().url().startsWith("https://").max(500)]),
+  }),
+
   academicYear: z.object({
     startMonth: z.number().int().min(1).max(12),
   }),
@@ -110,6 +114,7 @@ export const DEFAULT_SETTINGS: Settings = {
     grievanceOfficerName: "",
     grievanceOfficerEmail: "alfitrah.sompura@gmail.com",
   },
+  fees: { payUrl: "" },
   academicYear: { startMonth: 6 },
   pipelines: {
     admission_inquiry: {

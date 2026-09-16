@@ -25,9 +25,7 @@ export type LeadRow = {
   utmSource?: string | null;
   referredBy?: string | null;
   noteCount: number;
-  assignedTo: string | null;
   possibleDuplicateOf: string | null;
-  tags: string[];
   createdAtMs: number | null;
   followUpMs: number | null;
 };
@@ -57,20 +55,15 @@ function toRow(d: FirebaseFirestore.QueryDocumentSnapshot): LeadRow {
     utmSource: x.utm?.source ?? null,
     referredBy: x.referredBy ?? null,
     noteCount: noteCountOf(x),
-    assignedTo: x.assignedTo ?? null,
     possibleDuplicateOf: x.possibleDuplicateOf ?? null,
-    tags: Array.isArray(x.tags) ? x.tags : [],
     createdAtMs: x.createdAt?.toMillis?.() ?? null,
     followUpMs: x.followUpDate?.toMillis?.() ?? null,
   };
 }
 
-function baseQuery(type: LeadType, stage?: string, assignee?: string, tag?: string) {
+function baseQuery(type: LeadType, stage?: string) {
   let q = getDb().collection("leads").where("type", "==", type);
   if (stage) q = q.where("stage", "==", stage);
-  if (assignee === "unassigned") q = q.where("assignedTo", "==", null);
-  else if (assignee) q = q.where("assignedTo", "==", assignee);
-  if (tag) q = q.where("tags", "array-contains", tag);
   return q.orderBy("createdAt", "desc").orderBy("__name__", "desc");
 }
 
@@ -163,14 +156,14 @@ async function attentionRows(type: LeadType, now: number): Promise<LeadRow[]> {
 }
 
 function matchesSearch(r: LeadRow, q: string): boolean {
-  return [r.name, r.childName, r.phone, r.email, r.role, r.childAge, ...r.tags]
+  return [r.name, r.childName, r.phone, r.email, r.role, r.childAge]
     .filter(Boolean)
     .some((v) => String(v).toLowerCase().includes(q));
 }
 
 export async function getInbox(
   type: LeadType,
-  opts: { stage?: string; q?: string; attention?: boolean; cursor?: string; assignee?: string; tag?: string } = {},
+  opts: { stage?: string; q?: string; attention?: boolean; cursor?: string } = {},
 ): Promise<Inbox> {
   await requireAdmin();
 
@@ -188,7 +181,7 @@ export async function getInbox(
         }))
       : q
         ?
-          baseQuery(type, opts.stage, opts.assignee, opts.tag)
+          baseQuery(type, opts.stage)
             .limit(SEARCH_SCAN_LIMIT)
             .get()
             .then((snap) => ({
@@ -198,7 +191,7 @@ export async function getInbox(
             }))
         : (() => {
             const cursor = decodeCursor(opts.cursor);
-            let pageQuery = baseQuery(type, opts.stage, opts.assignee, opts.tag);
+            let pageQuery = baseQuery(type, opts.stage);
             if (cursor) pageQuery = pageQuery.startAfter(new Date(cursor.createdAtMs), cursor.id);
             return pageQuery
               .limit(PAGE_SIZE + 1)
@@ -227,42 +220,6 @@ export async function getInbox(
   }
 
   return { ...page, counts, kpis, attentionCount, pipeline };
-}
-
-export const BOARD_COLUMN_SIZE = 10;
-
-export type BoardColumn = {
-  stage: string;
-  total: number;
-  rows: LeadRow[];
-};
-
-export type Board = { columns: BoardColumn[]; pipeline: StageView[]; attentionCount: number };
-
-export async function getBoard(type: LeadType): Promise<Board> {
-  await requireAdmin();
-  const pipeline = await getPipeline(type);
-  const now = Date.now();
-
-  const [columns, attentionCount] = await Promise.all([
-    Promise.all(
-      pipeline.map(async (s): Promise<BoardColumn> => {
-        const [snap, agg] = await Promise.all([
-          baseQuery(type, s.id).limit(BOARD_COLUMN_SIZE).get(),
-          getDb()
-            .collection("leads")
-            .where("type", "==", type)
-            .where("stage", "==", s.id)
-            .count()
-            .get(),
-        ]);
-        return { stage: s.id, total: agg.data().count, rows: snap.docs.map(toRow) };
-      }),
-    ),
-    attentionCountOf(type, now),
-  ]);
-
-  return { columns, pipeline, attentionCount };
 }
 
 export type SourceCount = { source: string; total: number; thisMonth: number };
@@ -361,9 +318,7 @@ export type LeadDetail = {
   utm?: { source?: string; medium?: string; campaign?: string } | null;
   referredBy?: string | null;
   cv?: { filename: string } | null;
-  assignedTo: string | null;
   possibleDuplicateOf: string | null;
-  tags: string[];
   portfolioUrl: string | null;
   interviewAtMs: number | null;
   interviewLocation: string | null;
@@ -402,9 +357,7 @@ export async function getLead(id: string): Promise<LeadDetail | null> {
     utm: x.utm ?? null,
     referredBy: x.referredBy ?? null,
     cv: x.cv ? { filename: x.cv.filename } : null,
-    assignedTo: x.assignedTo ?? null,
     possibleDuplicateOf: x.possibleDuplicateOf ?? null,
-    tags: Array.isArray(x.tags) ? x.tags : [],
     portfolioUrl: x.portfolioUrl ?? null,
     interviewAtMs: x.interviewAt?.toMillis?.() ?? null,
     interviewLocation: x.interviewLocation ?? null,

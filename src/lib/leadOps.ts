@@ -28,7 +28,6 @@ export function leadDefaults(phone: string, verdict: DuplicateVerdict) {
   return {
     phoneKey: phoneKey(phone),
     noteCount: 0,
-    assignedTo: null,
     ...(verdict.duplicate ? { possibleDuplicateOf: verdict.ofId } : {}),
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),

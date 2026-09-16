@@ -6,7 +6,6 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { attempt, fail, type ActionResult } from "@/lib/actionResult";
 import { queueAudit } from "@/lib/audit";
 import { queueNote } from "@/lib/notes";
-import { listAdminEmails } from "@/lib/roles";
 import { isValidStage, stageLabelFor, terminalStages } from "@/lib/pipelines";
 import type { LeadType } from "@/lib/leads";
 
@@ -48,44 +47,6 @@ export async function bulkUpdateStage(formData: FormData): Promise<ActionResult>
       entity: { type: "lead", id: "bulk" },
       summary: `Moved ${selected.length} lead${selected.length === 1 ? "" : "s"} to ${label}`,
       meta: { count: selected.length, stage, ids: selected.slice(0, 20).join(" ") },
-    });
-
-    await batch.commit();
-    revalidatePath("/admin");
-  });
-}
-
-export async function bulkAssign(formData: FormData): Promise<ActionResult> {
-  return attempt("bulkAssign", async () => {
-    const admin = await requireAdmin();
-    const selected = ids(formData);
-    if (selected.length === 0) return fail("Select some leads first.");
-    if (selected.length > MAX_SELECTION) return fail(`Select at most ${MAX_SELECTION} leads at a time.`);
-
-    const raw = String(formData.get("assignedTo") ?? "").trim().toLowerCase();
-    const assignedTo = raw || null;
-    if (assignedTo && !(await listAdminEmails()).includes(assignedTo)) {
-      return fail("That address cannot sign in, so it cannot own a lead.");
-    }
-
-    const db = getDb();
-    const batch = db.batch();
-    for (const id of selected) {
-      batch.update(db.collection("leads").doc(id), { assignedTo, updatedAt: FieldValue.serverTimestamp() });
-      queueNote(db, batch, id, {
-        text: assignedTo ? `Assigned to ${assignedTo}` : "Assignment cleared",
-        author: admin.email,
-        kind: "stage",
-      });
-    }
-    queueAudit(db, batch, {
-      actor: admin.email,
-      action: "lead.bulk_assigned",
-      entity: { type: "lead", id: "bulk" },
-      summary: assignedTo
-        ? `Assigned ${selected.length} lead${selected.length === 1 ? "" : "s"} to ${assignedTo}`
-        : `Cleared the owner on ${selected.length} lead${selected.length === 1 ? "" : "s"}`,
-      meta: { count: selected.length, assignedTo, ids: selected.slice(0, 20).join(" ") },
     });
 
     await batch.commit();

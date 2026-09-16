@@ -13,7 +13,7 @@ const MAX_ROWS = 5000;
 
 const HEADER = [
   "Received", "Type", "Name", "Child", "Phone", "WhatsApp", "Email",
-  "Stage", "Owner", "Source", "Campaign", "Referred by", "Child age",
+  "Stage", "Source", "Campaign", "Referred by", "Child age",
   "Program", "Role", "Notes", "Follow-up", "Possible duplicate of",
 ];
 
@@ -41,12 +41,9 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const type = (url.searchParams.get("type") ?? "admission_inquiry") as LeadType;
   const stage = url.searchParams.get("stage") ?? undefined;
-  const assignee = url.searchParams.get("assignee") ?? undefined;
 
   let q = getDb().collection("leads").where("type", "==", type) as FirebaseFirestore.Query;
   if (stage) q = q.where("stage", "==", stage);
-  if (assignee === "unassigned") q = q.where("assignedTo", "==", null);
-  else if (assignee) q = q.where("assignedTo", "==", assignee);
 
   const snap = await q.orderBy("createdAt", "desc").limit(MAX_ROWS).get();
   const pipeline = await getPipeline(type);
@@ -63,7 +60,6 @@ export async function GET(req: Request) {
       x.whatsapp ? "yes" : "",
       x.email ?? "",
       findStage(pipeline, stageId).label,
-      x.assignedTo ?? "",
       x.source ?? "",
       x.utm?.campaign ?? x.utm?.source ?? "",
       x.referredBy ?? "",
@@ -81,7 +77,7 @@ export async function GET(req: Request) {
     action: "lead.exported",
     entity: { type: "lead", id: "bulk" },
     summary: `Exported ${rows.length} ${type === "staff_application" ? "applications" : "enquiries"}`,
-    meta: { rows: rows.length, type, stage: stage ?? null, assignee: assignee ?? null },
+    meta: { rows: rows.length, type, stage: stage ?? null },
   });
 
   return new NextResponse(csvDocument(HEADER, rows), {

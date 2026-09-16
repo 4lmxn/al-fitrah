@@ -9,7 +9,7 @@ import { needsAttention } from "@/lib/attention";
 import { relativeTime } from "@/lib/relativeTime";
 import { followUpWaLink } from "@/lib/followup";
 import { updateStage, snoozeFollowUp } from "@/app/admin/(dash)/leads/[id]/actions";
-import { bulkUpdateStage, bulkAssign } from "@/app/admin/(dash)/leads/bulk-actions";
+import { bulkUpdateStage } from "@/app/admin/(dash)/leads/bulk-actions";
 import { Icon } from "@/components/ui/Icon";
 import { StatCard } from "@/components/admin/StatCard";
 import { LeadAvatar } from "@/components/admin/LeadAvatar";
@@ -29,7 +29,6 @@ export function InboxBoard({
   q,
   wonLabel,
   stages,
-  admins,
   initial,
 }: {
   type: LeadType;
@@ -38,7 +37,6 @@ export function InboxBoard({
   q: string;
   wonLabel: string;
   stages: StageView[];
-  admins: string[];
   initial: State;
 }) {
   const [state, setState] = useState<State>(initial);
@@ -201,25 +199,6 @@ export function InboxBoard({
             </button>
           </ActionForm>
 
-          <ActionForm action={bulkAssign} className="flex items-center gap-2">
-            {[...selected].map((id) => (
-              <input key={id} type="hidden" name="id" value={id} />
-            ))}
-            <select
-              name="assignedTo"
-              defaultValue=""
-              className="rounded-lg border border-emerald/20 bg-white px-2.5 py-1.5 text-xs font-semibold text-emerald-deep outline-none focus:border-emerald"
-            >
-              <option value="">Unassigned</option>
-              {admins.map((a) => (
-                <option key={a} value={a}>{a.split("@")[0]}</option>
-              ))}
-            </select>
-            <button type="submit" className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-emerald-deep ring-1 ring-inset ring-emerald/20 transition hover:bg-emerald/5">
-              Assign
-            </button>
-          </ActionForm>
-
           <button
             type="button"
             onClick={() => setSelected(new Set())}
@@ -356,16 +335,8 @@ export function InboxBoard({
                         <span className="min-w-0">
                           <span className="block truncate font-semibold text-emerald-deep">{l.name}</span>
                           <span className="block truncate text-xs text-ink/45">
-                          {l.assignedTo ? `Owner: ${l.assignedTo.split("@")[0]}` : (l.email ?? "No email")}
+                          {l.email ?? "No email"}
                         </span>
-                        {l.tags.length > 0 && (
-                          <span className="mt-1 flex flex-wrap gap-1">
-                            {l.tags.slice(0, 3).map((t) => (
-                              <span key={t} className="rounded-full bg-emerald/8 px-2 py-0.5 text-[10px] font-semibold text-emerald-deep">{t}</span>
-                            ))}
-                            {l.tags.length > 3 && <span className="text-[10px] text-ink/40">+{l.tags.length - 3}</span>}
-                          </span>
-                        )}
                         </span>
                       </Link>
                     </td>

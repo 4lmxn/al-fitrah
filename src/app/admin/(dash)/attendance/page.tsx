@@ -107,11 +107,19 @@ export default async function AttendancePage({
             Everyone starts present — just mark the exceptions. You can save again to correct a day.
           </p>
         </div>
-        {marked && (
-          <p className="text-xs text-ink/50">
-            Last saved by {register.markedBy ?? "—"}
-          </p>
-        )}
+        <div className="flex flex-wrap items-center gap-3">
+          {marked && (
+            <p className="text-xs text-ink/50">
+              Last saved by {register.markedBy ?? "—"}
+            </p>
+          )}
+          <a
+            href={`/admin/attendance/export?${new URLSearchParams({ class: classSection, month: key.slice(0, 7) })}`}
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-white px-4 text-sm font-semibold text-emerald-deep shadow-soft ring-1 ring-emerald/10 transition hover:bg-emerald/5"
+          >
+            <Icon name="download" className="text-[18px]" /> Export this month
+          </a>
+        </div>
       </div>
 
       <CheckInCard

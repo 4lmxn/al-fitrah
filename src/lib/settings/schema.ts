@@ -85,7 +85,6 @@ export const settingsSchema = z.object({
 
   features: z.object({
     comingSoon: z.boolean(),
-    onlinePayments: z.boolean(),
     whatsappNotifications: z.boolean(),
     smsNotifications: z.boolean(),
   }),
@@ -205,7 +204,6 @@ export const DEFAULT_SETTINGS: Settings = {
 
   features: {
     comingSoon: true,
-    onlinePayments: false,
     whatsappNotifications: false,
     smsNotifications: false,
   },

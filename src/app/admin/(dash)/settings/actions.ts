@@ -115,7 +115,6 @@ export async function saveOperations(formData: FormData): Promise<ActionResult> 
       },
       features: {
         comingSoon: (await import("@/lib/flags")).COMING_SOON,
-        onlinePayments: formData.get("onlinePayments") === "on",
         whatsappNotifications: formData.get("whatsappNotifications") === "on",
         smsNotifications: formData.get("smsNotifications") === "on",
       },

@@ -7,7 +7,7 @@ import { OpeningForm } from "@/components/admin/OpeningForm";
 import { getEmploymentTypes } from "@/lib/taxonomy";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { updateOpening, deleteOpening } from "../actions";
-import { CARD } from "@/components/ui/styles";
+import { CARD, DANGER_BUTTON } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -39,8 +39,8 @@ export default async function EditOpeningPage({ params }: { params: Promise<{ id
             confirm={`Delete the “${opening.title}” opening? It comes off the careers page immediately. Applications already received are kept. This cannot be undone.`}
           >
             <input type="hidden" name="id" value={opening.id} />
-            <button type="submit" className="rounded-full border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100">
-              Delete
+            <button type="submit" className={DANGER_BUTTON}>
+              <Icon name="delete" className="text-[18px]" /> Delete
             </button>
           </ActionForm>
         </div>

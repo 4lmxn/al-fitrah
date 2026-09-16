@@ -4,7 +4,7 @@ import { getAllowlist, getOwners } from "@/lib/roles";
 import { Icon } from "@/components/ui/Icon";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { createStaff, deleteStaff, setStaffAccess, updateStaff } from "./actions";
-import { CARD, SECTION_LABEL } from "@/components/ui/styles";
+import { CARD, DANGER_BUTTON, SECTION_LABEL } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -199,7 +199,7 @@ export default async function StaffAdmin() {
                     <input type="hidden" name="id" value={s.id} />
                     <button
                       type="submit"
-                      className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-50"
+                      className={DANGER_BUTTON}
                     >
                       <Icon name="delete" className="text-[18px]" /> Remove from staff
                     </button>

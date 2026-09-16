@@ -8,7 +8,7 @@ import { ActionForm } from "@/components/admin/ActionForm";
 import { Icon } from "@/components/ui/Icon";
 import { applyToClass, createStructure, deleteStructure, updateStructure } from "./actions";
 import { EmptyState } from "@/components/admin/EmptyState";
-import { CARD, SECTION_LABEL } from "@/components/ui/styles";
+import { CARD, DANGER_BUTTON, SECTION_LABEL } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -207,9 +207,9 @@ export default async function FeeStructuresPage() {
                   <input type="hidden" name="id" value={s.id} />
                   <button
                     type="submit"
-                    className="text-xs font-semibold text-red-700/80 underline-offset-2 transition hover:underline"
+                    className={DANGER_BUTTON}
                   >
-                    Delete this fee
+                    <Icon name="delete" className="text-[18px]" /> Delete this fee
                   </button>
                 </ActionForm>
               )}

@@ -9,7 +9,7 @@ import { Icon } from "@/components/ui/Icon";
 import { createResource, deleteResource, updateResource } from "./actions";
 import { formatBytes } from "@/lib/bytes";
 import { EmptyState } from "@/components/admin/EmptyState";
-import { CARD, SECTION_LABEL } from "@/components/ui/styles";
+import { CARD, DANGER_BUTTON, SECTION_LABEL } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -225,9 +225,9 @@ export default async function ResourcesPage({
                   <input type="hidden" name="id" value={r.id} />
                   <button
                     type="submit"
-                    className="text-xs font-semibold text-red-700/80 underline-offset-2 transition hover:underline"
+                    className={DANGER_BUTTON}
                   >
-                    Delete this file
+                    <Icon name="delete" className="text-[18px]" /> Delete this file
                   </button>
                 </ActionForm>
               )}

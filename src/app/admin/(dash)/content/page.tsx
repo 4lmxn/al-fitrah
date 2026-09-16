@@ -5,7 +5,7 @@ import { ActionForm } from "@/components/admin/ActionForm";
 import { relativeTime } from "@/lib/relativeTime";
 import { Icon } from "@/components/ui/Icon";
 import { EmptyState } from "@/components/admin/EmptyState";
-import { CARD } from "@/components/ui/styles";
+import { CARD, TOGGLE_BUTTON } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -84,7 +84,7 @@ export default async function ContentPage() {
                       <input type="hidden" name="published" value={String(!p.published)} />
                       <button
                         type="submit"
-                        className="rounded-full px-3 py-1.5 text-xs font-semibold text-emerald opacity-70 transition hover:bg-emerald/5 group-hover:opacity-100"
+                        className={TOGGLE_BUTTON}
                       >
                         {p.published ? "Unpublish" : "Publish"}
                       </button>

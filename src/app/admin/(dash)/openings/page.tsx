@@ -5,7 +5,7 @@ import { Icon } from "@/components/ui/Icon";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { toggleOpening } from "./actions";
 import { EmptyState } from "@/components/admin/EmptyState";
-import { CARD } from "@/components/ui/styles";
+import { CARD, TOGGLE_BUTTON } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -84,7 +84,7 @@ export default async function OpeningsAdmin() {
                   <input type="hidden" name="active" value={String(!o.active)} />
                   <button
                     type="submit"
-                    className="rounded-full px-3 py-1.5 text-xs font-semibold text-emerald ring-1 ring-inset ring-emerald/20 transition hover:bg-emerald/5"
+                    className={TOGGLE_BUTTON}
                   >
                     {o.active ? "Hide" : "Make active"}
                   </button>

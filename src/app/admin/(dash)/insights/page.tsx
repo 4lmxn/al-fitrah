@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getInsights, INSIGHTS_SCAN_LIMIT } from "@/lib/leadQueries";
 import { Icon } from "@/components/ui/Icon";
+import { CARD, SECTION_LABEL } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +18,8 @@ export default async function InsightsPage() {
       </div>
 
       <div className="mt-7 grid gap-6 lg:grid-cols-2">
-        <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+        <section className={`${CARD} p-6`}>
+          <h2 className={SECTION_LABEL}>
             <Icon name="filter_alt" className="text-[18px] text-gold" /> Admission funnel
           </h2>
           <ol className="mt-5 space-y-3">
@@ -42,9 +43,9 @@ export default async function InsightsPage() {
           </p>
         </section>
 
-        <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
+        <section className={`${CARD} p-6`}>
           <div className="flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+            <h2 className={SECTION_LABEL}>
               <Icon name="campaign" className="text-[18px] text-gold" /> Sources
             </h2>
             <span className="rounded-full bg-emerald/8 px-3 py-1 text-xs font-semibold text-emerald-deep">
@@ -82,8 +83,8 @@ export default async function InsightsPage() {
         </section>
       </div>
 
-      <section className="mt-6 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
-        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+      <section className={`${CARD} mt-6 p-6`}>
+        <h2 className={SECTION_LABEL}>
           <Icon name="handshake" className="text-[18px] text-gold" /> Referrals
         </h2>
         {referrers.length === 0 ? (

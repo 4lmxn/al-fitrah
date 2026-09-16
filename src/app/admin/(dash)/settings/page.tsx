@@ -7,13 +7,13 @@ import { NOTIFY_CHANNELS, NOTIFY_EVENTS, tokensIn } from "@/lib/notify";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { PipelineEditor } from "@/components/admin/PipelineEditor";
 import { Icon } from "@/components/ui/Icon";
+import { CARD, SECTION_LABEL } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
 const field =
   "w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20";
 const label = "mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/45";
-const card = "rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft";
 
 const TABS = [
   { id: "school", label: "School", icon: "school" },
@@ -107,8 +107,8 @@ export default async function SettingsPage({
       </nav>
 
       {tab === "school" && (
-        <section className={card}>
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+        <section className={`${CARD} p-6`}>
+          <h2 className={SECTION_LABEL}>
             <Icon name="school" className="text-[18px] text-gold" /> School
           </h2>
           <ActionForm action={saveSchool} className="mt-4 space-y-4">
@@ -133,8 +133,8 @@ export default async function SettingsPage({
       )}
 
       {tab === "pipelines" && (
-        <section className={card}>
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+        <section className={`${CARD} p-6`}>
+          <h2 className={SECTION_LABEL}>
             <Icon name="account_tree" className="text-[18px] text-gold" /> Admissions pipeline
           </h2>
           <p className="mt-1 text-xs text-ink/50">The stages an enquiry moves through. Order is the order shown everywhere.</p>
@@ -144,8 +144,8 @@ export default async function SettingsPage({
         </section>
       )}
       {tab === "pipelines" && (
-        <section className={card}>
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+        <section className={`${CARD} p-6`}>
+          <h2 className={SECTION_LABEL}>
             <Icon name="work" className="text-[18px] text-gold" /> Recruitment pipeline
           </h2>
           <div className="mt-4">
@@ -155,8 +155,8 @@ export default async function SettingsPage({
       )}
 
       {tab === "lists" && (
-        <section className={card}>
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+        <section className={`${CARD} p-6`}>
+          <h2 className={SECTION_LABEL}>
             <Icon name="list" className="text-[18px] text-gold" /> Lists
           </h2>
           <ActionForm action={saveTaxonomy} className="mt-4 space-y-4">
@@ -174,8 +174,8 @@ export default async function SettingsPage({
       )}
 
       {tab === "notifications" && (
-        <section className={card}>
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+        <section className={`${CARD} p-6`}>
+          <h2 className={SECTION_LABEL}>
             <Icon name="notifications" className="text-[18px] text-gold" /> Notifications
           </h2>
           <p className="mt-1 text-xs text-ink/50">
@@ -211,8 +211,8 @@ export default async function SettingsPage({
       )}
 
       {tab === "operations" && (
-        <section className={card}>
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+        <section className={`${CARD} p-6`}>
+          <h2 className={SECTION_LABEL}>
             <Icon name="tune" className="text-[18px] text-gold" /> Operations
           </h2>
           <ActionForm action={saveOperations} className="mt-4 space-y-5">

@@ -4,6 +4,7 @@ import { listAudit, recentActors, RETENTION_DAYS } from "@/lib/audit";
 import { relativeTime } from "@/lib/relativeTime";
 import { Icon } from "@/components/ui/Icon";
 import { EmptyState } from "@/components/admin/EmptyState";
+import { CARD } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -90,7 +91,7 @@ export default async function AuditPage({
         </div>
       )}
 
-      <div className="mt-5 overflow-hidden rounded-2xl border border-emerald/10 bg-white/90 shadow-soft">
+      <div className={`${CARD} mt-5 overflow-hidden`}>
         {entries.length === 0 ? (
           <EmptyState
             icon="history"

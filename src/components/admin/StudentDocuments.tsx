@@ -7,13 +7,8 @@ import {
 import { MAX_DOCUMENTS, type StudentDocument } from "@/lib/studentDocuments";
 import { formatDate } from "@/lib/relativeTime";
 import { formatBytes } from "@/lib/bytes";
-
-const ICON_FOR: Record<string, string> = {
-  "application/pdf": "picture_as_pdf",
-  "image/jpeg": "image",
-  "image/png": "image",
-  "image/webp": "image",
-};
+import { CARD, SECTION_LABEL } from "@/components/ui/styles";
+import { fileIcon } from "@/components/ui/fileIcon";
 
 export function StudentDocuments({
   studentId,
@@ -28,8 +23,8 @@ export function StudentDocuments({
 
   return (
     <div className="mt-7 space-y-3">
-      <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
-        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+      <section className={`${CARD} p-6`}>
+        <h2 className={SECTION_LABEL}>
           <Icon name="folder" className="text-[18px] text-gold" /> Documents
           <span className="ml-auto text-xs font-normal normal-case text-ink/40">
             {documents.length} of {MAX_DOCUMENTS}
@@ -46,7 +41,7 @@ export function StudentDocuments({
             {documents.map((d) => (
               <li key={d.id} className="flex flex-wrap items-center gap-3 py-3">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald/8 text-emerald-deep">
-                  <Icon name={ICON_FOR[d.contentType] ?? "description"} className="text-[18px]" />
+                  <Icon name={fileIcon(d.contentType)} className="text-[18px]" />
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-semibold text-emerald-deep">
@@ -93,7 +88,7 @@ export function StudentDocuments({
       {!full && (
         <ActionForm
           action={uploadStudentDocumentAction}
-          className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft"
+          className={`${CARD} p-6`}
         >
           <input type="hidden" name="id" value={studentId} />
           <h3 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Add a document</h3>

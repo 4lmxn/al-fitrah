@@ -9,6 +9,7 @@ import { Icon } from "@/components/ui/Icon";
 import { createResource, deleteResource, updateResource } from "./actions";
 import { formatBytes } from "@/lib/bytes";
 import { EmptyState } from "@/components/admin/EmptyState";
+import { CARD, SECTION_LABEL } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -64,8 +65,8 @@ export default async function ResourcesPage({
         </p>
       </div>
 
-      <section className="mt-7 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
-        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+      <section className={`${CARD} mt-7 p-6`}>
+        <h2 className={SECTION_LABEL}>
           <Icon name="upload_file" className="text-[18px] text-gold" /> Share a file
         </h2>
         <ActionForm action={createResource} className="mt-4">
@@ -122,14 +123,14 @@ export default async function ResourcesPage({
         <EmptyState
           icon="folder_open"
           title="Nothing shared yet"
-          className="mt-5 rounded-2xl border border-emerald/10 bg-white/90 shadow-soft"
+          className={`${CARD} mt-5`}
         >
           Upload a newsletter or a form above and choose who should see it.
         </EmptyState>
       ) : (
         <div className="mt-5 space-y-4">
           {rows.map((r) => (
-            <section key={r.id} className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
+            <section key={r.id} className={`${CARD} p-6`}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
                   <h3 className="font-display text-lg text-emerald-deep">{r.title}</h3>

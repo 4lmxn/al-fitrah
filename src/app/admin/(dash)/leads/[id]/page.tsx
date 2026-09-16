@@ -19,6 +19,7 @@ import { sourceLabel } from "@/lib/leads";
 import { referralCode, referralLink, referralShareLink } from "@/lib/referral";
 import { updateStage, logContact, snoozeFollowUp, scheduleInterview } from "./actions";
 import { formatDate } from "@/lib/relativeTime";
+import { CARD, SECTION_LABEL } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -59,7 +60,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
         <Icon name="arrow_back" className="text-[18px]" /> Back to leads
       </Link>
 
-      <div className="mt-4 overflow-hidden rounded-2xl border border-emerald/10 bg-white/90 shadow-soft">
+      <div className={`${CARD} mt-4 overflow-hidden`}>
         <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7">
           <div className="flex items-center gap-4">
             <LeadAvatar name={lead.name} />
@@ -152,8 +153,8 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
       </div>
 
       {lead.type === "staff_application" && (
-        <section className="mt-6 rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft">
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+        <section className={`${CARD} mt-6 p-5`}>
+          <h2 className={SECTION_LABEL}>
             <Icon name="event_available" className="text-[18px] text-gold" /> Interview &amp; rating
           </h2>
           {lead.portfolioUrl && (
@@ -214,8 +215,8 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           {lead.message && (
-            <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
-              <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+            <section className={`${CARD} p-6`}>
+              <h2 className={SECTION_LABEL}>
                 <Icon name="format_quote" className="text-[18px] text-gold" /> Message
               </h2>
               <p className="mt-3 whitespace-pre-wrap leading-relaxed text-ink/80">{lead.message}</p>
@@ -223,8 +224,8 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
           )}
 
           {lead.type === "staff_application" && (
-            <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
-              <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+            <section className={`${CARD} p-6`}>
+              <h2 className={SECTION_LABEL}>
                 <Icon name="description" className="text-[18px] text-gold" /> Application CV
               </h2>
               {lead.cv ? (
@@ -244,8 +245,8 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
             </section>
           )}
 
-          <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
-            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+          <section className={`${CARD} p-6`}>
+            <h2 className={SECTION_LABEL}>
               <Icon name="history" className="text-[18px] text-gold" /> Activity
             </h2>
             <ActionForm action={logContact} className="mt-4 space-y-3 rounded-xl border border-emerald/15 bg-cream/30 p-4">
@@ -286,8 +287,8 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
         </div>
 
         <aside className="lg:sticky lg:top-6 lg:self-start">
-          <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
-            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+          <section className={`${CARD} p-6`}>
+            <h2 className={SECTION_LABEL}>
               <Icon name="conversion_path" className="text-[18px] text-gold" /> Pipeline
             </h2>
             <ol className="mt-5 space-y-1">
@@ -326,8 +327,8 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
             <p className="mt-4 border-t border-emerald/10 pt-3 text-[11px] text-ink/45">Tap a stage to move this lead.</p>
           </section>
 
-          <section className="mt-6 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
-            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+          <section className={`${CARD} mt-6 p-6`}>
+            <h2 className={SECTION_LABEL}>
               <Icon name="event" className="text-[18px] text-gold" /> Follow-up
             </h2>
 
@@ -374,7 +375,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
 
           {showReferral && (
             <section className="mt-6 rounded-2xl border border-emerald/15 bg-white/90 p-6 shadow-soft">
-              <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+              <h2 className={SECTION_LABEL}>
                 <Icon name="school" className="text-[18px] text-gold" /> Enrolment
               </h2>
               {enrolled ? (

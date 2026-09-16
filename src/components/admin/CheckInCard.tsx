@@ -4,6 +4,7 @@ import { LocationFields } from "@/components/admin/LocationFields";
 import { checkIn } from "@/app/admin/(dash)/attendance/actions";
 import { formatDistance } from "@/lib/geofence";
 import type { CheckIn, StaffDay } from "@/lib/staffAttendance";
+import { CARD, SECTION_LABEL } from "@/components/ui/styles";
 
 function time(ms: number | null): string {
   return ms ? new Date(ms).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }) : "—";
@@ -28,10 +29,10 @@ export function CheckInCard({
   const others = Object.values(day.entries).sort((a, b) => (a.atMs ?? 0) - (b.atMs ?? 0));
 
   return (
-    <section className="mt-7 rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft">
+    <section className={`${CARD} mt-7 p-5`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+          <h2 className={SECTION_LABEL}>
             <Icon name="how_to_reg" className="text-[18px] text-gold" /> Staff check-in
           </h2>
           <p className="mt-1 text-sm text-ink/55">

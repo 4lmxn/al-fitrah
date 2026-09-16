@@ -4,6 +4,7 @@ import { getAllowlist, getOwners } from "@/lib/roles";
 import { Icon } from "@/components/ui/Icon";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { createStaff, deleteStaff, setStaffAccess, updateStaff } from "./actions";
+import { CARD, SECTION_LABEL } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -40,8 +41,8 @@ export default async function StaffAdmin() {
         </p>
       )}
 
-      <section className="mt-7 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
-        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+      <section className={`${CARD} mt-7 p-6`}>
+        <h2 className={SECTION_LABEL}>
           <Icon name="person_add" className="text-[18px] text-gold" /> Add someone
         </h2>
         <ActionForm action={createStaff} className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -79,7 +80,7 @@ export default async function StaffAdmin() {
       ) : (
         <ul className="mt-8 space-y-4">
           {staff.map((s) => (
-            <li key={s.id} className="rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft">
+            <li key={s.id} className={`${CARD} p-5`}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="font-semibold text-emerald-deep">

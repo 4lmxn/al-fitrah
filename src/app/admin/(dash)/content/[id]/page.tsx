@@ -6,6 +6,7 @@ import { PostForm } from "@/components/admin/PostForm";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { requireAdmin } from "@/lib/adminAuth";
 import { Icon } from "@/components/ui/Icon";
+import { CARD } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +34,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
         )}
       </div>
 
-      <div className="mt-7 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft sm:p-8">
+      <div className={`${CARD} mt-7 p-6 sm:p-8`}>
         <PostForm action={updatePost} post={post} submitLabel="Save changes" />
       </div>
 

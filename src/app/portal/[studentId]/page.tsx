@@ -8,6 +8,7 @@ import { Icon } from "@/components/ui/Icon";
 import { listDocuments } from "@/lib/studentDocuments";
 import { PortalDocuments } from "@/components/portal/PortalDocuments";
 import { formatDate } from "@/lib/relativeTime";
+import { CARD, SECTION_LABEL } from "@/components/ui/styles";
 
 export const metadata: Metadata = { title: "Fees & attendance", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -67,9 +68,9 @@ export default async function ChildPage({ params }: { params: Promise<{ studentI
           </div>
         </dl>
 
-        <section className="mt-8 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
+        <section className={`${CARD} mt-8 p-6`}>
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+            <h2 className={SECTION_LABEL}>
               <Icon name="fact_check" className="text-[18px] text-gold" /> Attendance
             </h2>
             <span className="text-xs text-ink/70">{monthLabel}</span>
@@ -143,8 +144,8 @@ export default async function ChildPage({ params }: { params: Promise<{ studentI
           )}
         </section>
 
-        <section className="mt-8 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+        <section className={`${CARD} mt-8 p-6`}>
+          <h2 className={SECTION_LABEL}>
             <Icon name="receipt_long" className="text-[18px] text-gold" /> Payments
           </h2>
           {payments.length === 0 ? (

@@ -8,6 +8,7 @@ import { ActionForm } from "@/components/admin/ActionForm";
 import { Icon } from "@/components/ui/Icon";
 import { applyToClass, createStructure, deleteStructure, updateStructure } from "./actions";
 import { EmptyState } from "@/components/admin/EmptyState";
+import { CARD, SECTION_LABEL } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -41,8 +42,8 @@ export default async function FeeStructuresPage() {
         </p>
       </div>
 
-      <section className="mt-7 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
-        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+      <section className={`${CARD} mt-7 p-6`}>
+        <h2 className={SECTION_LABEL}>
           <Icon name="add" className="text-[18px] text-gold" /> New fee
         </h2>
         <ActionForm action={createStructure} className="mt-4">
@@ -88,7 +89,7 @@ export default async function FeeStructuresPage() {
         <EmptyState
           icon="payments"
           title="No fees defined yet"
-          className="mt-5 rounded-2xl border border-emerald/10 bg-white/90 shadow-soft"
+          className={`${CARD} mt-5`}
         >
           Add one above, then apply it to a class. Totals set by hand on a child&apos;s record keep
           working either way.
@@ -96,7 +97,7 @@ export default async function FeeStructuresPage() {
       ) : (
         <div className="mt-5 space-y-4">
           {structures.map((s) => (
-            <section key={s.id} className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
+            <section key={s.id} className={`${CARD} p-6`}>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h3 className="font-display text-lg text-emerald-deep">{s.name}</h3>

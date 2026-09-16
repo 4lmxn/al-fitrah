@@ -221,7 +221,11 @@ export default async function ResourcesPage({
               </ActionForm>
 
               {admin.role === "owner" && (
-                <ActionForm action={deleteResource} className="mt-3">
+                <ActionForm
+                  action={deleteResource}
+                  className="mt-3"
+                  confirm={`Delete “${r.title}”? The file itself is deleted, not just the listing, so any link to it stops working. This cannot be undone.`}
+                >
                   <input type="hidden" name="id" value={r.id} />
                   <button
                     type="submit"

@@ -199,7 +199,11 @@ export default async function FeeStructuresPage() {
               </ActionForm>
 
               {admin.role === "owner" && (
-                <ActionForm action={deleteStructure} className="mt-3">
+                <ActionForm
+                  action={deleteStructure}
+                  className="mt-3"
+                  confirm={`Delete the “${s.name}” fee from the price list? Children already on it keep their balance — this only stops it being applied to anyone new. This cannot be undone.`}
+                >
                   <input type="hidden" name="id" value={s.id} />
                   <button
                     type="submit"

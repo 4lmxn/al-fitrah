@@ -43,7 +43,10 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
             <p className="text-sm font-semibold text-red-800">Delete this post</p>
             <p className="text-xs text-red-700/70">Removes it and its image. This cannot be undone.</p>
           </div>
-          <ActionForm action={deletePost}>
+          <ActionForm
+            action={deletePost}
+            confirm={`Delete “${post.title}”? It comes off the website immediately, and its image is deleted too. This cannot be undone.`}
+          >
             <input type="hidden" name="id" value={post.id} />
             <button type="submit" className="rounded-full border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100">
               Delete

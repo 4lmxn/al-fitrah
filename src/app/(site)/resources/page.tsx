@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { listForAudience, type Resource } from "@/lib/resources";
 import { formatBytes } from "@/lib/bytes";
+import { CARD } from "@/components/ui/styles";
 
 export async function generateMetadata(): Promise<Metadata> {
   return pageMeta("/resources", {
@@ -52,7 +53,7 @@ export default async function ResourcesPage() {
                   <li>
                     <a
                       href={r.publicUrl ?? `/api/resources/${r.id}`}
-                      className="flex items-center gap-4 rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft transition hover:shadow-lift"
+                      className={`${CARD} flex items-center gap-4 p-5 transition hover:shadow-lift`}
                     >
                       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald/8 text-emerald-deep">
                         <Icon name="description" className="text-[22px]" />

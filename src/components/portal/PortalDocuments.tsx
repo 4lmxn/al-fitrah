@@ -4,13 +4,8 @@ import { uploadDocument } from "@/app/portal/[studentId]/actions";
 import { MAX_DOCUMENTS, type StudentDocument } from "@/lib/studentDocuments";
 import { formatDate } from "@/lib/relativeTime";
 import { formatBytes } from "@/lib/bytes";
-
-const ICON_FOR: Record<string, string> = {
-  "application/pdf": "picture_as_pdf",
-  "image/jpeg": "image",
-  "image/png": "image",
-  "image/webp": "image",
-};
+import { CARD, SECTION_LABEL } from "@/components/ui/styles";
+import { fileIcon } from "@/components/ui/fileIcon";
 
 export function PortalDocuments({
   studentId,
@@ -22,8 +17,8 @@ export function PortalDocuments({
   const full = documents.length >= MAX_DOCUMENTS;
 
   return (
-    <section className="mt-8 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
-      <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+    <section className={`${CARD} mt-8 p-6`}>
+      <h2 className={SECTION_LABEL}>
         <Icon name="folder" className="text-[18px] text-gold" /> Documents
       </h2>
 
@@ -37,7 +32,7 @@ export function PortalDocuments({
           {documents.map((d) => (
             <li key={d.id} className="flex items-center gap-3 py-3">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald/8 text-emerald-deep">
-                <Icon name={ICON_FOR[d.contentType] ?? "description"} className="text-[18px]" />
+                <Icon name={fileIcon(d.contentType)} className="text-[18px]" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold text-emerald-deep">{d.label}</span>

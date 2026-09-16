@@ -6,6 +6,7 @@ import { listForAudience } from "@/lib/resources";
 import { Icon } from "@/components/ui/Icon";
 import { ParentSignOut } from "@/components/portal/ParentSignOut";
 import { formatBytes } from "@/lib/bytes";
+import { CARD } from "@/components/ui/styles";
 
 export const metadata: Metadata = { title: "Resources", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -42,7 +43,7 @@ export default async function PortalResourcesPage() {
         </p>
 
         {resources.length === 0 ? (
-          <p className="mt-8 rounded-2xl border border-emerald/10 bg-white/90 p-8 text-center text-sm text-ink/55 shadow-soft">
+          <p className={`${CARD} mt-8 p-8 text-center text-sm text-ink/55`}>
             Nothing shared with you yet.
           </p>
         ) : (
@@ -51,7 +52,7 @@ export default async function PortalResourcesPage() {
               <li key={r.id}>
                 <a
                   href={r.publicUrl ?? `/api/resources/${r.id}`}
-                  className="flex items-center gap-4 rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft transition hover:shadow-lift"
+                  className={`${CARD} flex items-center gap-4 p-5 transition hover:shadow-lift`}
                 >
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald/8 text-emerald-deep">
                     <Icon name="description" className="text-[22px]" />

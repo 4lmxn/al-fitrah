@@ -14,6 +14,7 @@ import {
 import { RemindButton } from "@/components/admin/RemindButton";
 import { formatDate } from "@/lib/relativeTime";
 import { EmptyState } from "@/components/admin/EmptyState";
+import { CARD } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -150,17 +151,17 @@ export default async function FeesPage({
       </div>
 
       <div className="mt-7 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft">
+        <div className={`${CARD} p-5`}>
           <p className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">Worth chasing today</p>
           <p className="mt-1 font-display text-2xl tabular-nums text-emerald-deep">{formatPaise(chaseTotal)}</p>
           <p className="mt-0.5 text-xs text-ink/45">{chase.length} {chase.length === 1 ? "family" : "families"}</p>
         </div>
-        <div className="rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft">
+        <div className={`${CARD} p-5`}>
           <p className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">Promised, not yet due</p>
           <p className="mt-1 font-display text-2xl tabular-nums text-emerald-deep">{formatPaise(promisedTotal)}</p>
           <p className="mt-0.5 text-xs text-ink/45">{promised.length} waiting on a date they gave</p>
         </div>
-        <div className="rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft">
+        <div className={`${CARD} p-5`}>
           <p className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">No fee set yet</p>
           <p className="mt-1 font-display text-2xl tabular-nums text-emerald-deep">{unset}</p>
           <p className="mt-0.5 text-xs text-ink/45">invisible to collection until set</p>
@@ -171,7 +172,7 @@ export default async function FeesPage({
         <EmptyState
           icon="task_alt"
           title="Nobody to chase on this page"
-          className="mt-5 rounded-2xl border border-emerald/10 bg-white/90 shadow-soft"
+          className={`${CARD} mt-5`}
         >
           {unset > 0
             ? `${unset} ${unset === 1 ? "child has" : "children have"} no fee set yet — set a total on their record so they appear here.`
@@ -180,7 +181,7 @@ export default async function FeesPage({
       ) : (
         <div className="mt-5 space-y-5">
           {groups.map(({ bucket, items }) => (
-            <section key={bucket} className="overflow-hidden rounded-2xl border border-emerald/10 bg-white/90 shadow-soft">
+            <section key={bucket} className={`${CARD} overflow-hidden`}>
               <div className="flex flex-wrap items-center gap-3 border-b border-emerald/10 bg-cream/40 px-5 py-3">
                 <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${bucketStyle[bucket].chip}`}>
                   <Icon name={bucketStyle[bucket].icon} className="text-[15px]" />
@@ -200,7 +201,7 @@ export default async function FeesPage({
       )}
 
       {promised.length > 0 && (
-        <section className="mt-5 overflow-hidden rounded-2xl border border-emerald/10 bg-white/90 shadow-soft">
+        <section className={`${CARD} mt-5 overflow-hidden`}>
           <div className="flex flex-wrap items-center gap-3 border-b border-emerald/10 bg-cream/40 px-5 py-3">
             <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${bucketStyle.promised.chip}`}>
               <Icon name="handshake" className="text-[15px]" /> {FEE_BUCKET_LABEL.promised}

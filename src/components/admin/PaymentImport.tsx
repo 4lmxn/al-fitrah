@@ -9,6 +9,7 @@ import {
 import { guessMapping, headersOf, type ColumnMap } from "@/lib/paymentImport";
 import { formatPaise } from "@/lib/money";
 import { Icon } from "@/components/ui/Icon";
+import { CARD } from "@/components/ui/styles";
 
 const field =
   "w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20";
@@ -80,7 +81,7 @@ export function PaymentImport() {
     <form action={formAction} className="space-y-5">
       <input type="hidden" name="csv" value={csv} />
 
-      <div className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
+      <div className={`${CARD} p-6`}>
         <label className="block">
           <span className={label}>SBI Collect report (CSV)</span>
           <input
@@ -101,7 +102,7 @@ export function PaymentImport() {
       </div>
 
       {headers.length > 0 && (
-        <div className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
+        <div className={`${CARD} p-6`}>
           <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/70">
             Which column is which?
           </h2>

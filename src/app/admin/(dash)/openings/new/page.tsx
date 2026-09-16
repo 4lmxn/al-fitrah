@@ -3,6 +3,7 @@ import { Icon } from "@/components/ui/Icon";
 import { OpeningForm } from "@/components/admin/OpeningForm";
 import { getEmploymentTypes } from "@/lib/taxonomy";
 import { createOpening } from "../actions";
+import { CARD } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ export default async function NewOpeningPage() {
       </Link>
       <h1 className="mt-4 font-display text-3xl text-emerald-deep">New opening</h1>
       <p className="mt-1 text-sm text-ink/55">Publish a role to the public careers page.</p>
-      <div className="mt-7 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft sm:p-8">
+      <div className={`${CARD} mt-7 p-6 sm:p-8`}>
         <OpeningForm action={createOpening} employmentTypes={employmentTypes} submitLabel="Create opening" />
       </div>
     </div>

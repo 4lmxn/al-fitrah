@@ -15,6 +15,7 @@ import { StatCard } from "@/components/admin/StatCard";
 import { LeadAvatar } from "@/components/admin/LeadAvatar";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { EmptyState } from "@/components/admin/EmptyState";
+import { CARD } from "@/components/ui/styles";
 
 type State = {
   rows: LeadRow[];
@@ -271,7 +272,7 @@ export function InboxBoard({
         </form>
       </div>
 
-      <div className="mt-5 overflow-hidden rounded-2xl border border-emerald/10 bg-white/90 shadow-soft">
+      <div className={`${CARD} mt-5 overflow-hidden`}>
         {rows.length === 0 ? (
           <EmptyState
             icon={attention ? "task_alt" : q || activeStage ? "search_off" : "inbox"}

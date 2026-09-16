@@ -4,6 +4,7 @@ import { SOURCE_LABEL } from "@/lib/leads";
 import { getManualLeadSources, getPrograms } from "@/lib/taxonomy";
 import { AGE_BANDS } from "@/lib/leadSchema";
 import { createLead } from "./actions";
+import { CARD } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +29,7 @@ export default async function NewLeadPage() {
       <h1 className="mt-4 font-display text-3xl text-emerald-deep">Add a lead</h1>
       <p className="mt-1 text-sm text-ink/55">Log a walk-in, phone, or referral enquiry — it joins the same pipeline.</p>
 
-      <form action={createLead} className="mt-7 space-y-5 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft sm:p-8">
+      <form action={createLead} className={`${CARD} mt-7 space-y-5 p-6 sm:p-8`}>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <label className={labelCls} htmlFor="parentName">Parent&apos;s name *</label>

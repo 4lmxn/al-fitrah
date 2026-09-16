@@ -5,6 +5,7 @@ import { Icon } from "@/components/ui/Icon";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { toggleOpening } from "./actions";
 import { EmptyState } from "@/components/admin/EmptyState";
+import { CARD } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +43,7 @@ export default async function OpeningsAdmin() {
         <EmptyState
           icon="work_off"
           title="No openings yet"
-          className="mt-8 rounded-2xl border border-emerald/10 bg-white/90 shadow-soft"
+          className={`${CARD} mt-8`}
           action={
             <Link href="/admin/openings/new" className="mt-1 text-sm font-semibold text-emerald hover:text-emerald-deep">
                     Create opening
@@ -56,7 +57,7 @@ export default async function OpeningsAdmin() {
           {openings.map((o) => (
             <div
               key={o.id}
-              className="flex flex-col gap-4 rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft sm:flex-row sm:items-center sm:justify-between"
+              className={`${CARD} flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between`}
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2.5">

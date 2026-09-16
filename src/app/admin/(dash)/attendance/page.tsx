@@ -21,6 +21,7 @@ import { RegisterSummary } from "@/components/admin/RegisterSummary";
 import { CheckInCard } from "@/components/admin/CheckInCard";
 import { LocationFields } from "@/components/admin/LocationFields";
 import { EmptyState } from "@/components/admin/EmptyState";
+import { CARD } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -162,7 +163,7 @@ export default async function AttendancePage({
         <EmptyState
           icon="groups"
           title={<>No children in {classSection}</>}
-          className="mt-6 rounded-2xl border border-emerald/10 bg-white/90 shadow-soft"
+          className={`${CARD} mt-6`}
           action={
             <Link href="/admin/students" className="mt-1 text-sm font-semibold text-emerald hover:text-emerald-deep">
                     Go to students
@@ -176,7 +177,7 @@ export default async function AttendancePage({
           <input type="hidden" name="classSection" value={classSection} />
           <input type="hidden" name="dateKey" value={key} />
 
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-emerald/10 bg-white/90 px-5 py-4 shadow-soft">
+          <div className={`${CARD} mb-4 flex flex-wrap items-center justify-between gap-4 px-5 py-4`}>
             <RegisterSummary
               formId={REGISTER_FORM_ID}
               presentIds={statuses.filter((s) => s.present).map((s) => s.id)}
@@ -196,7 +197,7 @@ export default async function AttendancePage({
               return (
                 <li
                   key={s.id}
-                  className="rounded-2xl border border-emerald/10 bg-white/90 p-4 shadow-soft transition hover:border-emerald/20"
+                  className={`${CARD} p-4 transition hover:border-emerald/20`}
                 >
                   <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
                     <div className="min-w-0">

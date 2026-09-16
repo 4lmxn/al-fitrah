@@ -5,6 +5,7 @@ import { ActionForm } from "@/components/admin/ActionForm";
 import { relativeTime } from "@/lib/relativeTime";
 import { Icon } from "@/components/ui/Icon";
 import { EmptyState } from "@/components/admin/EmptyState";
+import { CARD } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +28,7 @@ export default async function ContentPage() {
         </Link>
       </div>
 
-      <div className="mt-7 overflow-hidden rounded-2xl border border-emerald/10 bg-white/90 shadow-soft">
+      <div className={`${CARD} mt-7 overflow-hidden`}>
         {posts.length === 0 ? (
           <EmptyState
             icon="article"

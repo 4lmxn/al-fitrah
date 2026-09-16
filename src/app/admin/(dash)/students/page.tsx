@@ -3,6 +3,7 @@ import { listStudents, STUDENT_STATUSES, STUDENT_STATUS_LABEL, SEARCH_SCAN_LIMIT
 import { Icon } from "@/components/ui/Icon";
 import { formatDate } from "@/lib/relativeTime";
 import { EmptyState } from "@/components/admin/EmptyState";
+import { CARD } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -84,7 +85,7 @@ export default async function StudentsPage({
         </form>
       </div>
 
-      <div className="mt-5 overflow-hidden rounded-2xl border border-emerald/10 bg-white/90 shadow-soft">
+      <div className={`${CARD} mt-5 overflow-hidden`}>
         {rows.length === 0 ? (
           <EmptyState
             icon={q || status ? "search_off" : "school"}

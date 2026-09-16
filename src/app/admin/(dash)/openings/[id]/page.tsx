@@ -7,6 +7,7 @@ import { OpeningForm } from "@/components/admin/OpeningForm";
 import { getEmploymentTypes } from "@/lib/taxonomy";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { updateOpening, deleteOpening } from "../actions";
+import { CARD } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +24,7 @@ export default async function EditOpeningPage({ params }: { params: Promise<{ id
       <h1 className="mt-4 font-display text-3xl text-emerald-deep">Edit opening</h1>
       <p className="mt-1 text-sm text-ink/55">Changes go live on the careers page immediately.</p>
 
-      <div className="mt-7 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft sm:p-8">
+      <div className={`${CARD} mt-7 p-6 sm:p-8`}>
         <OpeningForm action={updateOpening} opening={opening} employmentTypes={employmentTypes} submitLabel="Save changes" />
       </div>
 

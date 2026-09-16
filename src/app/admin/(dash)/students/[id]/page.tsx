@@ -13,6 +13,7 @@ import { StudentDocuments } from "@/components/admin/StudentDocuments";
 import { listDocuments } from "@/lib/studentDocuments";
 import { requireAdmin } from "@/lib/adminAuth";
 import { listStructures } from "@/lib/feeStructures";
+import { CARD, SECTION_LABEL } from "@/components/ui/styles";
 
 export const dynamic = "force-dynamic";
 
@@ -125,7 +126,7 @@ export default async function StudentDetail({
       {tab === "attendance" && (
         <section className="mt-7">
           {!student.classSection ? (
-            <div className="rounded-2xl border border-emerald/10 bg-white/90 p-8 text-center shadow-soft">
+            <div className={`${CARD} p-8 text-center`}>
               <p className="font-semibold text-emerald-deep">Not in a class yet</p>
               <p className="mx-auto mt-2 max-w-sm text-sm text-ink/55">
                 Attendance is taken per class, so this child needs a class before there is a
@@ -140,14 +141,14 @@ export default async function StudentDetail({
                   { label: "Away", value: attendance.absent, tone: attendance.absent > 0 ? "text-red-700" : "text-ink/40" },
                   { label: "Days counted", value: attendance.counted, tone: "text-ink/70" },
                 ].map((s) => (
-                  <div key={s.label} className="rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft">
+                  <div key={s.label} className={`${CARD} p-5`}>
                     <p className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">{s.label}</p>
                     <p className={`mt-1 text-3xl font-semibold tabular-nums ${s.tone}`}>{s.value}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-3 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
+              <div className={`${CARD} mt-3 p-6`}>
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">
                     This month · {student.classSection}
@@ -186,8 +187,8 @@ export default async function StudentDetail({
         />
       )}
 
-      <section hidden={tab !== "guardians"} className="mt-7 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
-        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+      <section hidden={tab !== "guardians"} className={`${CARD} mt-7 p-6`}>
+        <h2 className={SECTION_LABEL}>
           <Icon name="family_restroom" className="text-[18px] text-gold" /> Guardians
         </h2>
         {student.guardians.length === 0 ? (
@@ -229,8 +230,8 @@ export default async function StudentDetail({
       <ActionForm action={updateStudent} className="mt-6 space-y-6">
         <input type="hidden" name="id" value={student.id} />
 
-        <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+        <section className={`${CARD} p-6`}>
+          <h2 className={SECTION_LABEL}>
             <Icon name="badge" className="text-[18px] text-gold" /> Details
           </h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -288,8 +289,8 @@ export default async function StudentDetail({
           </div>
         </section>
 
-        <section className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+        <section className={`${CARD} p-6`}>
+          <h2 className={SECTION_LABEL}>
             <Icon name="emergency" className="text-[18px] text-gold" /> Emergency contact
           </h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-3">
@@ -309,7 +310,7 @@ export default async function StudentDetail({
         </section>
 
         <section className="rounded-2xl border border-gold/30 bg-gold-soft/20 p-6 shadow-soft">
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+          <h2 className={SECTION_LABEL}>
             <Icon name="medical_information" className="text-[18px] text-gold" /> Medical
           </h2>
           <p className="mt-1 text-xs text-ink/50">

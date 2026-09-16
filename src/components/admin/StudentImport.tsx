@@ -3,6 +3,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { importStudents, type ImportOutcome } from "@/app/admin/(dash)/students/import/actions";
 import { Icon } from "@/components/ui/Icon";
+import { CARD } from "@/components/ui/styles";
 
 const SAMPLE = `admissionNumber,firstName,lastName,dob,program,classSection,status,guardianName,guardianPhone,guardianEmail,feeTotal
 AF-2025-0001,Yusuf,Khan,03/08/2022,Pre-KG,Rose,enrolled,Ayesha Khan,9876543210,ayesha@example.com,25000
@@ -46,7 +47,7 @@ export function StudentImport() {
 
   return (
     <form action={formAction} className="space-y-5">
-      <div className="rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
+      <div className={`${CARD} p-6`}>
         <label className="block">
           <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/70">CSV file</span>
           <input

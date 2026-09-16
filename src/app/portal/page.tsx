@@ -6,6 +6,7 @@ import { getSettings } from "@/lib/settings";
 import { formatPaise } from "@/lib/money";
 import { Icon } from "@/components/ui/Icon";
 import { ParentSignOut } from "@/components/portal/ParentSignOut";
+import { CARD } from "@/components/ui/styles";
 
 export const metadata: Metadata = { title: "Your children", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -38,7 +39,7 @@ export default async function PortalPage() {
             <li key={c.id}>
               <Link
                 href={`/portal/${c.id}`}
-                className="flex flex-wrap items-center gap-4 rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft transition hover:shadow-lift"
+                className={`${CARD} flex flex-wrap items-center gap-4 p-5 transition hover:shadow-lift`}
               >
                 <span className="flex h-11 w-11 items-center justify-center rounded-full bg-emerald/8 font-display text-lg text-emerald-deep">
                   {c.fullName.charAt(0)}
@@ -68,7 +69,7 @@ export default async function PortalPage() {
 
         <Link
           href="/portal/resources"
-          className="mt-4 flex items-center gap-4 rounded-2xl border border-emerald/10 bg-white/90 p-5 shadow-soft transition hover:shadow-lift"
+          className={`${CARD} mt-4 flex items-center gap-4 p-5 transition hover:shadow-lift`}
         >
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-emerald/8 text-emerald-deep">
             <Icon name="folder_shared" className="text-[22px]" />

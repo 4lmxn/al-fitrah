@@ -13,6 +13,7 @@ import { ActionForm } from "@/components/admin/ActionForm";
 import { Icon } from "@/components/ui/Icon";
 import { feeBucket, FEE_BUCKET_LABEL } from "@/lib/feeStatus";
 import { formatDate } from "@/lib/relativeTime";
+import { CARD, SECTION_LABEL } from "@/components/ui/styles";
 
 const field =
   "w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20";
@@ -49,9 +50,9 @@ export function FeesPanel({
   };
 
   return (
-    <section id="fees" className="mt-6 scroll-mt-24 rounded-2xl border border-emerald/10 bg-white/90 p-6 shadow-soft">
+    <section id="fees" className={`${CARD} mt-6 scroll-mt-24 p-6`}>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
+        <h2 className={SECTION_LABEL}>
           <Icon name="payments" className="text-[18px] text-gold" /> Fees
         </h2>
         <span

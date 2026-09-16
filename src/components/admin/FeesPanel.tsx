@@ -102,135 +102,145 @@ export function FeesPanel({
         </div>
       </dl>
 
-      {structures.length > 0 && (
-        <ActionForm action={assignStructure} className="mt-4 flex flex-wrap items-end gap-2">
-          <input type="hidden" name="id" value={studentId} />
-          <label className="block">
-            <span className={label}>Fee structure</span>
-            <select name="structureId" defaultValue={fees.structureId ?? ""} className={`${field} w-56`}>
-              <option value="" disabled>
-                Choose a fee…
-              </option>
-              {structures.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name} — {formatPaise(s.amountPaise)}
+      <details open={fees.totalPaise === 0} className="group mt-4 rounded-xl border border-emerald/15 bg-cream/20">
+        <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-ink/45 [&::-webkit-details-marker]:hidden">
+          <Icon name="expand_more" className="text-[18px] text-gold transition group-open:rotate-180" />
+          Fee for the year, and when the balance is due
+        </summary>
+        <div className="px-4 pb-4">
+        {structures.length > 0 && (
+          <ActionForm action={assignStructure} className="mt-4 flex flex-wrap items-end gap-2">
+            <input type="hidden" name="id" value={studentId} />
+            <label className="block">
+              <span className={label}>Fee structure</span>
+              <select name="structureId" defaultValue={fees.structureId ?? ""} className={`${field} w-56`}>
+                <option value="" disabled>
+                  Choose a fee…
                 </option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className={label}>Concession (₹)</span>
-            <input
-              name="discount"
-              inputMode="decimal"
-              defaultValue={fees.discountPaise ? (fees.discountPaise / 100).toFixed(2) : ""}
-              placeholder="0"
-              className={`${field} w-28`}
-            />
-          </label>
-          <label className="block">
-            <span className={label}>Reason</span>
-            <input
-              name="discountReason"
-              defaultValue={fees.discountReason ?? ""}
-              placeholder="Sibling discount"
-              className={`${field} w-52`}
-            />
-          </label>
-          <button
-            type="submit"
-            className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep ring-1 ring-emerald/20 transition hover:bg-emerald/5"
-          >
-            Apply fee
-          </button>
-          <p className="w-full text-[11px] text-ink/45">
-            Sets the total to the fee less the concession.{" "}
-            <Link href="/admin/fees/structures" className="font-semibold text-emerald hover:text-emerald-deep">
-              Manage fee structures
-            </Link>
-          </p>
-        </ActionForm>
-      )}
-
-      <ActionForm action={setFeeTotal} className="mt-4 flex flex-wrap items-end gap-2">
-        <input type="hidden" name="id" value={studentId} />
-        <label className="block">
-          <span className={label}>
-            {structures.length > 0 ? "Or set a one-off total (₹)" : "Set total for the year (₹)"}
-          </span>
-          <input
-            name="total"
-            inputMode="decimal"
-            defaultValue={fees.totalPaise ? (fees.totalPaise / 100).toFixed(2) : ""}
-            placeholder="25000"
-            className={`${field} w-40`}
-          />
-        </label>
-        <button type="submit" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep ring-1 ring-emerald/20 transition hover:bg-emerald/5">
-          Save total
-        </button>
-      </ActionForm>
-
-      <ActionForm action={setFeeDueDate} className="mt-3 flex flex-wrap items-end gap-2">
-        <input type="hidden" name="id" value={studentId} />
-        <label className="block">
-          <span className={label}>Balance due on</span>
-          <input type="date" name="dueDate" defaultValue={dayInput(fees.dueDateMs)} className={`${field} w-44`} />
-        </label>
-        <button type="submit" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep ring-1 ring-emerald/20 transition hover:bg-emerald/5">
-          Save due date
-        </button>
-        {fees.dueDateMs && (
-          <button
-            type="submit"
-            name="dueDate"
-            value="clear"
-            className="rounded-full px-3 py-2 text-sm font-semibold text-ink/50 transition hover:text-ink"
-          >
-            Clear
-          </button>
-        )}
-      </ActionForm>
-
-      <ActionForm action={logFeePromise} className="mt-3 rounded-xl border border-emerald/15 bg-cream/30 p-4">
-        <input type="hidden" name="id" value={studentId} />
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">
-          Parent promised to pay
-        </p>
-        <div className="mt-3 grid gap-3 sm:grid-cols-[11rem_1fr]">
-          <label className="block">
-            <span className={label}>By</span>
-            <input type="date" name="promisedDate" defaultValue={dayInput(fees.promisedDateMs)} className={field} />
-          </label>
-          <label className="block">
-            <span className={label}>What they said</span>
-            <input
-              name="promiseNote"
-              defaultValue={fees.promiseNote ?? ""}
-              placeholder="After salary comes in, before the 5th"
-              className={field}
-            />
-          </label>
-        </div>
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <button type="submit" className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep ring-1 ring-emerald/20 transition hover:bg-emerald/5">
-            <Icon name="handshake" className="text-[18px]" /> Log promise
-          </button>
-          {fees.promisedDateMs && (
+                {structures.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name} — {formatPaise(s.amountPaise)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block">
+              <span className={label}>Concession (₹)</span>
+              <input
+                name="discount"
+                inputMode="decimal"
+                defaultValue={fees.discountPaise ? (fees.discountPaise / 100).toFixed(2) : ""}
+                placeholder="0"
+                className={`${field} w-28`}
+              />
+            </label>
+            <label className="block">
+              <span className={label}>Reason</span>
+              <input
+                name="discountReason"
+                defaultValue={fees.discountReason ?? ""}
+                placeholder="Sibling discount"
+                className={`${field} w-52`}
+              />
+            </label>
             <button
               type="submit"
-              name="promisedDate"
+              className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep ring-1 ring-emerald/20 transition hover:bg-emerald/5"
+            >
+              Apply fee
+            </button>
+            <p className="w-full text-[11px] text-ink/45">
+              Sets the total to the fee less the concession.{" "}
+              <Link href="/admin/fees/structures" className="font-semibold text-emerald hover:text-emerald-deep">
+                Manage fee structures
+              </Link>
+            </p>
+          </ActionForm>
+        )}
+
+        <ActionForm action={setFeeTotal} className="mt-4 flex flex-wrap items-end gap-2">
+          <input type="hidden" name="id" value={studentId} />
+          <label className="block">
+            <span className={label}>
+              {structures.length > 0 ? "Or set a one-off total (₹)" : "Set total for the year (₹)"}
+            </span>
+            <input
+              name="total"
+              inputMode="decimal"
+              defaultValue={fees.totalPaise ? (fees.totalPaise / 100).toFixed(2) : ""}
+              placeholder="25000"
+              className={`${field} w-40`}
+            />
+          </label>
+          <button type="submit" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep ring-1 ring-emerald/20 transition hover:bg-emerald/5">
+            Save total
+          </button>
+        </ActionForm>
+
+        <ActionForm action={setFeeDueDate} className="mt-3 flex flex-wrap items-end gap-2">
+          <input type="hidden" name="id" value={studentId} />
+          <label className="block">
+            <span className={label}>Balance due on</span>
+            <input type="date" name="dueDate" defaultValue={dayInput(fees.dueDateMs)} className={`${field} w-44`} />
+          </label>
+          <button type="submit" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep ring-1 ring-emerald/20 transition hover:bg-emerald/5">
+            Save due date
+          </button>
+          {fees.dueDateMs && (
+            <button
+              type="submit"
+              name="dueDate"
               value="clear"
               className="rounded-full px-3 py-2 text-sm font-semibold text-ink/50 transition hover:text-ink"
             >
-              Clear promise
+              Clear
             </button>
           )}
-          {fees.lastRemindedMs && (
-            <span className="text-[11px] text-ink/45">Last reminded {fmtDate(fees.lastRemindedMs)}</span>
-          )}
+        </ActionForm>
         </div>
-      </ActionForm>
+      </details>
+
+      {fees.balancePaise > 0 && (
+        <ActionForm action={logFeePromise} className="mt-3 rounded-xl border border-emerald/15 bg-cream/30 p-4">
+          <input type="hidden" name="id" value={studentId} />
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-ink/45">
+            Parent promised to pay
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-[11rem_1fr]">
+            <label className="block">
+              <span className={label}>By</span>
+              <input type="date" name="promisedDate" defaultValue={dayInput(fees.promisedDateMs)} className={field} />
+            </label>
+            <label className="block">
+              <span className={label}>What they said</span>
+              <input
+                name="promiseNote"
+                defaultValue={fees.promiseNote ?? ""}
+                placeholder="After salary comes in, before the 5th"
+                className={field}
+              />
+            </label>
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <button type="submit" className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-deep ring-1 ring-emerald/20 transition hover:bg-emerald/5">
+              <Icon name="handshake" className="text-[18px]" /> Log promise
+            </button>
+            {fees.promisedDateMs && (
+              <button
+                type="submit"
+                name="promisedDate"
+                value="clear"
+                className="rounded-full px-3 py-2 text-sm font-semibold text-ink/50 transition hover:text-ink"
+              >
+                Clear promise
+              </button>
+            )}
+            {fees.lastRemindedMs && (
+              <span className="text-[11px] text-ink/45">Last reminded {fmtDate(fees.lastRemindedMs)}</span>
+            )}
+          </div>
+        </ActionForm>
+      )}
 
       <ActionForm action={recordPayment} className="mt-5 rounded-xl border border-emerald/15 bg-cream/30 p-4">
         <input type="hidden" name="studentId" value={studentId} />

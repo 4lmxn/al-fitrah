@@ -12,3 +12,18 @@ export function relativeTime(ms: number | null): string {
   if (day < 7) return `${day}d ago`;
   return new Date(ms).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
+
+type DateStyle = "day" | "medium" | "long" | "full" | "datetime";
+
+const DATE_FORMAT: Record<DateStyle, Intl.DateTimeFormatOptions> = {
+  day: { day: "numeric", month: "short" },
+  medium: { dateStyle: "medium" },
+  long: { dateStyle: "long" },
+  full: { dateStyle: "full" },
+  datetime: { dateStyle: "medium", timeStyle: "short" },
+};
+
+export function formatDate(ms: number | null, style: DateStyle = "medium", empty = "—"): string {
+  if (!ms) return empty;
+  return new Date(ms).toLocaleString("en-IN", DATE_FORMAT[style]);
+}

@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { listAudit, recentActors, RETENTION_DAYS } from "@/lib/audit";
 import { relativeTime } from "@/lib/relativeTime";
 import { Icon } from "@/components/ui/Icon";
+import { EmptyState } from "@/components/admin/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -91,15 +92,12 @@ export default async function AuditPage({
 
       <div className="mt-5 overflow-hidden rounded-2xl border border-emerald/10 bg-white/90 shadow-soft">
         {entries.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 p-16 text-center">
-            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald/5 text-emerald/40">
-              <Icon name="history" className="text-[30px]" />
-            </span>
-            <p className="font-display text-lg text-emerald-deep">Nothing recorded yet</p>
-            <p className="max-w-sm text-sm text-ink/50">
-              Changes made from the console appear here as they happen.
-            </p>
-          </div>
+          <EmptyState
+            icon="history"
+            title="Nothing recorded yet"
+          >
+            Changes made from the console appear here as they happen.
+          </EmptyState>
         ) : (
           <ul className="divide-y divide-emerald/5">
             {entries.map((e) => {

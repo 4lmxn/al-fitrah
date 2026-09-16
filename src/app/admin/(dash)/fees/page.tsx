@@ -12,6 +12,8 @@ import {
   type FeeBucket,
 } from "@/lib/feeStatus";
 import { RemindButton } from "@/components/admin/RemindButton";
+import { formatDate } from "@/lib/relativeTime";
+import { EmptyState } from "@/components/admin/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -32,10 +34,6 @@ const bucketBlurb: Partial<Record<FeeBucket, string>> = {
   dueSoon: "Due within seven days. A nudge now costs less than a chase later.",
   undated: "Owing, but nobody has set a due date, so nothing can tell you when to follow up.",
 };
-
-function fmtDay(ms: number | null): string {
-  return ms ? new Date(ms).toLocaleDateString("en-IN", { day: "numeric", month: "short" }) : "—";
-}
 
 function primaryGuardian(s: Student): { name: string; phone: string } {
   const g = s.guardians.find((x) => x.isPrimary) ?? s.guardians[0];
@@ -73,9 +71,9 @@ function Row({ s, bucket }: { s: Student; bucket: FeeBucket }) {
         <p className="font-display text-lg tabular-nums text-emerald-deep">{formatPaise(s.fees.balancePaise)}</p>
         <p className="text-[11px] text-ink/45">
           {bucket === "promised" || bucket === "broken"
-            ? `promised ${fmtDay(s.fees.promisedDateMs)}`
+            ? `promised ${formatDate(s.fees.promisedDateMs, "day")}`
             : s.fees.dueDateMs
-              ? `due ${fmtDay(s.fees.dueDateMs)}`
+              ? `due ${formatDate(s.fees.dueDateMs, "day")}`
               : "no due date"}
         </p>
       </div>
@@ -95,7 +93,7 @@ function Row({ s, bucket }: { s: Student; bucket: FeeBucket }) {
       </div>
 
       {s.fees.lastRemindedMs && (
-        <p className="w-full text-[11px] text-ink/40">Last reminded {fmtDay(s.fees.lastRemindedMs)}</p>
+        <p className="w-full text-[11px] text-ink/40">Last reminded {formatDate(s.fees.lastRemindedMs, "day")}</p>
       )}
     </li>
   );
@@ -170,17 +168,15 @@ export default async function FeesPage({
       </div>
 
       {groups.length === 0 ? (
-        <div className="mt-5 flex flex-col items-center gap-3 rounded-2xl border border-emerald/10 bg-white/90 p-16 text-center shadow-soft">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald/5 text-emerald/40">
-            <Icon name="task_alt" className="text-[30px]" />
-          </span>
-          <p className="font-display text-lg text-emerald-deep">Nobody to chase on this page</p>
-          <p className="max-w-sm text-sm text-ink/50">
-            {unset > 0
-              ? `${unset} ${unset === 1 ? "child has" : "children have"} no fee set yet — set a total on their record so they appear here.`
-              : "Every enrolled family on this page is settled, promised, or not yet due."}
-          </p>
-        </div>
+        <EmptyState
+          icon="task_alt"
+          title="Nobody to chase on this page"
+          className="mt-5 rounded-2xl border border-emerald/10 bg-white/90 shadow-soft"
+        >
+          {unset > 0
+            ? `${unset} ${unset === 1 ? "child has" : "children have"} no fee set yet — set a total on their record so they appear here.`
+            : "Every enrolled family on this page is settled, promised, or not yet due."}
+        </EmptyState>
       ) : (
         <div className="mt-5 space-y-5">
           {groups.map(({ bucket, items }) => (

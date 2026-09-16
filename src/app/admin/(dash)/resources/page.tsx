@@ -7,17 +7,14 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { Icon } from "@/components/ui/Icon";
 import { createResource, deleteResource, updateResource } from "./actions";
+import { formatBytes } from "@/lib/bytes";
+import { EmptyState } from "@/components/admin/EmptyState";
 
 export const dynamic = "force-dynamic";
 
 const field =
   "w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20";
 const label = "mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/45";
-
-function fmtSize(bytes: number): string {
-  if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  return `${Math.max(1, Math.round(bytes / 1024))} KB`;
-}
 
 function AudienceChoice({ resource }: { resource?: Resource }) {
   return (
@@ -122,15 +119,13 @@ export default async function ResourcesPage({
       </section>
 
       {rows.length === 0 ? (
-        <div className="mt-5 flex flex-col items-center gap-3 rounded-2xl border border-emerald/10 bg-white/90 p-16 text-center shadow-soft">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald/5 text-emerald/40">
-            <Icon name="folder_open" className="text-[30px]" />
-          </span>
-          <p className="font-display text-lg text-emerald-deep">Nothing shared yet</p>
-          <p className="max-w-sm text-sm text-ink/50">
-            Upload a newsletter or a form above and choose who should see it.
-          </p>
-        </div>
+        <EmptyState
+          icon="folder_open"
+          title="Nothing shared yet"
+          className="mt-5 rounded-2xl border border-emerald/10 bg-white/90 shadow-soft"
+        >
+          Upload a newsletter or a form above and choose who should see it.
+        </EmptyState>
       ) : (
         <div className="mt-5 space-y-4">
           {rows.map((r) => (
@@ -139,7 +134,7 @@ export default async function ResourcesPage({
                 <div className="min-w-0">
                   <h3 className="font-display text-lg text-emerald-deep">{r.title}</h3>
                   <p className="mt-0.5 text-xs text-ink/50">
-                    {r.fileName} · {fmtSize(r.sizeBytes)} · {r.academicYear}
+                    {r.fileName} · {formatBytes(r.sizeBytes)} · {r.academicYear}
                     {r.classSection ? ` · ${r.classSection}` : ""}
                     {r.category ? ` · ${r.category}` : ""}
                   </p>

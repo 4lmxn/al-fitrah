@@ -18,13 +18,9 @@ import { EditContact } from "@/components/admin/EditContact";
 import { sourceLabel } from "@/lib/leads";
 import { referralCode, referralLink, referralShareLink } from "@/lib/referral";
 import { updateStage, logContact, snoozeFollowUp, scheduleInterview } from "./actions";
+import { formatDate } from "@/lib/relativeTime";
 
 export const dynamic = "force-dynamic";
-
-function fmt(ms: number | null): string {
-  if (!ms) return "—";
-  return new Date(ms).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
-}
 
 function authorInitials(email: string): string {
   return email.slice(0, 2).toUpperCase();
@@ -79,7 +75,7 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
               {lead.childName && (
                 <p className="text-sm text-ink/60">Child: <span className="font-medium text-ink/80">{lead.childName}</span></p>
               )}
-              <p className="text-xs text-ink/45">Received {relativeTime(lead.createdAtMs)} · {fmt(lead.createdAtMs)}</p>
+              <p className="text-xs text-ink/45">Received {relativeTime(lead.createdAtMs)} · {formatDate(lead.createdAtMs, "datetime")}</p>
             </div>
           </div>
 

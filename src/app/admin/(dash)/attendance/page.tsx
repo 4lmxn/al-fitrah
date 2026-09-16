@@ -20,6 +20,7 @@ import { ActionForm } from "@/components/admin/ActionForm";
 import { RegisterSummary } from "@/components/admin/RegisterSummary";
 import { CheckInCard } from "@/components/admin/CheckInCard";
 import { LocationFields } from "@/components/admin/LocationFields";
+import { EmptyState } from "@/components/admin/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -158,18 +159,18 @@ export default async function AttendancePage({
           )}
         </div>
       ) : roster.length === 0 ? (
-        <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl border border-emerald/10 bg-white/90 p-16 text-center shadow-soft">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald/5 text-emerald/40">
-            <Icon name="groups" className="text-[30px]" />
-          </span>
-          <p className="font-display text-lg text-emerald-deep">No children in {classSection}</p>
-          <p className="max-w-sm text-sm text-ink/50">
-            Assign a class section on a student&apos;s record and they will appear here.
-          </p>
-          <Link href="/admin/students" className="mt-1 text-sm font-semibold text-emerald hover:text-emerald-deep">
-            Go to students
-          </Link>
-        </div>
+        <EmptyState
+          icon="groups"
+          title={<>No children in {classSection}</>}
+          className="mt-6 rounded-2xl border border-emerald/10 bg-white/90 shadow-soft"
+          action={
+            <Link href="/admin/students" className="mt-1 text-sm font-semibold text-emerald hover:text-emerald-deep">
+                    Go to students
+                  </Link>
+          }
+        >
+          Assign a class section on a student&apos;s record and they will appear here.
+        </EmptyState>
       ) : (
         <ActionForm id={REGISTER_FORM_ID} action={saveRegister} className="mt-6 pb-28 sm:pb-0">
           <input type="hidden" name="classSection" value={classSection} />

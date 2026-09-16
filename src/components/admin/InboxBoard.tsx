@@ -14,6 +14,7 @@ import { Icon } from "@/components/ui/Icon";
 import { StatCard } from "@/components/admin/StatCard";
 import { LeadAvatar } from "@/components/admin/LeadAvatar";
 import { ActionForm } from "@/components/admin/ActionForm";
+import { EmptyState } from "@/components/admin/EmptyState";
 
 type State = {
   rows: LeadRow[];
@@ -272,22 +273,23 @@ export function InboxBoard({
 
       <div className="mt-5 overflow-hidden rounded-2xl border border-emerald/10 bg-white/90 shadow-soft">
         {rows.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 p-16 text-center">
-            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald/5 text-emerald/40">
-              <Icon name={attention ? "task_alt" : q || activeStage ? "search_off" : "inbox"} className="text-[30px]" />
-            </span>
-            <p className="font-display text-lg text-emerald-deep">
-              {attention ? "All caught up" : q || activeStage ? "No matching leads" : "No leads yet"}
-            </p>
-            <p className="max-w-xs text-sm text-ink/50">
-              {attention ? "No overdue follow-ups or untouched enquiries. Nice work." : q || activeStage ? "Try clearing the filter or search." : "New submissions from the website will land here automatically."}
-            </p>
-            {(q || activeStage || attention) && (
-              <Link href={`/admin?type=${type}`} className="mt-1 text-sm font-semibold text-emerald hover:text-emerald-deep">
-                {attention ? "Back to all leads" : "Clear filters"}
-              </Link>
-            )}
-          </div>
+          <EmptyState
+            icon={attention ? "task_alt" : q || activeStage ? "search_off" : "inbox"}
+            title={attention ? "All caught up" : q || activeStage ? "No matching leads" : "No leads yet"}
+            action={
+              (q || activeStage || attention) && (
+                <Link href={`/admin?type=${type}`} className="mt-1 text-sm font-semibold text-emerald hover:text-emerald-deep">
+                  {attention ? "Back to all leads" : "Clear filters"}
+                </Link>
+              )
+            }
+          >
+            {attention
+              ? "No overdue follow-ups or untouched enquiries. Nice work."
+              : q || activeStage
+                ? "Try clearing the filter or search."
+                : "New submissions from the website will land here automatically."}
+          </EmptyState>
         ) : (
           <div className="-mx-2 overflow-x-auto px-2">
           <table className="w-full min-w-[20rem] text-left text-sm">

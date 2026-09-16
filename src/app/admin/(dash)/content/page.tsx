@@ -4,6 +4,7 @@ import { togglePublished } from "./actions";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { relativeTime } from "@/lib/relativeTime";
 import { Icon } from "@/components/ui/Icon";
+import { EmptyState } from "@/components/admin/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -28,18 +29,17 @@ export default async function ContentPage() {
 
       <div className="mt-7 overflow-hidden rounded-2xl border border-emerald/10 bg-white/90 shadow-soft">
         {posts.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 p-16 text-center">
-            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald/5 text-emerald/40">
-              <Icon name="article" className="text-[30px]" />
-            </span>
-            <p className="font-display text-lg text-emerald-deep">Nothing posted yet</p>
-            <p className="max-w-sm text-sm text-ink/50">
-              Add a notice, an announcement, or an upcoming event and it appears on the website.
-            </p>
-            <Link href="/admin/content/new" className="mt-1 text-sm font-semibold text-emerald hover:text-emerald-deep">
-              Write the first post
-            </Link>
-          </div>
+          <EmptyState
+            icon="article"
+            title="Nothing posted yet"
+            action={
+              <Link href="/admin/content/new" className="mt-1 text-sm font-semibold text-emerald hover:text-emerald-deep">
+                Write the first post
+              </Link>
+            }
+          >
+            Add a notice, an announcement, or an upcoming event and it appears on the website.
+          </EmptyState>
         ) : (
           <div className="-mx-2 overflow-x-auto px-2">
           <table className="w-full min-w-[20rem] text-left text-sm">

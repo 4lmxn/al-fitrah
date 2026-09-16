@@ -6,6 +6,7 @@ import { pageMeta } from "@/lib/seo";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { Icon } from "@/components/ui/Icon";
+import { formatDate } from "@/lib/relativeTime";
 
 export const revalidate = 3600;
 
@@ -18,10 +19,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const post = await getPublishedBySlug(slug).catch(() => null);
   if (!post) return pageMeta(`/news/${slug}`, { title: "Not found", description: "" });
   return pageMeta(`/news/${post.slug}`, { title: post.title, description: post.excerpt });
-}
-
-function fmt(ms: number | null): string {
-  return ms ? new Date(ms).toLocaleDateString("en-IN", { dateStyle: "long" }) : "";
 }
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -46,7 +43,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
         <h1 className="mt-3 font-display text-4xl leading-tight text-emerald-deep">{post.title}</h1>
         <p className="mt-2 text-sm text-ink/50">
-          {post.type === "event" && post.eventDateMs ? fmt(post.eventDateMs) : fmt(post.publishedAtMs)}
+          {post.type === "event" && post.eventDateMs ? formatDate(post.eventDateMs, "long", "") : formatDate(post.publishedAtMs, "long", "")}
           {post.location ? ` · ${post.location}` : ""}
         </p>
 

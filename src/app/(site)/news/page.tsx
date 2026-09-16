@@ -7,6 +7,7 @@ import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
 import { SwipeRail } from "@/components/ui/SwipeRail";
+import { formatDate } from "@/lib/relativeTime";
 
 export async function generateMetadata(): Promise<Metadata> {
   return pageMeta("/news", {
@@ -17,10 +18,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const revalidate = 3600;
-
-function fmt(ms: number | null): string {
-  return ms ? new Date(ms).toLocaleDateString("en-IN", { dateStyle: "long" }) : "";
-}
 
 export default async function NewsPage() {
   const posts = await listPublished().catch((err) => {
@@ -62,7 +59,7 @@ export default async function NewsPage() {
                       </span>
                       <h2 className="mt-3 font-display text-xl font-bold text-emerald-deep group-hover:text-emerald">{p.title}</h2>
                       <p className="mt-1 text-xs text-ink/45">
-                        {p.type === "event" && p.eventDateMs ? fmt(p.eventDateMs) : fmt(p.publishedAtMs)}
+                        {p.type === "event" && p.eventDateMs ? formatDate(p.eventDateMs, "long", "") : formatDate(p.publishedAtMs, "long", "")}
                         {p.location ? ` · ${p.location}` : ""}
                       </p>
                       <p className="mt-3 flex-1 leading-relaxed text-ink/70">{p.excerpt}</p>

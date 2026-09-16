@@ -5,6 +5,8 @@ import {
   uploadStudentDocumentAction,
 } from "@/app/admin/(dash)/students/actions";
 import { MAX_DOCUMENTS, type StudentDocument } from "@/lib/studentDocuments";
+import { formatDate } from "@/lib/relativeTime";
+import { formatBytes } from "@/lib/bytes";
 
 const ICON_FOR: Record<string, string> = {
   "application/pdf": "picture_as_pdf",
@@ -12,16 +14,6 @@ const ICON_FOR: Record<string, string> = {
   "image/png": "image",
   "image/webp": "image",
 };
-
-function size(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-function when(ms: number | null): string {
-  return ms ? new Date(ms).toLocaleDateString("en-IN", { dateStyle: "medium" }) : "—";
-}
 
 export function StudentDocuments({
   studentId,
@@ -61,7 +53,7 @@ export function StudentDocuments({
                     {d.label}
                   </span>
                   <span className="block text-[11px] text-ink/45">
-                    {size(d.sizeBytes)} · {when(d.atMs)} ·{" "}
+                    {formatBytes(d.sizeBytes)} · {formatDate(d.atMs)} ·{" "}
                     {d.uploadedByRole === "parent" ? "from a guardian" : "added by the school"}
                     <span className="ml-1 text-ink/35">({d.uploadedBy})</span>
                   </span>

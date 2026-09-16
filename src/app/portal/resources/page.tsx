@@ -5,14 +5,10 @@ import { getSettings } from "@/lib/settings";
 import { listForAudience } from "@/lib/resources";
 import { Icon } from "@/components/ui/Icon";
 import { ParentSignOut } from "@/components/portal/ParentSignOut";
+import { formatBytes } from "@/lib/bytes";
 
 export const metadata: Metadata = { title: "Resources", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
-
-function fmtSize(bytes: number): string {
-  if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  return `${Math.max(1, Math.round(bytes / 1024))} KB`;
-}
 
 export default async function PortalResourcesPage() {
   await requireParent();
@@ -66,7 +62,7 @@ export default async function PortalResourcesPage() {
                       <span className="mt-0.5 block text-sm text-ink/60">{r.description}</span>
                     )}
                     <span className="mt-1 block text-xs text-ink/45">
-                      {[r.category, r.classSection, fmtSize(r.sizeBytes)].filter(Boolean).join(" · ")}
+                      {[r.category, r.classSection, formatBytes(r.sizeBytes)].filter(Boolean).join(" · ")}
                     </span>
                   </span>
                   <Icon name="download" className="shrink-0 text-[20px] text-emerald" />

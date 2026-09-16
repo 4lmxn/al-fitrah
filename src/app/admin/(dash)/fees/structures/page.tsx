@@ -7,6 +7,7 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { Icon } from "@/components/ui/Icon";
 import { applyToClass, createStructure, deleteStructure, updateStructure } from "./actions";
+import { EmptyState } from "@/components/admin/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -84,16 +85,14 @@ export default async function FeeStructuresPage() {
       </section>
 
       {structures.length === 0 ? (
-        <div className="mt-5 flex flex-col items-center gap-3 rounded-2xl border border-emerald/10 bg-white/90 p-16 text-center shadow-soft">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald/5 text-emerald/40">
-            <Icon name="payments" className="text-[30px]" />
-          </span>
-          <p className="font-display text-lg text-emerald-deep">No fees defined yet</p>
-          <p className="max-w-sm text-sm text-ink/50">
-            Add one above, then apply it to a class. Totals set by hand on a child&apos;s record keep
-            working either way.
-          </p>
-        </div>
+        <EmptyState
+          icon="payments"
+          title="No fees defined yet"
+          className="mt-5 rounded-2xl border border-emerald/10 bg-white/90 shadow-soft"
+        >
+          Add one above, then apply it to a class. Totals set by hand on a child&apos;s record keep
+          working either way.
+        </EmptyState>
       ) : (
         <div className="mt-5 space-y-4">
           {structures.map((s) => (

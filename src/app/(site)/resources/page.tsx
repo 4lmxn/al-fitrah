@@ -6,6 +6,7 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { listForAudience, type Resource } from "@/lib/resources";
+import { formatBytes } from "@/lib/bytes";
 
 export async function generateMetadata(): Promise<Metadata> {
   return pageMeta("/resources", {
@@ -24,11 +25,6 @@ async function safeResources(): Promise<Resource[]> {
     console.error("resources: read failed", err);
     return [];
   }
-}
-
-function fmtSize(bytes: number): string {
-  if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  return `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
 
 export default async function ResourcesPage() {
@@ -68,7 +64,7 @@ export default async function ResourcesPage() {
                         )}
                         <span className="mt-1 block text-xs text-ink/45">
                           {r.category ? `${r.category} · ` : ""}
-                          {fmtSize(r.sizeBytes)}
+                          {formatBytes(r.sizeBytes)}
                         </span>
                       </span>
                       <Icon name="download" className="shrink-0 text-[20px] text-emerald" />

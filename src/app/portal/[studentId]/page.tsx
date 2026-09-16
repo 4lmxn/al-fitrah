@@ -7,13 +7,10 @@ import { formatPaise } from "@/lib/money";
 import { Icon } from "@/components/ui/Icon";
 import { listDocuments } from "@/lib/studentDocuments";
 import { PortalDocuments } from "@/components/portal/PortalDocuments";
+import { formatDate } from "@/lib/relativeTime";
 
 export const metadata: Metadata = { title: "Fees & attendance", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
-
-function fmt(ms: number | null): string {
-  return ms ? new Date(ms).toLocaleDateString("en-IN", { dateStyle: "medium" }) : "—";
-}
 
 export default async function ChildPage({ params }: { params: Promise<{ studentId: string }> }) {
   await requireParent();
@@ -119,7 +116,7 @@ export default async function ChildPage({ params }: { params: Promise<{ studentI
                 {attendance.days.map((d) => (
                   <li
                     key={d.dateKey}
-                    title={`${fmt(new Date(`${d.dateKey}T00:00:00`).getTime())} — ${d.status}`}
+                    title={`${formatDate(new Date(`${d.dateKey}T00:00:00`).getTime())} — ${d.status}`}
                     className={`rounded-md px-2 py-1 text-[11px] font-semibold tabular-nums ${
                       d.present
                         ? "bg-emerald/10 text-emerald-deep"
@@ -128,7 +125,7 @@ export default async function ChildPage({ params }: { params: Promise<{ studentI
                   >
                     <span aria-hidden>{d.dateKey.slice(-2)}</span>
                     <span className="sr-only">
-                      {fmt(new Date(`${d.dateKey}T00:00:00`).getTime())} — {d.status}
+                      {formatDate(new Date(`${d.dateKey}T00:00:00`).getTime())} — {d.status}
                     </span>
                   </li>
                 ))}
@@ -166,7 +163,7 @@ export default async function ChildPage({ params }: { params: Promise<{ studentI
                 {payments.map((p) => (
                   <tr key={p.id}>
                     <td className="py-2.5 tabular-nums text-ink/60">{p.receiptNumber}</td>
-                    <td className="py-2.5 text-ink/70">{fmt(p.receivedAtMs)}</td>
+                    <td className="py-2.5 text-ink/70">{formatDate(p.receivedAtMs)}</td>
                     <td className="py-2.5 text-ink/70">{p.method}</td>
                     <td className={`py-2.5 text-right tabular-nums font-semibold ${p.amountPaise < 0 ? "text-red-700" : "text-emerald-deep"}`}>
                       {formatPaise(p.amountPaise)}

@@ -12,14 +12,11 @@ import {
 import { ActionForm } from "@/components/admin/ActionForm";
 import { Icon } from "@/components/ui/Icon";
 import { feeBucket, FEE_BUCKET_LABEL } from "@/lib/feeStatus";
+import { formatDate } from "@/lib/relativeTime";
 
 const field =
   "w-full rounded-lg border border-emerald/15 bg-cream/30 px-3 py-2 text-sm text-ink outline-none transition focus:border-emerald focus:ring-2 focus:ring-emerald/20";
 const label = "mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink/45";
-
-function fmtDate(ms: number | null): string {
-  return ms ? new Date(ms).toLocaleDateString("en-IN", { dateStyle: "medium" }) : "—";
-}
 
 function todayInput(): string {
   const d = new Date();
@@ -236,7 +233,7 @@ export function FeesPanel({
               </button>
             )}
             {fees.lastRemindedMs && (
-              <span className="text-[11px] text-ink/45">Last reminded {fmtDate(fees.lastRemindedMs)}</span>
+              <span className="text-[11px] text-ink/45">Last reminded {formatDate(fees.lastRemindedMs)}</span>
             )}
           </div>
         </ActionForm>
@@ -296,7 +293,7 @@ export function FeesPanel({
                   {p.receiptNumber}
                   {p.reference && <span className="ml-2 text-xs text-ink/40">{p.reference}</span>}
                 </td>
-                <td className="py-2.5 text-ink/70">{fmtDate(p.receivedAtMs)}</td>
+                <td className="py-2.5 text-ink/70">{formatDate(p.receivedAtMs)}</td>
                 <td className="hidden py-2.5 text-ink/70 sm:table-cell">{p.method}</td>
                 <td className={`py-2.5 text-right tabular-nums font-semibold ${p.amountPaise < 0 ? "text-red-700" : "text-emerald-deep"}`}>
                   {formatPaise(p.amountPaise)}

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { listStudents, STUDENT_STATUSES, STUDENT_STATUS_LABEL, SEARCH_SCAN_LIMIT, type StudentStatus } from "@/lib/students";
 import { Icon } from "@/components/ui/Icon";
+import { formatDate } from "@/lib/relativeTime";
+import { EmptyState } from "@/components/admin/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -9,11 +11,6 @@ const STATUS_DOT: Record<StudentStatus, string> = {
   withdrawn: "bg-ink/30",
   graduated: "bg-gold",
 };
-
-function fmtDob(ms: number | null): string {
-  if (!ms) return "—";
-  return new Date(ms).toLocaleDateString("en-IN", { dateStyle: "medium" });
-}
 
 export default async function StudentsPage({
   searchParams,
@@ -89,19 +86,14 @@ export default async function StudentsPage({
 
       <div className="mt-5 overflow-hidden rounded-2xl border border-emerald/10 bg-white/90 shadow-soft">
         {rows.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 p-16 text-center">
-            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald/5 text-emerald/40">
-              <Icon name={q || status ? "search_off" : "school"} className="text-[30px]" />
-            </span>
-            <p className="font-display text-lg text-emerald-deep">
-              {q || status ? "No matching students" : "No students yet"}
-            </p>
-            <p className="max-w-sm text-sm text-ink/50">
-              {q || status
-                ? "Try clearing the filter or search."
-                : "Move an admission enquiry to Admitted, then enrol it from the lead page."}
-            </p>
-          </div>
+          <EmptyState
+            icon={q || status ? "search_off" : "school"}
+            title={q || status ? "No matching students" : "No students yet"}
+          >
+            {q || status
+              ? "Try clearing the filter or search."
+              : "Move an admission enquiry to Admitted, then enrol it from the lead page."}
+          </EmptyState>
         ) : (
           <div className="-mx-2 overflow-x-auto px-2">
           <table className="w-full min-w-[20rem] text-left text-sm">
@@ -128,7 +120,7 @@ export default async function StudentsPage({
                       {s.classSection && <span className="ml-2 text-xs text-ink/45">{s.classSection}</span>}
                     </td>
                     <td className="hidden px-5 py-3.5 text-ink/70 sm:table-cell">{s.program}</td>
-                    <td className="hidden px-5 py-3.5 text-ink/70 md:table-cell">{fmtDob(s.dobMs)}</td>
+                    <td className="hidden px-5 py-3.5 text-ink/70 md:table-cell">{formatDate(s.dobMs)}</td>
                     <td className="hidden px-5 py-3.5 text-ink/70 lg:table-cell">
                       {primary ? (
                         <>

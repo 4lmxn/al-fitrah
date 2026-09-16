@@ -2,6 +2,8 @@ import { Icon } from "@/components/ui/Icon";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { uploadDocument } from "@/app/portal/[studentId]/actions";
 import { MAX_DOCUMENTS, type StudentDocument } from "@/lib/studentDocuments";
+import { formatDate } from "@/lib/relativeTime";
+import { formatBytes } from "@/lib/bytes";
 
 const ICON_FOR: Record<string, string> = {
   "application/pdf": "picture_as_pdf",
@@ -9,16 +11,6 @@ const ICON_FOR: Record<string, string> = {
   "image/png": "image",
   "image/webp": "image",
 };
-
-function size(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-function when(ms: number | null): string {
-  return ms ? new Date(ms).toLocaleDateString("en-IN", { dateStyle: "medium" }) : "—";
-}
 
 export function PortalDocuments({
   studentId,
@@ -50,7 +42,7 @@ export function PortalDocuments({
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold text-emerald-deep">{d.label}</span>
                 <span className="block text-[11px] text-ink/45">
-                  {size(d.sizeBytes)} · {when(d.atMs)}
+                  {formatBytes(d.sizeBytes)} · {formatDate(d.atMs)}
                   {d.uploadedByRole === "staff" && " · added by the school"}
                 </span>
               </span>

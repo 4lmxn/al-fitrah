@@ -4,6 +4,7 @@ import { relativeTime } from "@/lib/relativeTime";
 import { Icon } from "@/components/ui/Icon";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { toggleOpening } from "./actions";
+import { EmptyState } from "@/components/admin/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -38,16 +39,18 @@ export default async function OpeningsAdmin() {
       </div>
 
       {openings.length === 0 ? (
-        <div className="mt-8 flex flex-col items-center gap-3 rounded-2xl border border-emerald/10 bg-white/90 p-16 text-center shadow-soft">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald/5 text-emerald/40">
-            <Icon name="work_off" className="text-[30px]" />
-          </span>
-          <p className="font-display text-lg text-emerald-deep">No openings yet</p>
-          <p className="max-w-xs text-sm text-ink/50">Create your first job opening — it shows on the public careers page when marked active.</p>
-          <Link href="/admin/openings/new" className="mt-1 text-sm font-semibold text-emerald hover:text-emerald-deep">
-            Create opening
-          </Link>
-        </div>
+        <EmptyState
+          icon="work_off"
+          title="No openings yet"
+          className="mt-8 rounded-2xl border border-emerald/10 bg-white/90 shadow-soft"
+          action={
+            <Link href="/admin/openings/new" className="mt-1 text-sm font-semibold text-emerald hover:text-emerald-deep">
+                    Create opening
+                  </Link>
+          }
+        >
+          Create your first job opening — it shows on the public careers page when marked active.
+        </EmptyState>
       ) : (
         <div className="mt-7 space-y-3">
           {openings.map((o) => (

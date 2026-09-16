@@ -127,3 +127,36 @@ export function monthBounds(key: string): { from: string; to: string } {
   const p = (n: number) => String(n).padStart(2, "0");
   return { from: `${y}-${p(m)}-01`, to: `${y}-${p(m)}-${p(last)}` };
 }
+
+export function attendanceMatrix(
+  roster: { id: string; admissionNumber: string; fullName: string }[],
+  registers: Register[],
+  statuses: { id: string; present: boolean; counted: boolean }[],
+): { header: string[]; rows: (string | number)[][] } {
+  const days = [...registers].sort((a, b) => a.dateKey.localeCompare(b.dateKey));
+
+  const header = [
+    "Admission no.",
+    "Name",
+    ...days.map((d) => d.dateKey),
+    "Present",
+    "Absent",
+    "Counted",
+    "Attendance %",
+  ];
+
+  const rows = roster.map((s) => {
+    const total = summarise(days, s.id, statuses);
+    return [
+      s.admissionNumber,
+      s.fullName,
+      ...days.map((d) => d.entries[s.id] ?? ""),
+      total.present,
+      total.absent,
+      total.counted,
+      total.percent ?? "",
+    ];
+  });
+
+  return { header, rows };
+}

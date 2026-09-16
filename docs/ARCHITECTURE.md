@@ -17,7 +17,7 @@ re-verified against the code on 16 Sep 2026:
 | **CRM** | Built | No tasks. Duplicate detection, bulk stage moves and CSV export shipped. Assignment, tags and the Kanban board were built, then **removed in Sep 2026** — see below |
 | **Admissions pipeline** | **Configurable** — stages are data, edited in Settings | None. The brief's nine stages are a configuration choice now, not a code change |
 | **Teacher recruitment** | Applications, CV, portfolio link, interview scheduling, 1–5 rating | Internal comments reuse the shared notes subcollection instead of a separate field |
-| **Attendance** | Class register, staff check-in, monthly % | No CSV export, no bulk edit, no rollups, so no trend view |
+| **Attendance** | Class register, staff check-in, monthly %, CSV export | No bulk edit, no rollups, so no trend view |
 | **Notifications** | Engine in `src/lib/notify` — email + daily digest | WhatsApp and SMS adapters exist, both unconfigured |
 | **Dashboards** | One (Insights) | Principal, Admissions, CRM, Attendance, HR, System |
 | **Analytics** | Sources, funnel, referrers | No trends, campaign performance, monthly reports |
@@ -44,6 +44,30 @@ work that survives at any size.
 
 If the school hires admissions staff, assignment is the one to rebuild first,
 and `git log` has it.
+
+### Three remaining gaps are not "next up"
+
+Each looks like a small piece of work and is not, for reasons that live outside
+the code:
+
+**Resource audiences.** The brief asks for Public, Parents, Students, Teachers,
+Staff and Admin. The code has three, and that is not laziness — §5 of
+`HANDOVER.md` is the constraint: there are exactly three identities in this
+system, and students are not one of them. "Teachers" is what `staff` already
+means, and "Admin" is the `owner` role. Adding *Students* would put a choice in
+the upload form that no one can ever be. Adding audiences before identities is
+how you get a control that gates nothing.
+
+**Attendance rollups.** `attendanceRollups/{year}_{class}_{month}` is designed
+in `EXPANSION_PLAN.md` §6 and should stay designed until something needs it.
+Its whole purpose is to keep a yearly trend view flat-cost, and there is no
+trend view. `listRegisters` caps at 62 documents, which is correct for the
+month view that exists today. Build the rollup in the same commit as the screen
+that reads it, or it is a write on every register save that nothing queries.
+
+**Gallery.** Blocked on the school, not on code — `docs/school-facts-needed.md`
+is still waiting on real campus photographs. A gallery shell shipped now would
+be a production page carrying placeholder images.
 
 ## 2. The decision that has to come first
 

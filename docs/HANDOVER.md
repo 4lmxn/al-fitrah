@@ -128,9 +128,12 @@ which is deliberately distinct from `[]` (a roster with nobody in it): an
 unknown roster never promotes anyone.
 
 Two roles: `owner` (can delete) and `staff`. Owners come from `ADMIN_OWNERS` or
-from the roster. While **neither** names an owner, everyone allowed is an owner
+from the roster, and the roster is editable at **Staff → set a person to owner**
+with no deploy. While **neither** names an owner, everyone allowed is an owner
 — deliberate, so introducing roles could not lock the school out — and that
-stops the moment the first owner exists anywhere.
+stops the moment the first owner exists anywhere. Treat that fallback as the
+lockout guard it is, not as the deployment's behaviour: `ADMIN_OWNERS` is
+declared in `apphosting.yaml`.
 
 **Parent** (`src/lib/parentAuth.ts`)
 Firebase email-link sign-in, falling back to phone OTP. Email is the default
@@ -270,6 +273,12 @@ parent portal, audit log, notification engine, configurable settings.
 
 **Just built, not yet activated:** campus geofence for attendance — enforcement
 off pending the real campus pin.
+
+**Reconciliation, not collection:** payments taken offline through SBI Collect
+are imported from the bank's own report at **Fees → Import payments**
+(`src/lib/paymentImport.ts`). It dedupes on the bank reference number and
+matches by admission number. It does not take money; it records money already
+taken.
 
 **In progress:** online fee payment. The design is a provider-agnostic seam with
 Razorpay as the first implementation; the gateway choice (Razorpay vs SBI ePay)

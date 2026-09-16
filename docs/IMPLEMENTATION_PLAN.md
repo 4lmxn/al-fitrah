@@ -46,15 +46,24 @@ long after it was true. Each item was overtaken:
 
 ### Open items that need the school, not code
 
-- **Notes backfill** — `node scripts/migrate-notes.mjs --commit`.
-- **Named grievance officer** in `src/content/site.ts` (DPDP requirement).
-- **No owner is named yet.** While neither `ADMIN_OWNERS` nor the staff roster
-  names one, every allowed address resolves to `owner`, so the split does
-  nothing and any signed-in account can delete. The permissive default was
-  deliberate — it stopped the deploy that introduced roles from locking the
-  school out — and it ends the moment the first owner exists. Since Sep 2026
-  this no longer needs a deploy: **Staff → set a person to owner**, which is
-  what `docs/SCHOOL_GUIDE.md` tells the school to do on day one.
+*Re-verified against the code on 16 Sep 2026. Two items that sat here for weeks
+were already closed; they are recorded below rather than silently deleted,
+because a reader who acted on the old list would have been sent to the wrong
+file.*
+
+- ~~**Notes backfill**~~ — **closed.** `docs/ops.md` records it verified as not
+  needed: no legacy `notes` arrays exist and `noteCount` already matches every
+  subcollection. `scripts/migrate-notes.mjs` has nothing left to migrate.
+- **Named grievance officer** (DPDP requirement) — still needed from the school,
+  but **not** a code change. It is `settings.school.grievanceOfficerName` and
+  `…Email`, edited at **Settings → School**, no deploy. The earlier instruction
+  to edit `src/content/site.ts` was wrong: that file has carried no grievance
+  officer since settings became data.
+- ~~**No owner is named yet**~~ — **closed in configuration.** `ADMIN_OWNERS` is
+  declared as a secret in `apphosting.yaml`, and an owner can also be set from
+  **Staff → set a person to owner** without a deploy. The permissive fallback in
+  `src/lib/roles.ts` now only fires when the env list *and* the roster are both
+  empty, which is the lockout guard, not the live behaviour.
 - **`INQUIRY_FROM_EMAIL` is `onboarding@resend.dev`**, Resend's shared sandbox
   sender. Enquiry mail leaves from a domain the school does not own. Verify the
   school's domain in Resend before launch.
@@ -163,8 +172,9 @@ subsequent phase is unverified at the point of review.
 **0c. `firestore.indexes.json`** committed and wired into `firebase.json`, so indexes
 are reviewable and reproducible instead of hand-clicked in the console.
 
-**0d. Holding-page SEO leak** — while `NEXT_PUBLIC_COMING_SOON=1` (currently live in
-`apphosting.yaml`), `proxy.ts` rewrites every public path to the holding page with
+**0d. Holding-page SEO leak** — while `NEXT_PUBLIC_COMING_SOON=1` (it was live in
+`apphosting.yaml` when this was written; the site has since launched and the flag
+is `0`), `proxy.ts` rewrites every public path to the holding page with
 HTTP 200, and `sitemap.xml` still submits all 11 of them.
 
 *Corrected after reading the code:* the holding page is indexable **on purpose**, with

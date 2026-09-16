@@ -7,15 +7,19 @@ Analysis of the three requested features against the system as it stands
 
 Against the sequence in §9:
 
+*Status re-verified against the code on 16 Sep 2026. Three rows below said "not
+started" for work that had already shipped.*
+
 | Phase | State | Shipped in |
 |---|---|---|
 | 1 — Identity (parent sign-in, role claims) | ✅ done | #42, #43 |
 | 3 — Parent portal, read-only | ✅ done | #42 |
-| 2 — Fee structures + assignment | ✅ done | this PR |
-| 4 — Gateway abstraction | ⛔ blocked | needs SBI merchant docs (§10.1) |
-| 5 — Resource Center | ⬜ not started | |
-| 6 — Attendance depth + rollups | ⬜ not started | |
-| — `staff` collection (§4.3) | ⬜ not started | teacher attendance depends on it |
+| 2 — Fee structures + assignment | ✅ done | #26 |
+| 4 — Gateway abstraction | ⛔ still blocked | needs SBI merchant docs (§10.1). The Razorpay path is not blocked by them |
+| 4a — SBI Collect report import | ✅ done | `feat/sbi-collect-import` — reconciles payments already taken offline; not a gateway |
+| 5 — Resource Center | ✅ done | #45 — `src/lib/resources.ts`, admin + portal surfaces |
+| 6 — Attendance depth + rollups | 🟡 partly | register and staff check-in shipped; `attendanceRollups` not built, so there is still no trend view |
+| — `staff` collection (§4.3) | ✅ done | `50380ce` — `src/lib/staff.ts`, roster-driven console access |
 
 Phase 3 shipped ahead of phase 2 because the portal only needed a total to
 show, and the totals were being typed in by hand.

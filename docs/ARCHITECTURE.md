@@ -8,26 +8,33 @@ an extension rather than a rewrite.
 
 ## 1. Honest position against the brief
 
-Nothing here is a plan disguised as progress. Current state, module by module:
+Nothing here is a plan disguised as progress. Current state, module by module,
+re-verified against the code on 16 Sep 2026:
 
 | Module | State | Gap |
 |---|---|---|
-| **Public website** | Mostly built | No Gallery; "Academics" is split across Programs/Syllabus |
-| **CRM** | Core built | No assignment, tasks, tags, duplicate detection, bulk actions, export |
-| **Admissions pipeline** | 6 stages, **hardcoded** | Brief wants 9 and *configurable* |
-| **Teacher recruitment** | Applications + CV + pipeline | No portfolio links, interview scheduling, ratings, internal comments |
-| **Attendance** | Student, daily, monthly % | No teacher attendance, bulk, CSV export, analytics |
-| **Notifications** | Email + daily digest | No engine — channels are called directly |
+| **Public website** | Mostly built | No Gallery page; "Academics" is split across Programs/Syllabus |
+| **CRM** | Built | No tasks. Assignment, tags, duplicate detection, bulk actions and CSV export all shipped |
+| **Admissions pipeline** | **Configurable** — stages are data, edited in Settings | None. The brief's nine stages are a configuration choice now, not a code change |
+| **Teacher recruitment** | Applications, CV, portfolio link, interview scheduling, 1–5 rating | Internal comments reuse the shared notes subcollection instead of a separate field |
+| **Attendance** | Class register, staff check-in, monthly % | No CSV export, no bulk edit, no rollups, so no trend view |
+| **Notifications** | Engine in `src/lib/notify` — email + daily digest | WhatsApp and SMS adapters exist, both unconfigured |
 | **Dashboards** | One (Insights) | Principal, Admissions, CRM, Attendance, HR, System |
 | **Analytics** | Sources, funnel, referrers | No trends, campaign performance, monthly reports |
 
-This is roughly a third of the brief. The remaining two thirds is months of
-work, and saying otherwise would be dishonest.
+The gaps that remain are the two heavy ones — the dashboard suite and online
+payment — plus attendance depth and analytics depth. Saying the platform is
+finished would be dishonest; so would the earlier version of this table, which
+described gaps that four releases had already closed.
 
 ## 2. The decision that has to come first
 
 > *"NEVER hardcode mutable values. Everything configurable. Everything editable
 > via Admin Panel."*
+
+*This section states the problem as it stood before the settings work. It was
+carried out: those constants are stored settings today, read through
+`src/lib/settings`. Read it as the argument, not as the current state.*
 
 Ten constants currently live in TypeScript: `PIPELINES`, `STAGE_META`,
 `CLASS_SECTIONS`, `PROGRAMS`, `LEAD_SOURCES`, `EMPLOYMENT_TYPES`, `POST_TYPES`,

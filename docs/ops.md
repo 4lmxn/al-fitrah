@@ -64,8 +64,8 @@ Applied and verified 5 Aug 2026. Nothing in this section needs re-running.
 ### Still open
 
 - **`GCP_SA_KEY` repo secret.** The weekly backup workflow is committed but fails until this exists — deliberately, because a backup you believe in but don't have is worse than none. The header of `.github/workflows/firestore-backup.yml` has the exact commands.
-- **Grievance officer name.** `src/content/site.ts` → `grievanceOfficer.name`. Only the school can supply this; the server now logs a COMPLIANCE warning at every boot until it is filled in. Draft message to send them is in §9.
-- **`ADMIN_OWNERS` secret.** Optional; until set, every admin is an owner (today's behaviour).
+- **Grievance officer name.** **Settings → School** → "Grievance officer" and "Grievance email" (`settings.school.grievanceOfficerName`/`…Email`). No deploy, no code change. Only the school can supply the name; until it is set, the privacy page falls back to naming the school, and `/admin/settings` shows a standing DPDP banner. Draft message to send them is in §9.
+- **`ADMIN_OWNERS` secret.** Declared in `apphosting.yaml`. An owner can also be named from **Staff → set a person to owner**, no deploy. The "everyone is an owner" fallback in `src/lib/roles.ts` fires only while the env list *and* the roster are both empty — it is the lockout guard, not the intended steady state.
 - **Firestore location.** See the warning above.
 
 ---
@@ -259,10 +259,11 @@ reads by day. Check it after Phase 1 ships to confirm the numbers.
 
 ## 9. Grievance officer — the one thing only the school can answer
 
-`src/content/site.ts` → `grievanceOfficer.name` is empty. The privacy page falls
-back to naming the school, which is weaker than the DPDP Act asks for: it wants a
-**named person** a parent can contact about their data. The server logs a
-COMPLIANCE warning at every boot until it is filled in.
+`settings.school.grievanceOfficerName` is empty. The privacy page falls back to
+naming the school (`src/app/(site)/privacy/page.tsx:179`), which is weaker than
+the DPDP Act asks for: it wants a **named person** a parent can contact about
+their data. `/admin/settings` carries a standing banner saying so until it is
+filled in.
 
 Nobody here can invent this. Message to send the school:
 
@@ -277,16 +278,9 @@ Nobody here can invent this. Message to send the school:
 >
 > It appears on the privacy page and we should respond within 30 days.
 
-Once they reply, fill in the one line:
-
-```ts
-grievanceOfficer: {
-  name: "Their Name",
-  email: "their@email",
-},
-```
-
-The boot warning disappears and the privacy page names them instead of the school.
+Once they reply, type it into **Settings → School**: "Grievance officer" and
+"Grievance email", then Save. The banner disappears and the privacy page names
+them instead of the school. No deploy — it is stored settings, not code.
 
 ## 10. Campus geofence — a two-step activation, on purpose
 

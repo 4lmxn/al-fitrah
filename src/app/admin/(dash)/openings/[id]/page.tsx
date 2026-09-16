@@ -33,7 +33,10 @@ export default async function EditOpeningPage({ params }: { params: Promise<{ id
             <p className="text-sm font-semibold text-red-800">Delete this opening</p>
             <p className="text-xs text-red-700/70">Permanently removes it. This cannot be undone.</p>
           </div>
-          <ActionForm action={deleteOpening}>
+          <ActionForm
+            action={deleteOpening}
+            confirm={`Delete the “${opening.title}” opening? It comes off the careers page immediately. Applications already received are kept. This cannot be undone.`}
+          >
             <input type="hidden" name="id" value={opening.id} />
             <button type="submit" className="rounded-full border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100">
               Delete

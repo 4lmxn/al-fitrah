@@ -75,7 +75,11 @@ export function StudentDocuments({
                     Open
                   </a>
                   {canDelete && (
-                    <ActionForm action={deleteStudentDocumentAction} errorClassName="sr-only">
+                    <ActionForm
+                      action={deleteStudentDocumentAction}
+                      errorClassName="sr-only"
+                      confirm={`Delete “${d.label}”? This is the child's record and the file itself is deleted. If a guardian uploaded it, they will have to send it again. This cannot be undone.`}
+                    >
                       <input type="hidden" name="id" value={studentId} />
                       <input type="hidden" name="docId" value={d.id} />
                       <button

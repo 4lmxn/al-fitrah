@@ -287,6 +287,7 @@ export async function uploadStudentDocumentAction(formData: FormData): Promise<A
 export async function deleteStudentDocumentAction(formData: FormData): Promise<ActionResult> {
   return attempt("deleteStudentDocument", async () => {
     const admin = await requireAdmin();
+    if (admin.role !== "owner") return fail("Deleting a document needs an owner account.");
     const id = String(formData.get("id") ?? "");
     const docId = String(formData.get("docId") ?? "");
     if (!id || !docId) return fail("Missing document");

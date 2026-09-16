@@ -237,27 +237,12 @@ export function InboxBoard({
         <StatCard label={wonLabel} value={kpis.won} icon="verified" tone="deep" />
       </div>
 
-      {attentionCount > 0 && !attention && (
-        <Link
-          href={`/admin?type=${type}&view=attention`}
-          className="mt-6 flex items-center gap-3 rounded-2xl border border-gold/30 bg-gold-soft/50 px-5 py-3.5 text-sm transition hover:bg-gold-soft"
-        >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-[#7a611a]">
-            <Icon name="notification_important" className="text-[20px]" />
-          </span>
-          <span className="font-semibold text-[#7a611a]">
-            {attentionCount} lead{attentionCount > 1 ? "s" : ""} need attention
-          </span>
-          <span className="hidden text-[#7a611a]/70 sm:inline">— overdue follow-ups or untouched new enquiries</span>
-          <Icon name="arrow_forward" className="ml-auto text-[18px] text-[#7a611a]" />
-        </Link>
-      )}
-
       <div className="mt-7 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap gap-2">
           {attentionCount > 0 && (
             <Link
               href={attention ? `/admin?type=${type}` : `/admin?type=${type}&view=attention`}
+              title="Overdue follow-ups, and new enquiries nobody has touched"
               className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset transition ${
                 attention ? "bg-gold text-ink ring-gold" : "bg-white text-[#7a611a] ring-gold/30 hover:bg-gold-soft/50"
               }`}
@@ -437,12 +422,6 @@ export function InboxBoard({
                             <Icon name="snooze" className="text-[18px]" />
                           </button>
                         )}
-                        <Link
-                          href={`/admin/leads/${l.id}`}
-                          className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold text-emerald opacity-70 transition group-hover:bg-emerald/5 group-hover:opacity-100"
-                        >
-                          Open <Icon name="arrow_forward" className="text-[16px]" />
-                        </Link>
                       </div>
                     </td>
                   </tr>

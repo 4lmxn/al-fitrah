@@ -28,7 +28,7 @@ export function NavLink({
       <Link
         href={href}
         aria-current={active ? "page" : undefined}
-        className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 transition ${
+        className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 transition ${
           active ? "bg-cream/15 text-cream" : "text-cream/75 hover:bg-cream/10"
         }`}
       >

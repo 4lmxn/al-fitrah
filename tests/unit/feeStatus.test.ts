@@ -78,3 +78,36 @@ describe("the reminder a parent receives", () => {
     expect(feeReminderText({ ...base, guardianName: "—", bucket: "dueSoon" })).toContain("alaikum there");
   });
 });
+
+describe("the reminder can carry the school's payment link", () => {
+  const base = {
+    guardianName: "Fatima Sheikh",
+    childName: "Zayd",
+    balancePaise: 250000,
+  } as const;
+
+  it("includes the link when the school has set one", () => {
+    const text = feeReminderText({
+      ...base,
+      bucket: "overdue",
+      payUrl: "https://www.onlinesbi.sbi/sbicollect/x",
+    });
+    expect(text).toContain("https://www.onlinesbi.sbi/sbicollect/x");
+  });
+
+  it("says nothing about paying online when no link is set", () => {
+    const text = feeReminderText({ ...base, bucket: "overdue" });
+    expect(text).not.toContain("pay online");
+  });
+
+  it("still tells a parent who has already paid to ignore it", () => {
+    // SBI Collect does not notify this system, so a reminder can always reach
+    // someone who paid this morning. The escape hatch must survive the link.
+    const text = feeReminderText({
+      ...base,
+      bucket: "broken",
+      payUrl: "https://www.onlinesbi.sbi/sbicollect/x",
+    });
+    expect(text).toContain("already been paid");
+  });
+});

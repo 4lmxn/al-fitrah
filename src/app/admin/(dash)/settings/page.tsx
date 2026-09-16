@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/adminAuth";
 import { getSettings } from "@/lib/settings";
 import { getPipeline } from "@/lib/pipelines";
-import { saveSchool, saveTaxonomy, saveOperations, saveNotifications } from "./actions";
+import { saveSchool, saveTaxonomy, saveOperations, saveNotifications, saveFees } from "./actions";
 import { NOTIFY_CHANNELS, NOTIFY_EVENTS, tokensIn } from "@/lib/notify";
 import { ActionForm } from "@/components/admin/ActionForm";
 import { PipelineEditor } from "@/components/admin/PipelineEditor";
@@ -18,6 +18,7 @@ const label = "mb-1 block text-[11px] font-semibold uppercase tracking-wide text
 const TABS = [
   { id: "school", label: "School", icon: "school" },
   { id: "pipelines", label: "Pipelines", icon: "account_tree" },
+  { id: "fees", label: "Fees", icon: "payments" },
   { id: "lists", label: "Lists", icon: "list" },
   { id: "notifications", label: "Notifications", icon: "notifications" },
   { id: "operations", label: "Operations", icon: "tune" },
@@ -151,6 +152,42 @@ export default async function SettingsPage({
           <div className="mt-4">
             <PipelineEditor type="staff_application" label={settings.pipelines.staff_application.label} stages={staff} />
           </div>
+        </section>
+      )}
+
+      {tab === "fees" && (
+        <section className={`${CARD} p-6`}>
+          <h2 className={SECTION_LABEL}>
+            <Icon name="payments" className="text-[18px] text-gold" /> Paying online
+          </h2>
+          <p className="mt-1 text-xs text-ink/50">
+            The school&apos;s SBI Collect page. Paste the link parents should use and it appears on
+            their child&apos;s fee page in the portal. Leave it blank and the portal keeps telling
+            them to contact the office.
+          </p>
+          <ActionForm action={saveFees} className="mt-4 space-y-3">
+            <label className="block">
+              <span className={label}>Payment link</span>
+              <input
+                name="payUrl"
+                defaultValue={settings.fees.payUrl}
+                placeholder="https://www.onlinesbi.sbi/sbicollect/..."
+                className={field}
+              />
+              <span className="mt-1 block text-[11px] text-ink/45">
+                Must start with https://. Open it yourself once before saving — whatever is here is
+                what every parent will be sent to.
+              </span>
+            </label>
+            <button type="submit" className="rounded-full bg-emerald px-5 py-2 text-sm font-semibold text-cream transition hover:bg-emerald-deep">
+              Save payment link
+            </button>
+          </ActionForm>
+          <p className="mt-4 rounded-xl border border-gold/30 bg-gold-soft/40 px-4 py-3 text-xs text-[#7a611a]">
+            SBI Collect does not tell this system when a parent pays. Balances move when the office
+            imports the SBI report under <b>Fees &rarr; Import payments</b>, so the portal warns
+            parents that a payment can take a day or two to show.
+          </p>
         </section>
       )}
 

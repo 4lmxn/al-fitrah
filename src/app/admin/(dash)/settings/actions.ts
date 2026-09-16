@@ -55,6 +55,26 @@ export async function saveSchool(formData: FormData): Promise<ActionResult> {
   });
 }
 
+export async function saveFees(formData: FormData): Promise<ActionResult> {
+  return attempt("saveFees", async () => {
+    const admin = await requireOwnerForSettings();
+    if (!admin) return fail("Changing settings needs an owner account.");
+    const payUrl = clean(formData.get("payUrl"), 500);
+    if (payUrl && !payUrl.startsWith("https://")) {
+      return fail("The payment link must start with https://");
+    }
+    const res = await saveSettings({ fees: { payUrl } });
+    if (!res.ok) return fail(res.error);
+    await recordAudit({
+      actor: admin!.email,
+      action: "settings.updated",
+      entity: { type: "settings", id: "platform" },
+      summary: payUrl ? "Set the fee payment link" : "Cleared the fee payment link",
+    });
+    return { ok: true as const };
+  });
+}
+
 export async function saveTaxonomy(formData: FormData): Promise<ActionResult> {
   return attempt("saveTaxonomy", async () => {
     const admin = await requireOwnerForSettings();

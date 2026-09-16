@@ -87,8 +87,9 @@ export function feeReminderText(opts: {
   childName: string;
   balancePaise: number;
   bucket: FeeBucket;
+  payUrl?: string;
 }): string {
-  const { guardianName, childName, balancePaise, bucket } = opts;
+  const { guardianName, childName, balancePaise, bucket, payUrl } = opts;
   const amount = formatPaise(balancePaise);
   const open = `Assalamu alaikum ${firstName(guardianName)}, this is Al Fitrah Pre School, Sarjapura.`;
 
@@ -99,7 +100,9 @@ export function feeReminderText(opts: {
         ? `A gentle reminder that the fee for ${childName}, ${amount}, is now past its due date.`
         : `A gentle reminder that the fee for ${childName}, ${amount}, is due shortly.`;
 
-  return `${open} ${middle} If it has already been paid, please ignore this and let us know so we can correct our records. Jazakallahu khairan.`;
+  const pay = payUrl ? ` You can pay online here: ${payUrl}` : "";
+
+  return `${open} ${middle}${pay} If it has already been paid, please ignore this and let us know so we can correct our records. Jazakallahu khairan.`;
 }
 
 export function feeReminderLink(

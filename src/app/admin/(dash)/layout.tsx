@@ -9,6 +9,35 @@ export const dynamic = "force-dynamic";
 
 export const metadata = { robots: { index: false, follow: false } };
 
+const NAV = [
+  {
+    group: "Every day",
+    links: [
+      { href: "/admin", icon: "inbox", label: "Leads" },
+      { href: "/admin/students", icon: "school", label: "Students" },
+      { href: "/admin/attendance", icon: "fact_check", label: "Attendance" },
+      { href: "/admin/fees", icon: "payments", label: "Fees" },
+    ],
+  },
+  {
+    group: "The school",
+    links: [
+      { href: "/admin/staff", icon: "badge", label: "Staff" },
+      { href: "/admin/resources", icon: "folder_shared", label: "Resources" },
+      { href: "/admin/content", icon: "article", label: "Website" },
+      { href: "/admin/openings", icon: "work", label: "Careers" },
+    ],
+  },
+  {
+    group: "Oversight",
+    links: [
+      { href: "/admin/insights", icon: "insights", label: "Insights" },
+      { href: "/admin/audit", icon: "history", label: "Activity" },
+      { href: "/admin/settings", icon: "settings", label: "Settings" },
+    ],
+  },
+];
+
 export default async function AdminDashLayout({ children }: { children: React.ReactNode }) {
   let admin: { email: string };
   try {
@@ -30,19 +59,17 @@ export default async function AdminDashLayout({ children }: { children: React.Re
           </span>
         </Link>
 
-        <nav className="mt-9 space-y-1">
-          <span className="px-3 text-[11px] font-semibold uppercase tracking-wider text-cream/40">Workspace</span>
-          <NavLink href="/admin" icon="inbox" label="Leads" />
-          <NavLink href="/admin/students" icon="school" label="Students" />
-          <NavLink href="/admin/attendance" icon="fact_check" label="Attendance" />
-          <NavLink href="/admin/fees" icon="payments" label="Fees" />
-          <NavLink href="/admin/staff" icon="badge" label="Staff" />
-          <NavLink href="/admin/content" icon="article" label="Website" />
-          <NavLink href="/admin/resources" icon="folder_shared" label="Resources" />
-          <NavLink href="/admin/insights" icon="insights" label="Insights" />
-          <NavLink href="/admin/openings" icon="work" label="Careers" />
-          <NavLink href="/admin/audit" icon="history" label="Activity" />
-          <NavLink href="/admin/settings" icon="settings" label="Settings" />
+        <nav className="mt-9 space-y-6">
+          {NAV.map((section) => (
+            <div key={section.group}>
+              <span className="px-3 text-[11px] font-semibold uppercase tracking-wider text-cream/40">
+                {section.group}
+              </span>
+              {section.links.map((link) => (
+                <NavLink key={link.href} {...link} />
+              ))}
+            </div>
+          ))}
         </nav>
 
         <div className="mt-auto rounded-2xl bg-cream/5 p-4 ring-1 ring-cream/10">
@@ -63,18 +90,13 @@ export default async function AdminDashLayout({ children }: { children: React.Re
           </Link>
           <LogoutButton />
         </div>
-        <nav aria-label="Admin" className="flex gap-2 border-t border-cream/10 px-5 py-2 text-sm font-semibold">
-          <NavLink href="/admin" icon="inbox" label="Leads" variant="topbar" />
-          <NavLink href="/admin/students" icon="school" label="Students" variant="topbar" />
-          <NavLink href="/admin/attendance" icon="fact_check" label="Attendance" variant="topbar" />
-          <NavLink href="/admin/fees" icon="payments" label="Fees" variant="topbar" />
-          <NavLink href="/admin/staff" icon="badge" label="Staff" variant="topbar" />
-          <NavLink href="/admin/content" icon="article" label="Website" variant="topbar" />
-          <NavLink href="/admin/resources" icon="folder_shared" label="Resources" variant="topbar" />
-          <NavLink href="/admin/insights" icon="insights" label="Insights" variant="topbar" />
-          <NavLink href="/admin/openings" icon="work" label="Careers" variant="topbar" />
-          <NavLink href="/admin/audit" icon="history" label="Activity" variant="topbar" />
-          <NavLink href="/admin/settings" icon="settings" label="Settings" variant="topbar" />
+        <nav
+          aria-label="Admin"
+          className="flex gap-2 overflow-x-auto border-t border-cream/10 px-5 py-2 text-sm font-semibold"
+        >
+          {NAV.flatMap((section) => section.links).map((link) => (
+            <NavLink key={link.href} {...link} variant="topbar" />
+          ))}
         </nav>
       </header>
 

@@ -17,7 +17,7 @@ import { createStudentFromLead } from "../../students/actions";
 import { EditContact } from "@/components/admin/EditContact";
 import { sourceLabel } from "@/lib/leads";
 import { referralCode, referralLink, referralShareLink } from "@/lib/referral";
-import { updateStage, logContact, setFollowUp, snoozeFollowUp, assignLead, setTags, scheduleInterview } from "./actions";
+import { updateStage, logContact, snoozeFollowUp, assignLead, setTags, scheduleInterview } from "./actions";
 import { listAdminEmails } from "@/lib/roles";
 
 export const dynamic = "force-dynamic";
@@ -398,16 +398,9 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
               </p>
             )}
 
-            <ActionForm action={setFollowUp} className="mt-4 flex flex-wrap items-center gap-2">
-              <input type="hidden" name="id" value={lead.id} />
-              <input
-                type="date"
-                name="followUpDate"
-                defaultValue={toDateInput(lead.followUpMs)}
-                className="rounded-xl border border-emerald/15 bg-cream/40 px-3 py-2 text-sm text-ink outline-none focus:border-emerald focus:ring-2 focus:ring-emerald/20"
-              />
-              <button type="submit" className="rounded-xl bg-emerald px-4 py-2 text-sm font-semibold text-cream transition hover:bg-emerald-deep">Set</button>
-            </ActionForm>
+            <p className="mt-3 text-xs text-ink/50">
+              A date is set where the call is logged, under Activity. Push it from here.
+            </p>
 
             <div className="mt-3 flex flex-wrap gap-2">
               {[
@@ -423,6 +416,15 @@ export default async function LeadDetail({ params }: { params: Promise<{ id: str
                   </button>
                 </ActionForm>
               ))}
+              {lead.followUpMs != null && (
+                <ActionForm action={logContact}>
+                  <input type="hidden" name="id" value={lead.id} />
+                  <input type="hidden" name="followUpDate" value="clear" />
+                  <button type="submit" className="rounded-full px-3 py-1.5 text-xs font-semibold text-ink/50 transition hover:bg-emerald/5 hover:text-ink">
+                    Clear
+                  </button>
+                </ActionForm>
+              )}
             </div>
           </section>
 

@@ -50,37 +50,6 @@ export async function updateStage(formData: FormData): Promise<ActionResult> {
   });
 }
 
-export async function setFollowUp(formData: FormData): Promise<ActionResult> {
-  return attempt("setFollowUp", async () => {
-  const admin = await requireAdmin();
-  const id = String(formData.get("id") ?? "");
-  const raw = String(formData.get("followUpDate") ?? "").trim();
-  if (!id) return fail("Missing lead id");
-
-  let followUpDate: Date | FieldValue = FieldValue.delete();
-  if (raw) {
-    const d = new Date(`${raw}T00:00:00`);
-    if (Number.isNaN(d.getTime())) return fail("Invalid follow-up date");
-    followUpDate = d;
-  }
-
-  const db = getDb();
-  const batch = db.batch();
-  batch.update(db.collection("leads").doc(id), {
-    followUpDate,
-    updatedAt: FieldValue.serverTimestamp(),
-  });
-  queueAudit(db, batch, {
-    actor: admin.email,
-    action: raw ? "lead.followup_set" : "lead.followup_cleared",
-    entity: { type: "lead", id },
-    summary: raw ? `Set follow-up for ${raw}` : "Cleared the follow-up date",
-  });
-  await batch.commit();
-  revalidatePath(`/admin/leads/${id}`);
-  });
-}
-
 export async function snoozeFollowUp(formData: FormData): Promise<ActionResult> {
   return attempt("snoozeFollowUp", async () => {
   const admin = await requireAdmin();

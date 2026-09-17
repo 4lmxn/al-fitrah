@@ -236,6 +236,38 @@ describe("cost invariant: the price list is never fetched unbounded", () => {
   });
 });
 
+describe("cost invariant: the attendance trend view reads rollups, not days", () => {
+  // A year is ~220 registers per class. Reading the days themselves to draw a
+  // trend is ~1,320 reads per view across six classes, and it is the exact cost
+  // the rollup document exists to remove. The rollups are addressed by id, so
+  // twelve months is twelve document reads and no query at all.
+  const trends = files.find((f) =>
+    f.path.endsWith(join("admin", "(dash)", "attendance", "trends", "page.tsx")),
+  );
+
+  it("the trend view exists", () => {
+    expect(trends).toBeDefined();
+  });
+
+  it("never reaches for the registers", () => {
+    expect(trends!.text).not.toMatch(/listRegisters|getRegister\b/);
+  });
+
+  it("reads the rollups", () => {
+    expect(trends!.text).toMatch(/getRollups\(/);
+  });
+
+  it("the rollup is written in the same batch as the register it summarises", () => {
+    // Two commits means a crash between them leaves a month that disagrees with
+    // its own days, and nothing would ever notice.
+    const actions = files.find((f) =>
+      f.path.endsWith(join("admin", "(dash)", "attendance", "actions.ts")),
+    )!;
+    expect(actions.text).toMatch(/batch\.set\(\s*\n?\s*db\.collection\(ROLLUPS\)/);
+    expect(actions.text).not.toMatch(/collection\(ROLLUPS\)[\s\S]{0,200}?FieldValue\.increment/);
+  });
+});
+
 describe("consistency invariant: one implementation per rule", () => {
   // These were each written out two or three times. The failure mode is silent:
   // fix one copy and the others keep the bug, and a wrong country-code prefix

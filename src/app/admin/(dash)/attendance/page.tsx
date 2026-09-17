@@ -113,6 +113,12 @@ export default async function AttendancePage({
               Last saved by {register.markedBy ?? "—"}
             </p>
           )}
+          <Link
+            href={`/admin/attendance/trends?${new URLSearchParams({ class: classSection })}`}
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-white px-4 text-sm font-semibold text-emerald-deep shadow-soft ring-1 ring-emerald/10 transition hover:bg-emerald/5"
+          >
+            <Icon name="insights" className="text-[18px]" /> Trends
+          </Link>
           <a
             href={`/admin/attendance/export?${new URLSearchParams({ class: classSection, month: key.slice(0, 7) })}`}
             className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-white px-4 text-sm font-semibold text-emerald-deep shadow-soft ring-1 ring-emerald/10 transition hover:bg-emerald/5"

@@ -19,6 +19,12 @@ service cloud.firestore {
     match /attendance/{doc=**} {
       allow read, write: if false;
     }
+    // Monthly attendance totals per class. They hold no child's name, but they
+    // are derived from the register and are what the trend view trusts — a
+    // client able to write here could restate a year of attendance. Server-only.
+    match /attendanceRollups/{doc=**} {
+      allow read, write: if false;
+    }
     // Staff check-in: who was at work, when, and the coordinates they were at.
     // Staff location history is personal data and the fence is only meaningful
     // if the record cannot be written by the client it judges. Server-only.

@@ -1,10 +1,12 @@
 import "server-only";
 import { getDb } from "@/lib/firebaseAdmin";
 import { requireAdmin } from "@/lib/adminAuth";
+import { academicYearFor } from "@/lib/students";
 
 export type AttendanceStatus = string;
 
 export const COLLECTION = "attendance";
+export const ROLLUPS = "attendanceRollups";
 
 export type Register = {
   id: string;
@@ -126,6 +128,129 @@ export function monthBounds(key: string): { from: string; to: string } {
   const last = new Date(y, m, 0).getDate();
   const p = (n: number) => String(n).padStart(2, "0");
   return { from: `${y}-${p(m)}-01`, to: `${y}-${p(m)}-${p(last)}` };
+}
+
+export type Rollup = {
+  month: string;
+  academicYear: string;
+  classSection: string;
+  days: Record<string, Record<string, number>>;
+};
+
+export type MonthTotals = {
+  month: string;
+  present: number;
+  absent: number;
+  counted: number;
+  percent: number | null;
+  daysMarked: number;
+};
+
+export function rollupId(academicYear: string, classSection: string, month: string): string {
+  return `${academicYear}_${classSection}_${month}`;
+}
+
+export function monthOf(key: string): string {
+  return key.slice(0, 7);
+}
+
+export function countByStatus(
+  entries: Record<string, AttendanceStatus>,
+  statusIds: string[],
+): Record<string, number> {
+  const counts: Record<string, number> = Object.fromEntries(statusIds.map((id) => [id, 0]));
+  for (const status of Object.values(entries)) {
+    if (status in counts) counts[status] += 1;
+  }
+  return counts;
+}
+
+export function academicYearMonths(academicYear: string): string[] {
+  const start = Number(academicYear.split("-")[0]);
+  const p = (n: number) => String(n).padStart(2, "0");
+  return Array.from({ length: 12 }, (_, i) => {
+    const month = 6 + i;
+    return month <= 12 ? `${start}-${p(month)}` : `${start + 1}-${p(month - 12)}`;
+  });
+}
+
+export function recentAcademicYears(count = 3, from = new Date()): string[] {
+  const current = Number(academicYearFor(from).split("-")[0]);
+  return Array.from({ length: count }, (_, i) => {
+    const start = current - i;
+    return `${start}-${String((start + 1) % 100).padStart(2, "0")}`;
+  });
+}
+
+export function summariseMonth(
+  rollup: Rollup | null,
+  month: string,
+  statuses: { id: string; present: boolean; counted: boolean }[],
+): MonthTotals {
+  const empty = { month, present: 0, absent: 0, counted: 0, percent: null, daysMarked: 0 };
+  if (!rollup) return empty;
+
+  let present = 0;
+  let counted = 0;
+  let daysMarked = 0;
+
+  for (const day of Object.values(rollup.days)) {
+    let dayCounted = 0;
+    for (const status of statuses) {
+      const n = day[status.id] ?? 0;
+      if (n === 0 || !status.counted) continue;
+      dayCounted += n;
+      if (status.present) present += n;
+    }
+    if (dayCounted > 0) daysMarked += 1;
+    counted += dayCounted;
+  }
+
+  return {
+    month,
+    present,
+    absent: counted - present,
+    counted,
+    percent: counted === 0 ? null : Math.round((present / counted) * 100),
+    daysMarked,
+  };
+}
+
+export function totalOf(months: MonthTotals[]): MonthTotals {
+  const present = months.reduce((n, m) => n + m.present, 0);
+  const counted = months.reduce((n, m) => n + m.counted, 0);
+  return {
+    month: "",
+    present,
+    absent: counted - present,
+    counted,
+    percent: counted === 0 ? null : Math.round((present / counted) * 100),
+    daysMarked: months.reduce((n, m) => n + m.daysMarked, 0),
+  };
+}
+
+export async function getRollups(
+  academicYear: string,
+  classSection: string,
+): Promise<Map<string, Rollup>> {
+  await requireAdmin();
+  const db = getDb();
+  const months = academicYearMonths(academicYear);
+  const docs = await db.getAll(
+    ...months.map((month) => db.collection(ROLLUPS).doc(rollupId(academicYear, classSection, month))),
+  );
+  const found = new Map<string, Rollup>();
+  for (const doc of docs) {
+    if (!doc.exists) continue;
+    const x = doc.data()!;
+    found.set(x.month, {
+      month: x.month,
+      academicYear: x.academicYear ?? academicYear,
+      classSection: x.classSection ?? classSection,
+      days: x.days ?? {},
+    });
+  }
+  return found;
 }
 
 export function attendanceMatrix(

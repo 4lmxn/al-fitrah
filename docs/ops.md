@@ -67,6 +67,15 @@ Applied and verified 5 Aug 2026. Nothing in this section needs re-running.
 - **Grievance officer name.** **Settings → School** → "Grievance officer" and "Grievance email" (`settings.school.grievanceOfficerName`/`…Email`). No deploy, no code change. Only the school can supply the name; until it is set, the privacy page falls back to naming the school, and `/admin/settings` shows a standing DPDP banner. Draft message to send them is in §9.
 - **`ADMIN_OWNERS` secret.** Declared in `apphosting.yaml`. An owner can also be named from **Staff → set a person to owner**, no deploy. The "everyone is an owner" fallback in `src/lib/roles.ts` fires only while the env list *and* the roster are both empty — it is the lockout guard, not the intended steady state.
 - **Firestore location.** See the warning above.
+- **Attendance rollup backfill.** Only if registers were saved before Sep 2026.
+  `attendanceRollups` is written in the same batch as the register from that
+  release onward, so anything marked since is already correct; earlier months
+  have no rollup and the trend view shows them as "Not marked" — which is a lie
+  about attendance that was actually taken. `node
+  scripts/backfill-attendance-rollups.mjs` is a dry run and prints what it would
+  write; `--commit` applies it. Safe to re-run: each day is written at its own
+  key, so a second pass rewrites rather than adds. If the school marked its
+  first register after this shipped, there is nothing to run.
 
 ---
 

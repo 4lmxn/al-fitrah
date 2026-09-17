@@ -1042,6 +1042,61 @@ Registers for one class across a date range.
 Reads are bounded by the range, not by class size — a month is at most ~31
 documents however many children are in the class.
 
+**`export const ROLLUPS = "attendanceRollups";`**
+
+Monthly totals per class, so a yearly view does not read a year of days.
+
+A year is ~220 registers per class. Drawing a trend from the registers
+themselves is ~1,320 reads per view across six classes, which is exactly the
+kind of cost that grows with how long the school has been open. One rollup
+document per class-month makes it twelve document reads, addressed by id, so
+there is no query and no index — the same property that makes opening a
+register a single get.
+
+Written in the register's own batch. A separate write means a crash between
+the two leaves a month that disagrees with its own days, and nothing would
+ever notice: no read path compares them.
+
+**`export function countByStatus(`**
+
+What one register contributes to its month, keyed by status id.
+
+Stored under status ids rather than as present/absent totals. Whether "late"
+counts as present is a settings decision the school can change later, and a
+rollup that had resolved it at write time would make its own history wrong
+the day they changed their mind. The percentage is derived on read from the
+statuses as they are configured then.
+
+Writes an explicit zero for every configured status. The rollup is merged
+into, not replaced, and Firestore merges maps field by field — a status left
+out of the map would keep yesterday's number. Correcting a day from two
+absences to none would leave the two behind.
+
+**`export function summariseMonth(`**
+
+The read side of the rollup, and the reason it is not an increment.
+
+`EXPANSION_PLAN.md` §4.2 specifies increments. Increments are wrong here,
+because the register is deliberately re-saveable — the page tells the teacher
+they can save again to correct a day — and a second save would increment the
+month a second time. Attendance would inflate silently, with no error and
+nothing to compare against. So the document holds `days: { "2026-09-17":
+{ present: 12, late: 1, absent: 2 } }` and a re-save overwrites that day's
+entry. Totals are summed over at most 31 entries on read, which costs nothing
+next to the read it saves.
+
+Days where nothing counted — a holiday, a status the school has since
+removed — do not increment `daysMarked`. A month the school was closed should
+read as unmarked, not as a month the children failed to come.
+
+**`export function academicYearMonths(academicYear: string): string[]`**
+
+The twelve months of an academic year, June to May.
+
+Derived from the year label rather than from what exists in the database, so
+a month nobody marked still gets a row saying so. A trend that silently omits
+its empty months is a trend that hides the gap it should be showing.
+
 ---
 
 ## `src/lib/attention.ts`

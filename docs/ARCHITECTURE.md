@@ -17,7 +17,7 @@ re-verified against the code on 16 Sep 2026:
 | **CRM** | Built | No tasks. Duplicate detection, bulk stage moves and CSV export shipped. Assignment, tags and the Kanban board were built, then **removed in Sep 2026** — see below |
 | **Admissions pipeline** | **Configurable** — stages are data, edited in Settings | None. The brief's nine stages are a configuration choice now, not a code change |
 | **Teacher recruitment** | Applications, CV, portfolio link, interview scheduling, 1–5 rating | Internal comments reuse the shared notes subcollection instead of a separate field |
-| **Attendance** | Class register, staff check-in, monthly %, CSV export | No bulk edit, no rollups, so no trend view |
+| **Attendance** | Class register, staff check-in, monthly %, CSV export, yearly trend from monthly rollups | No bulk edit |
 | **Notifications** | Engine in `src/lib/notify` — email + daily digest | WhatsApp and SMS adapters exist, both unconfigured |
 | **Dashboards** | One (Insights) | Principal, Admissions, CRM, Attendance, HR, System |
 | **Analytics** | Sources, funnel, referrers | No trends, campaign performance, monthly reports |
@@ -45,10 +45,11 @@ work that survives at any size.
 If the school hires admissions staff, assignment is the one to rebuild first,
 and `git log` has it.
 
-### Three remaining gaps are not "next up"
+### Two remaining gaps are not "next up"
 
 Each looks like a small piece of work and is not, for reasons that live outside
-the code:
+the code. A third — attendance rollups — was on this list until the screen that
+reads them was built; see below.
 
 **Resource audiences.** The brief asks for Public, Parents, Students, Teachers,
 Staff and Admin. The code has three, and that is not laziness — §5 of
@@ -58,16 +59,31 @@ means, and "Admin" is the `owner` role. Adding *Students* would put a choice in
 the upload form that no one can ever be. Adding audiences before identities is
 how you get a control that gates nothing.
 
-**Attendance rollups.** `attendanceRollups/{year}_{class}_{month}` is designed
-in `EXPANSION_PLAN.md` §6 and should stay designed until something needs it.
-Its whole purpose is to keep a yearly trend view flat-cost, and there is no
-trend view. `listRegisters` caps at 62 documents, which is correct for the
-month view that exists today. Build the rollup in the same commit as the screen
-that reads it, or it is a write on every register save that nothing queries.
-
 **Gallery.** Blocked on the school, not on code — `docs/school-facts-needed.md`
 is still waiting on real campus photographs. A gallery shell shipped now would
 be a production page carrying placeholder images.
+
+### The attendance rollup shipped with the screen that reads it
+
+`attendanceRollups/{year}_{class}_{month}` and `/admin/attendance/trends` are
+one change, which is what the entry above asked for. A year is ~220 registers
+per class, so drawing a trend from the days themselves is ~1,320 reads per view
+across six classes; the rollup makes it twelve document reads, addressed by id,
+with no query and therefore no index.
+
+It departs from `EXPANSION_PLAN.md` §4.2 in one way, and the reason matters. The
+plan says "updated by increment". Increments are wrong here, because the
+register is deliberately re-saveable — the page says *you can save again to
+correct a day* — and a second save would increment the month a second time,
+quietly inflating a year of attendance with no error anywhere. The document
+instead holds `days: { "2026-09-17": { present: 12, late: 1, absent: 2 } }`, so
+re-saving a day overwrites that day's entry and nothing accumulates. The write
+stays in the register's own batch, so a month can never disagree with its days.
+
+Counts are stored under **status ids**, not under present/absent. Whether "late"
+counts as present is a settings decision the school can change, and a rollup
+that had baked it in would make its own history wrong the day they changed it.
+The percentage is derived on read from the statuses as configured now.
 
 ## 2. The decision that has to come first
 

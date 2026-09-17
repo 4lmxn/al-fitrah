@@ -21,9 +21,13 @@ import {
 } from "@/lib/staffAttendance";
 import {
   COLLECTION,
+  ROLLUPS,
+  countByStatus,
   dateKey,
   isFuture,
+  monthOf,
   registerId,
+  rollupId,
   type AttendanceStatus,
 } from "@/lib/attendance";
 
@@ -118,7 +122,8 @@ export async function saveRegister(formData: FormData): Promise<ActionResult> {
     );
     if (refusal) return fail(refusal);
 
-    const validStatuses = new Set((await getAttendanceStatuses()).map((x) => x.id));
+    const statuses = await getAttendanceStatuses();
+    const validStatuses = new Set(statuses.map((x) => x.id));
 
     const entries: Record<string, AttendanceStatus> = {};
     for (const [name, value] of formData.entries()) {
@@ -147,6 +152,18 @@ export async function saveRegister(formData: FormData): Promise<ActionResult> {
         advisory: verdict.advisory,
       },
     });
+    const month = monthOf(key);
+    batch.set(
+      db.collection(ROLLUPS).doc(rollupId(academicYear, classSection, month)),
+      {
+        academicYear,
+        classSection,
+        month,
+        days: { [key]: countByStatus(entries, statuses.map((s) => s.id)) },
+        updatedAt: FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
     queueAudit(db, batch, {
       actor: admin.email,
       action: "attendance.marked",
